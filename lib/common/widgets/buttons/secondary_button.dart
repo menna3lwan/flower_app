@@ -1,0 +1,21 @@
+import 'package:flutter/material.dart';
+
+/// Full-width, pill-shaped outlined button — e.g. "Continue as guest".
+class SecondaryButton extends StatelessWidget {
+  const SecondaryButton({
+    required this.label,
+    required this.onPressed,
+    super.key,
+  });
+
+  final String label;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      onPressed: onPressed,
+      child: Text(label),
+    );
+  }
+}
