@@ -15,9 +15,16 @@ class AppBackAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+
     return AppBar(
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+        // Mirror the back arrow in RTL when the platform glyph itself does not flip automatically.
+        icon: Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.rotationY(isRtl ? 3.141592653589793 : 0),
+          child: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+        ),
         onPressed: onBackTap ?? () => Navigator.of(context).maybePop(),
       ),
       title: Text(title),

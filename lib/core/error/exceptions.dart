@@ -6,13 +6,13 @@ class ServerException implements Exception {
 }
 
 class CacheException implements Exception {
-  final dynamic message;
-
   const CacheException([this.message = 'Cache error.']);
+
+  final String message;
 }
 
 class NetworkException implements Exception {
-  final dynamic message;
-
   const NetworkException([this.message = 'No internet connection.']);
+
+  final String message;
 }
