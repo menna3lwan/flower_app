@@ -20,7 +20,11 @@ class FlowerApp extends StatelessWidget {
       supportedLocales: context.supportedLocales,
       locale: context.locale,
       getPages: CustomerPages.pages,
-      initialRoute: CustomerRoutes.login,
+      // SplashView is a real, already-built screen (branded launch state
+      // + redirect to Login) that was simply never reachable before —
+      // starting here instead of Login is the routing fix that makes it
+      // actually run.
+      initialRoute: CustomerRoutes.splash,
     );
   }
 }

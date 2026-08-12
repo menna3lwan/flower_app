@@ -63,21 +63,25 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                       obscureText: true,
                       validator: Validators.password,
                     ),
-                    const SizedBox(height: AppDimens.space16),
+                    // Figma Dev Mode (Reset password frame, node 76:7947):
+                    // 24px between stacked fields, not 16px.
+                    const SizedBox(height: AppDimens.space24),
                     AppTextField(
                       label: AppStrings.newPassword,
                       controller: _newPasswordController,
                       obscureText: true,
                       validator: Validators.password,
                     ),
-                    const SizedBox(height: AppDimens.space16),
+                    const SizedBox(height: AppDimens.space24),
                     AppTextField(
                       label: AppStrings.confirmPassword,
                       controller: _confirmPasswordController,
                       obscureText: true,
                       validator: (value) => Validators.confirmPassword(value, _newPasswordController.text),
                     ),
-                    const SizedBox(height: AppDimens.space24),
+                    // Figma measures ~48px before the primary button here
+                    // too — same pre-button gap as Login/Forgot Password.
+                    const SizedBox(height: AppDimens.space48),
                     PrimaryButton(
                       label: AppStrings.update,
                       isLoading: isSubmitting,

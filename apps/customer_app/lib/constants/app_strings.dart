@@ -35,7 +35,11 @@ abstract final class AppStrings {
   static String get passwordSectionTitle => 'passwordSectionTitle'.tr();
   static String get verificationCodeTitle => 'verificationCodeTitle'.tr();
   static String get verificationCodeSubtitle => 'verificationCodeSubtitle'.tr();
-  static String get resendCode => 'resendCode'.tr();
+  // Split into two spans so only "Resend" renders as the pink/underlined
+  // link (Figma: rest of the sentence stays default-colored) — see
+  // OtpVerificationView's `Text.rich` usage.
+  static String get resendCodePrefix => 'resendCodePrefix'.tr();
+  static String get resendCodeAction => 'resendCodeAction'.tr();
   static String get resetPasswordTitle => 'resetPasswordTitle'.tr();
   static String get currentPassword => 'currentPassword'.tr();
   static String get newPassword => 'newPassword'.tr();

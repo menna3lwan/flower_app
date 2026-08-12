@@ -39,14 +39,11 @@ class AppOutlinedTextField extends StatelessWidget {
       inputFormatters: inputFormatters,
       textCapitalization: textCapitalization,
       enabled: enabled,
-      // Entered-text style: Figma's field-content token is "Body Large"
-      // overridden to 14px — matches AppTextStyles.bodyMedium exactly.
       style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary),
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        // fill box behind them, unlike the app's other (filled) fields.
         filled: false,
         isDense: true,
         contentPadding: const EdgeInsets.symmetric(
