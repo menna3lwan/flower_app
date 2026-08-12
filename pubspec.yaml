@@ -36,3 +36,23 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/animations/
+    - assets/fonts/
+    - assets/translations/
+
+  fonts:
+    - family: IMFellEnglish
+      fonts:
+        - asset: assets/fonts/IMFellEnglish.ttf
+
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/inter.ttf
+
+    - family: Outfit
+      fonts:
+        - asset: assets/fonts/Outfit.ttf
+
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/roboto.ttf
