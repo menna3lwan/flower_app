@@ -1,15 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-/// Core product entity — the shared domain representation of a flower
-/// product across the home, catalog, product-details, cart and orders
-/// features.
-///
-/// This lives in `core/domain` (a "shared kernel") rather than inside a
-/// single feature because five different features legitimately need the
-/// same concept; duplicating it per-feature would violate DRY and Single
-/// Source of Truth. Feature-specific data (e.g. a cart quantity) is
-/// modeled as a separate entity that *wraps* this one — see
-/// [CartItemEntity] — rather than mutating this entity.
+/// Shared-kernel product entity used across home, catalog, product-details, cart and orders features.
 class ProductEntity extends Equatable {
   const ProductEntity({
     required this.id,

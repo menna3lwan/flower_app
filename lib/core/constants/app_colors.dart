@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Centralized color palette extracted from the Flower App Figma design
-/// (Design System > Color styles: Main color, Light pink, Gray, Error,
-/// Success, White, Black).
-///
-/// Single source of truth for color — never hardcode a `Color(0x...)`
-/// inside a widget, reference [AppColors] instead.
+/// Color palette from the Figma Design System — never hardcode `Color(0x...)` outside this file.
 abstract final class AppColors {
   const AppColors._();
 

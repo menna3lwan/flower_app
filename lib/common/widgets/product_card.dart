@@ -5,19 +5,10 @@ import '../../core/constants/app_dimens.dart';
 import '../../core/domain/entities/product_entity.dart';
 import '../../core/extensions/string_extensions.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../extensions/localization_extensions.dart';
 import 'media/app_image_placeholder.dart';
 
-/// Product card used in the Best seller row, Occasion grid, Categories
-/// grid and Search results — image, name, price (with strikethrough +
-/// discount badge when applicable) and an "Add to cart" button.
-///
-/// This is a `common` widget (not feature-owned) because five different
-/// features render it; it depends only on [ProductEntity], which lives
-/// in `core/domain` as shared kernel — never on a feature's Cubit/state.
-///
-/// [width] lets callers size it for a horizontal `ListView` (Home rows)
-/// versus a `GridView` (Categories/listing pages) without duplicating
-/// the card body.
+/// Product card shared across Best seller, Occasion, Categories and Search — depends only on [ProductEntity].
 class ProductCard extends StatelessWidget {
   const ProductCard({
     required this.product,
@@ -48,18 +39,22 @@ class ProductCard extends StatelessWidget {
                   child: AppImagePlaceholder(borderRadius: BorderRadius.circular(AppDimens.radiusMedium)),
                 ),
                 if (product.discountPercentage != null)
-                  Positioned(
+                  // `PositionedDirectional` keeps the badge on the leading edge in both LTR and RTL.
+                  PositionedDirectional(
                     top: AppDimens.space8,
-                    left: AppDimens.space8,
+                    start: AppDimens.space8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimens.space8,
+                        vertical: AppDimens.space4,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.error,
                         borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
                       ),
                       child: Text(
                         '${product.discountPercentage}%',
-                        style: AppTextStyles.caption.copyWith(color: AppColors.white, fontSize: 11),
+                        style: AppTextStyles.caption.copyWith(color: AppColors.white),
                       ),
                     ),
                   ),
@@ -94,7 +89,7 @@ class ProductCard extends StatelessWidget {
                 child: ElevatedButton.icon(
                   onPressed: onAddToCart,
                   icon: const Icon(Icons.shopping_cart_outlined, size: 18),
-                  label: const Text('Add to cart'),
+                  label: Text(context.l10n.addToCart),
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(40),
                     textStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.onPrimary),

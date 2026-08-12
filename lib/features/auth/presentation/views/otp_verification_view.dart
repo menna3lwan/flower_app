@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../common/extensions/localization_extensions.dart';
 import '../../../../common/widgets/app_back_app_bar.dart';
 import '../../../../common/widgets/buttons/primary_button.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -8,29 +9,24 @@ import '../../../../core/constants/app_dimens.dart';
 import '../../../../core/routing/app_routes.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
-/// OTP / verification-code step of the password recovery flow.
-///
-/// Kept as a static, self-contained layout (no dedicated Cubit) since at
-/// this skeleton stage there is no real OTP delivery to verify against —
-/// it exists to complete the Figma flow (Forget password > Verification
-/// code > Reset password) and is wired for a Cubit the moment that
-/// backend exists.
+/// OTP / verification-code step; kept static with no Cubit since there's no real OTP delivery to verify yet.
 class OtpVerificationView extends StatelessWidget {
   const OtpVerificationView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
-      appBar: const AppBackAppBar(title: 'Password'),
+      appBar: AppBackAppBar(title: l10n.passwordSectionTitle),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AppDimens.space16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Verification code', style: AppTextStyles.headlineMedium),
+              Text(l10n.verificationCodeTitle, style: AppTextStyles.headlineMedium),
               const SizedBox(height: AppDimens.space8),
-              Text('Enter the 4-digit code sent to your email', style: AppTextStyles.bodyMedium),
+              Text(l10n.verificationCodeSubtitle, style: AppTextStyles.bodyMedium),
               const SizedBox(height: AppDimens.space24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -50,13 +46,13 @@ class OtpVerificationView extends StatelessWidget {
               ),
               const SizedBox(height: AppDimens.space24),
               PrimaryButton(
-                label: 'Confirm',
+                label: l10n.confirm,
                 onPressed: () => Get.toNamed(AppRoutes.resetPassword),
               ),
               const SizedBox(height: AppDimens.space16),
               Center(
                 child: Text(
-                  "Didn't receive the code? Resend",
+                  l10n.resendCode,
                   style: AppTextStyles.bodyMedium.copyWith(color: AppColors.primary),
                 ),
               ),

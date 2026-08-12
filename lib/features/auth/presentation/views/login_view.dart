@@ -3,27 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 import '../../../../common/extensions/context_extensions.dart';
+import '../../../../common/extensions/localization_extensions.dart';
 import '../../../../common/widgets/app_back_app_bar.dart';
 import '../../../../common/widgets/buttons/primary_button.dart';
 import '../../../../common/widgets/buttons/secondary_button.dart';
 import '../../../../common/widgets/inputs/app_text_field.dart';
 import '../../../../core/constants/app_dimens.dart';
-import '../../../../core/constants/app_strings.dart';
 import '../../../../core/routing/app_routes.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/validators.dart';
 import '../cubit/login/login_cubit.dart';
 import '../cubit/login/login_state.dart';
 
-/// Login screen — matches the Figma "Login" frame: Email + Password
-/// fields, "Remember me" / "Forget password?" row, primary Login button,
-/// outlined "Continue as guest" button, and a "Sign up" link.
-///
-/// Password-visibility toggling is deliberately kept as page-local
-/// `ValueNotifier` state rather than routed through [LoginCubit]: it is
-/// purely cosmetic presentation state with no domain meaning, so folding
-/// it into the sealed [LoginState] hierarchy would only add ceremony
-/// without adding predictability.
+/// Login screen matching the Figma "Login" frame; password-visibility toggling stays page-local `ValueNotifier` state since it has no domain meaning for [LoginState].
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
 
@@ -58,8 +50,9 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
-      appBar: const AppBackAppBar(title: AppStrings.login),
+      appBar: AppBackAppBar(title: l10n.login),
       body: BlocConsumer<LoginCubit, LoginState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
@@ -79,7 +72,7 @@ class _LoginViewState extends State<LoginView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AppTextField(
-                      label: AppStrings.email,
+                      label: l10n.email,
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       validator: Validators.email,
@@ -89,7 +82,7 @@ class _LoginViewState extends State<LoginView> {
                       valueListenable: _obscurePassword,
                       builder: (context, obscure, _) {
                         return AppTextField(
-                          label: AppStrings.password,
+                          label: l10n.password,
                           controller: _passwordController,
                           obscureText: obscure,
                           validator: Validators.password,
@@ -113,7 +106,7 @@ class _LoginViewState extends State<LoginView> {
                                   value: remember,
                                   onChanged: (value) => _rememberMe.value = value ?? false,
                                 ),
-                                Text(AppStrings.rememberMe, style: AppTextStyles.bodyMedium),
+                                Text(l10n.rememberMe, style: AppTextStyles.bodyMedium),
                               ],
                             );
                           },
@@ -121,29 +114,29 @@ class _LoginViewState extends State<LoginView> {
                         const Spacer(),
                         TextButton(
                           onPressed: () => Get.toNamed(AppRoutes.forgotPassword),
-                          child: const Text(AppStrings.forgetPassword),
+                          child: Text(l10n.forgetPassword),
                         ),
                       ],
                     ),
                     const SizedBox(height: AppDimens.space24),
                     PrimaryButton(
-                      label: AppStrings.login,
+                      label: l10n.login,
                       isLoading: isSubmitting,
                       onPressed: _submit,
                     ),
                     const SizedBox(height: AppDimens.space16),
                     SecondaryButton(
-                      label: AppStrings.continueAsGuest,
+                      label: l10n.continueAsGuest,
                       onPressed: isSubmitting ? null : () => context.read<LoginCubit>().continueAsGuest(),
                     ),
                     const SizedBox(height: AppDimens.space24),
                     Center(
                       child: Wrap(
                         children: [
-                          Text('${AppStrings.dontHaveAccount} ', style: AppTextStyles.bodyMedium),
+                          Text('${l10n.dontHaveAccount} ', style: AppTextStyles.bodyMedium),
                           GestureDetector(
                             onTap: () => Get.toNamed(AppRoutes.signUp),
-                            child: Text(AppStrings.signUp, style: AppTextStyles.link),
+                            child: Text(l10n.signUp, style: AppTextStyles.link),
                           ),
                         ],
                       ),

@@ -10,9 +10,7 @@ class CategoryEntity extends Equatable {
   final String id;
   final String name;
 
-  /// Name of a [Material Icons] identifier resolved by the presentation
-  /// layer — kept as a string so the domain layer has zero Flutter
-  /// dependency.
+  /// Material Icons identifier string, kept as text so the domain layer stays free of any Flutter dependency.
   final String iconName;
 
   @override

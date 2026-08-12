@@ -4,12 +4,7 @@ import '../constants/app_colors.dart';
 import '../constants/app_dimens.dart';
 import 'app_text_styles.dart';
 
-/// Single entry point for the app's [ThemeData].
-///
-/// Every visual default (button shape, input border, app bar style) is
-/// declared once here so feature screens can rely on `Theme.of(context)`
-/// and the shared widgets in `common/widgets` instead of re-specifying
-/// decoration inline.
+/// Single entry point for the app's `ThemeData` — every visual default is declared once here.
 abstract final class AppTheme {
   const AppTheme._();
 
@@ -102,6 +97,15 @@ abstract final class AppTheme {
         color: AppColors.divider,
         thickness: 1,
         space: 1,
+      ),
+      cardTheme: CardThemeData(
+        color: AppColors.surface,
+        elevation: 2,
+        shadowColor: Colors.black.withOpacity(0.08),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
+        ),
+        margin: EdgeInsets.zero,
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.surface,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'common/dialogs/confirm_dialog.dart';
+import 'common/extensions/localization_extensions.dart';
 import 'common/widgets/app_section_header.dart';
 import 'common/widgets/buttons/primary_button.dart';
 import 'common/widgets/buttons/secondary_button.dart';
@@ -8,37 +9,47 @@ import 'common/widgets/media/app_image_placeholder.dart';
 import 'common/widgets/states/empty_state.dart';
 import 'core/constants/app_colors.dart';
 import 'core/constants/app_dimens.dart';
+import 'core/di/injector.dart';
+import 'core/localization/locale_controller.dart';
+import 'core/localization/supported_locales.dart';
 import 'core/theme/app_text_styles.dart';
 
-/// Temporary landing screen proving the `core`/`common`/`assets`
-/// foundation actually compiles and renders together — theme, shared
-/// widgets, dialogs, and the image placeholder.
-///
-/// **This is scaffolding, not a feature.** It has no Cubit, no state, no
-/// navigation target of its own; it exists only until the first real
-/// feature (Splash → Login → ...) is wired into [AppPages], at which
-/// point it should be deleted and `FlowerApp.home` replaced with
-/// `initialRoute`.
+/// Temporary scaffolding proving `core`/`common`/`assets` compile and render together; delete once features wire in.
 class FoundationPreviewScreen extends StatelessWidget {
   const FoundationPreviewScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final currentLocale = Localizations.localeOf(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Foundation preview')),
+      appBar: AppBar(title: Text(l10n.foundationPreviewTitle)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(AppDimens.space16),
           children: [
-            Text('Core + Common + Assets', style: AppTextStyles.headlineMedium),
+            Text(l10n.foundationPreviewHeading, style: AppTextStyles.headlineMedium),
             const SizedBox(height: AppDimens.space8),
-            Text(
-              'This screen only exercises the shared foundation — no feature '
-              'business logic runs here.',
-              style: AppTextStyles.bodyMedium,
+            Text(l10n.foundationPreviewBody, style: AppTextStyles.bodyMedium),
+            const SizedBox(height: AppDimens.space24),
+            AppSectionHeader(title: l10n.foundationLanguageSection, subtitle: 'core/localization — EN/AR, RTL'),
+            const SizedBox(height: AppDimens.space12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppDimens.space16),
+              child: Wrap(
+                spacing: AppDimens.space8,
+                children: SupportedLocales.all.map((locale) {
+                  final isSelected = locale.languageCode == currentLocale.languageCode;
+                  return ChoiceChip(
+                    label: Text(locale.languageCode == 'ar' ? 'العربية' : 'English'),
+                    selected: isSelected,
+                    onSelected: (_) => sl<LocaleController>().changeLocale(locale),
+                  );
+                }).toList(),
+              ),
             ),
             const SizedBox(height: AppDimens.space24),
-            const AppSectionHeader(title: 'Typography & color', subtitle: 'core/theme, core/constants'),
+            AppSectionHeader(title: l10n.foundationTypographySection, subtitle: 'core/theme, core/constants'),
             const SizedBox(height: AppDimens.space12),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: AppDimens.space16),
@@ -54,19 +65,19 @@ class FoundationPreviewScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppDimens.space24),
-            const AppSectionHeader(title: 'Buttons', subtitle: 'common/widgets/buttons'),
+            AppSectionHeader(title: l10n.foundationButtonsSection, subtitle: 'common/widgets/buttons'),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppDimens.space16),
               child: Column(
                 children: [
-                  PrimaryButton(label: 'Primary button', onPressed: () {}),
+                  PrimaryButton(label: l10n.foundationPrimaryButton, onPressed: () {}),
                   const SizedBox(height: AppDimens.space12),
-                  SecondaryButton(label: 'Secondary button', onPressed: () {}),
+                  SecondaryButton(label: l10n.foundationSecondaryButton, onPressed: () {}),
                 ],
               ),
             ),
             const SizedBox(height: AppDimens.space24),
-            const AppSectionHeader(title: 'Image placeholder', subtitle: 'common/widgets/media'),
+            AppSectionHeader(title: l10n.foundationImageSection, subtitle: 'common/widgets/media'),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: AppDimens.space16),
               child: SizedBox(
@@ -75,19 +86,19 @@ class FoundationPreviewScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppDimens.space24),
-            const AppSectionHeader(title: 'Empty state', subtitle: 'common/widgets/states'),
-            const EmptyState(message: 'Nothing here yet — this is a shared, reusable state.'),
+            AppSectionHeader(title: l10n.foundationEmptyStateSection, subtitle: 'common/widgets/states'),
+            EmptyState(message: l10n.foundationEmptyStateMessage),
             const SizedBox(height: AppDimens.space24),
-            const AppSectionHeader(title: 'Dialog', subtitle: 'common/dialogs'),
+            AppSectionHeader(title: l10n.foundationDialogSection, subtitle: 'common/dialogs'),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppDimens.space16),
               child: OutlinedButton(
                 onPressed: () => showConfirmDialog(
                   context,
-                  title: 'Confirm',
-                  message: 'This dialog is a shared common/ component.',
+                  title: l10n.foundationDialogTitle,
+                  message: l10n.foundationDialogMessage,
                 ),
-                child: const Text('Show confirm dialog'),
+                child: Text(l10n.foundationShowDialogButton),
               ),
             ),
           ],
@@ -116,7 +127,7 @@ class _ColorSwatch extends StatelessWidget {
             border: Border.all(color: AppColors.divider),
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: AppDimens.space4),
         Text(label, style: AppTextStyles.caption),
       ],
     );

@@ -1,14 +1,7 @@
 import '../../../../core/domain/entities/user_entity.dart';
 import '../../../../core/error/exceptions.dart';
 
-/// Placeholder data source standing in for a future remote (REST/Firebase)
-/// or local (secure storage) implementation.
-///
-/// Per the project brief this phase ships **no API integration** — every
-/// method here simulates network latency with [Future.delayed] and
-/// returns deterministic dummy data. [AuthRepositoryImpl] is the only
-/// caller, and it depends on this abstract type rather than the concrete
-/// class, so swapping in a real HTTP client later is a one-file change.
+/// Placeholder data source simulating latency with dummy data until a real remote/local implementation lands.
 abstract interface class AuthLocalDataSource {
   Future<UserEntity> login({required String email, required String password});
 

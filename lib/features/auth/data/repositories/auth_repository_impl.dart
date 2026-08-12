@@ -5,10 +5,7 @@ import '../../../../core/result/result.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_local_data_source.dart';
 
-/// Translates [AuthLocalDataSource] exceptions into [Failure]s and wraps
-/// every outcome in a [Result] — this is the only place in the codebase
-/// that touches `try/catch` for auth operations, keeping the Cubit above
-/// it exception-free.
+/// Translates [AuthLocalDataSource] exceptions into [Failure]s so the Cubit above stays exception-free.
 class AuthRepositoryImpl implements AuthRepository {
   const AuthRepositoryImpl(this._dataSource);
 
@@ -25,7 +22,7 @@ class AuthRepositoryImpl implements AuthRepository {
     } on ServerException catch (e) {
       return Result.failure(AuthFailure(e.message));
     } catch (_) {
-      return const Result.failure(UnexpectedFailure());
+      return  Result.failure(UnexpectedFailure());
     }
   }
 
@@ -51,7 +48,7 @@ class AuthRepositoryImpl implements AuthRepository {
     } on ServerException catch (e) {
       return Result.failure(AuthFailure(e.message));
     } catch (_) {
-      return const Result.failure(UnexpectedFailure());
+      return  Result.failure(UnexpectedFailure());
     }
   }
 
@@ -61,7 +58,7 @@ class AuthRepositoryImpl implements AuthRepository {
       final user = await _dataSource.continueAsGuest();
       return Result.success(user);
     } catch (_) {
-      return const Result.failure(UnexpectedFailure());
+      return  Result.failure(UnexpectedFailure());
     }
   }
 
@@ -69,9 +66,9 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Result<void>> sendPasswordResetEmail(String email) async {
     try {
       await _dataSource.sendPasswordResetEmail(email);
-      return const Result.success(null);
+      return  Result.success(null);
     } catch (_) {
-      return const Result.failure(UnexpectedFailure());
+      return  Result.failure(UnexpectedFailure());
     }
   }
 
@@ -85,9 +82,9 @@ class AuthRepositoryImpl implements AuthRepository {
         currentPassword: currentPassword,
         newPassword: newPassword,
       );
-      return const Result.success(null);
+      return  Result.success(null);
     } catch (_) {
-      return const Result.failure(UnexpectedFailure());
+      return  Result.failure(UnexpectedFailure());
     }
   }
 }

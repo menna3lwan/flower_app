@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 import '../../../../common/extensions/context_extensions.dart';
+import '../../../../common/extensions/localization_extensions.dart';
 import '../../../../common/widgets/app_back_app_bar.dart';
 import '../../../../common/widgets/buttons/primary_button.dart';
 import '../../../../common/widgets/inputs/app_text_field.dart';
@@ -13,8 +14,7 @@ import '../../../../core/utils/validators.dart';
 import '../cubit/forgot_password/forgot_password_cubit.dart';
 import '../cubit/forgot_password/forgot_password_state.dart';
 
-/// "Forget password" screen — email entry step of the password recovery
-/// flow (Figma: Password > Forget password).
+/// "Forget password" screen — email entry step of the password recovery flow.
 class ForgotPasswordView extends StatefulWidget {
   const ForgotPasswordView({super.key});
 
@@ -34,8 +34,9 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
-      appBar: const AppBackAppBar(title: 'Password'),
+      appBar: AppBackAppBar(title: l10n.passwordSectionTitle),
       body: BlocConsumer<ForgotPasswordCubit, ForgotPasswordState>(
         listener: (context, state) {
           if (state is ForgotPasswordEmailSent) {
@@ -54,23 +55,23 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Forget password', style: AppTextStyles.headlineMedium, textAlign: TextAlign.center),
+                    Text(l10n.forgotPasswordTitle, style: AppTextStyles.headlineMedium, textAlign: TextAlign.center),
                     const SizedBox(height: AppDimens.space8),
                     Text(
-                      'Please enter your email associated to your account',
+                      l10n.forgotPasswordSubtitle,
                       style: AppTextStyles.bodyMedium,
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: AppDimens.space24),
                     AppTextField(
-                      label: 'Email',
+                      label: l10n.email,
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       validator: Validators.email,
                     ),
                     const SizedBox(height: AppDimens.space24),
                     PrimaryButton(
-                      label: 'Confirm',
+                      label: l10n.confirm,
                       isLoading: isSubmitting,
                       onPressed: () {
                         if (_formKey.currentState?.validate() ?? false) {

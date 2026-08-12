@@ -3,17 +3,13 @@ import '../../../../core/domain/entities/occasion_entity.dart';
 import '../../../../core/domain/entities/product_entity.dart';
 import '../../../../core/error/exceptions.dart';
 
-/// In-memory placeholder catalog standing in for a future product API.
-///
-/// This is the single place the dummy flower catalog is declared —
-/// [CatalogRepositoryImpl] just filters/queries this list, so Home,
-/// Categories, Product details and Search all stay consistent with each
-/// other by construction.
+/// In-memory placeholder catalog standing in for a future product API; the single source the repository queries.
 abstract interface class CatalogLocalDataSource {
   Future<List<CategoryEntity>> getCategories();
   Future<List<OccasionEntity>> getOccasions();
   Future<List<ProductEntity>> getAllProducts();
   Future<ProductEntity> getProductById(String id);
+  Future<List<String>> getProductIdsForOccasion(String occasionId);
 }
 
 class CatalogLocalDataSourceImpl implements CatalogLocalDataSource {
@@ -179,7 +175,8 @@ class CatalogLocalDataSourceImpl implements CatalogLocalDataSource {
     );
   }
 
-  Future<List<String>> occasionProductIds(String occasionId) async {
+  @override
+  Future<List<String>> getProductIdsForOccasion(String occasionId) async {
     return _occasionProductIds[occasionId] ?? const [];
   }
 }

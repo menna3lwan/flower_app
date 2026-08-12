@@ -1,81 +1,107 @@
-/// Centralized user-facing copy.
-///
-/// At this skeleton stage there is no localization pipeline, but routing
-/// every string literal through here means adding `intl`/ARB files later
-/// is a mechanical extraction instead of a codebase-wide hunt for text.
+/// Translation key names (not display text) shared by `AppLocalizations` and both `assets/translations/*.json` files.
 abstract final class AppStrings {
   const AppStrings._();
 
-  static const String appName = 'Flowery';
+  static const String appName = 'appName';
 
   // Auth.
-  static const String login = 'Login';
-  static const String signUp = 'Sign up';
-  static const String email = 'Email';
-  static const String password = 'Password';
-  static const String confirmPassword = 'Confirm password';
-  static const String rememberMe = 'Remember me';
-  static const String forgetPassword = 'Forget password?';
-  static const String continueAsGuest = 'Continue as guest';
-  static const String dontHaveAccount = "Don't have an account?";
-  static const String alreadyHaveAccount = 'Already have an account?';
-  static const String firstName = 'First name';
-  static const String lastName = 'Last name';
-  static const String phoneNumber = 'Phone number';
-  static const String gender = 'Gender';
-  static const String female = 'Femail';
-  static const String male = 'Male';
-  static const String termsAgreement = 'Creating an account, you agree to our';
-  static const String termsAndConditions = 'Terms & Conditions';
+  static const String login = 'login';
+  static const String signUp = 'signUp';
+  static const String email = 'email';
+  static const String password = 'password';
+  static const String confirmPassword = 'confirmPassword';
+  static const String rememberMe = 'rememberMe';
+  static const String forgetPassword = 'forgetPassword';
+  static const String continueAsGuest = 'continueAsGuest';
+  static const String dontHaveAccount = 'dontHaveAccount';
+  static const String alreadyHaveAccount = 'alreadyHaveAccount';
+  static const String firstName = 'firstName';
+  static const String lastName = 'lastName';
+  static const String phoneNumber = 'phoneNumber';
+  static const String gender = 'gender';
+  static const String female = 'female';
+  static const String male = 'male';
+  static const String termsAgreement = 'termsAgreement';
+  static const String termsAndConditions = 'termsAndConditions';
+  static const String forgotPasswordTitle = 'forgotPasswordTitle';
+  static const String forgotPasswordSubtitle = 'forgotPasswordSubtitle';
+  static const String confirm = 'confirm';
+  static const String passwordSectionTitle = 'passwordSectionTitle';
+  static const String verificationCodeTitle = 'verificationCodeTitle';
+  static const String verificationCodeSubtitle = 'verificationCodeSubtitle';
+  static const String resendCode = 'resendCode';
+  static const String resetPasswordTitle = 'resetPasswordTitle';
+  static const String currentPassword = 'currentPassword';
+  static const String newPassword = 'newPassword';
+
+  /// Template for `AppTextField`'s auto-generated hint text; contains a literal `{field}` token.
+  static const String enterFieldTemplate = 'enterFieldTemplate';
 
   // Home.
-  static const String deliverTo = 'Deliver to';
-  static const String categories = 'Categories';
-  static const String bestSeller = 'Best seller';
-  static const String occasion = 'Occasion';
-  static const String viewAll = 'View All';
-  static const String search = 'Search';
-  static const String searchEmptyState = 'Search For Any Product You Want';
+  static const String deliverTo = 'deliverTo';
+  static const String categories = 'categories';
+  static const String bestSeller = 'bestSeller';
+  static const String occasion = 'occasion';
+  static const String viewAll = 'viewAll';
+  static const String search = 'search';
+  static const String searchEmptyState = 'searchEmptyState';
 
   // Product.
-  static const String description = 'Description';
-  static const String bouquetIncludes = 'Bouquet Includes';
-  static const String addToCart = 'Add to cart';
-  static const String inStock = 'In stock';
+  static const String description = 'description';
+  static const String bouquetIncludes = 'bouquetIncludes';
+  static const String addToCart = 'addToCart';
+  static const String inStock = 'inStock';
 
   // Cart & checkout.
-  static const String cart = 'Cart';
-  static const String subTotal = 'Sub Total';
-  static const String deliveryFee = 'Delivery Fee';
-  static const String total = 'Total';
-  static const String checkout = 'Checkout';
-  static const String address = 'Address';
-  static const String payment = 'Payment';
-  static const String trackOrder = 'Track order';
-  static const String isGift = 'It is a gift';
-  static const String deliverToLabel = 'Deliver to';
-  static const String addNewAddress = 'Add new address';
-  static const String next = 'Next';
-  static const String paymentMethod = 'Payment method';
-  static const String cashOnDelivery = 'Cash on delivery';
-  static const String creditCard = 'Credit card';
-  static const String placeOrder = 'Place order';
-  static const String orderPlacedSuccess = 'Your order placed successfully!';
-  static const String estimatedArrival = 'Estimated arrival';
-  static const String showMap = 'Show map';
+  static const String cart = 'cart';
+  static const String subTotal = 'subTotal';
+  static const String deliveryFee = 'deliveryFee';
+  static const String total = 'total';
+  static const String checkout = 'checkout';
+  static const String address = 'address';
+  static const String payment = 'payment';
+  static const String trackOrder = 'trackOrder';
+  static const String isGift = 'isGift';
+  static const String addNewAddress = 'addNewAddress';
+  static const String next = 'next';
+  static const String paymentMethod = 'paymentMethod';
+  static const String cashOnDelivery = 'cashOnDelivery';
+  static const String creditCard = 'creditCard';
+  static const String placeOrder = 'placeOrder';
+  static const String orderPlacedSuccess = 'orderPlacedSuccess';
+  static const String estimatedArrival = 'estimatedArrival';
+  static const String showMap = 'showMap';
 
   // Orders / profile.
-  static const String myOrders = 'My orders';
-  static const String active = 'Active';
-  static const String completed = 'Completed';
-  static const String profile = 'Profile';
-  static const String editProfile = 'Edit profile';
-  static const String savedAddress = 'Saved address';
-  static const String notifications = 'Notifications';
-  static const String aboutUs = 'About us';
-  static const String logout = 'Logout';
-  static const String confirmLogout = 'Confirm logout!!';
-  static const String cancel = 'Cancel';
-  static const String update = 'Update';
-  static const String save = 'Save';
+  static const String myOrders = 'myOrders';
+  static const String active = 'active';
+  static const String completed = 'completed';
+  static const String profile = 'profile';
+  static const String editProfile = 'editProfile';
+  static const String savedAddress = 'savedAddress';
+  static const String notifications = 'notifications';
+  static const String aboutUs = 'aboutUs';
+  static const String logout = 'logout';
+  static const String confirmLogout = 'confirmLogout';
+  static const String cancel = 'cancel';
+  static const String update = 'update';
+  static const String save = 'save';
+  static const String retry = 'retry';
+
+  // Foundation preview (temporary scaffold screen — see `lib/foundation_preview_screen.dart`).
+  static const String foundationPreviewTitle = 'foundationPreviewTitle';
+  static const String foundationPreviewHeading = 'foundationPreviewHeading';
+  static const String foundationPreviewBody = 'foundationPreviewBody';
+  static const String foundationTypographySection = 'foundationTypographySection';
+  static const String foundationButtonsSection = 'foundationButtonsSection';
+  static const String foundationPrimaryButton = 'foundationPrimaryButton';
+  static const String foundationSecondaryButton = 'foundationSecondaryButton';
+  static const String foundationImageSection = 'foundationImageSection';
+  static const String foundationEmptyStateSection = 'foundationEmptyStateSection';
+  static const String foundationEmptyStateMessage = 'foundationEmptyStateMessage';
+  static const String foundationDialogSection = 'foundationDialogSection';
+  static const String foundationShowDialogButton = 'foundationShowDialogButton';
+  static const String foundationDialogTitle = 'foundationDialogTitle';
+  static const String foundationDialogMessage = 'foundationDialogMessage';
+  static const String foundationLanguageSection = 'foundationLanguageSection';
 }

@@ -1,13 +1,7 @@
 import '../../../../core/domain/entities/user_entity.dart';
 import '../../../../core/result/result.dart';
 
-/// Contract the presentation layer (auth Cubits) depends on.
-///
-/// The presentation and domain layers only ever see this abstract
-/// definition — never [AuthRepositoryImpl] or a data source directly.
-/// That indirection is what lets the data layer swap an in-memory
-/// placeholder for a real REST/Firebase implementation later without
-/// touching a single Cubit.
+/// Contract the presentation layer depends on, never a concrete impl or data source directly (DIP).
 abstract interface class AuthRepository {
   Future<Result<UserEntity>> login({
     required String email,

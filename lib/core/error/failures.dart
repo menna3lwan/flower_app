@@ -1,12 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-/// Base type for every recoverable failure that can cross a repository
-/// boundary into the presentation layer.
-///
-/// Cubits should never see a raw [Exception] — the data layer is
-/// responsible for catching exceptions and mapping them to a concrete
-/// [Failure] subtype so the UI can react to a closed, well-known set of
-/// error cases instead of an open-ended throwable.
+/// Base type for every recoverable failure crossing a repository boundary; Cubits never see a raw [Exception].
 sealed class Failure extends Equatable {
   const Failure(this.message);
 

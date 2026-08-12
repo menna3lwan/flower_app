@@ -1,0 +1,1042 @@
+openapi: 3.0.3
+info:
+  title: Flower App API
+  description: |
+    REST API documentation for the Flower App ecosystem (User app, Driver app, Admin panel).
+    Derived from the Figma design "Flower App" (Login, Sign up, Apply/Driver registration,
+    Forget password flow, Vehicle selection).
+
+    ## Response envelope
+    Every endpoint in this API returns the same top-level envelope (see `BaseResponse` and
+    its typed variants below), regardless of success or failure:
+
+    ```json
+    {
+      "success": true,
+      "code": 200,
+      "message": "Request completed successfully",
+      "data": {},
+      "errors": null,
+      "meta": null
+    }
+    ```
+
+    - `success` — boolean, `true` for 2xx responses, `false` otherwise.
+    - `code` — the HTTP status code, duplicated in the body for clients that only read the payload.
+    - `message` — human readable, safe to show to the end user.
+    - `data` — the endpoint-specific payload. `null` when there is nothing to return (e.g. a 204-style ack) or on error.
+    - `errors` — `null` on success. On failure, an array of `{ field, message }` validation/business errors.
+    - `meta` — `null` unless the endpoint is paginated (see `get vehicles list`).
+  version: 1.0.0
+  contact:
+    name: Flower App Backend Team
+servers:
+  - url: https://api.flowerapp.com/v1
+    description: Production
+  - url: https://staging-api.flowerapp.com/v1
+    description: Staging
+
+tags:
+  - name: Auth
+    description: Login, token lifecycle and role management (shared across User, Driver, Admin)
+  - name: Registration
+    description: Public sign-up endpoints for User and Driver apps
+  - name: Password Recovery
+    description: Forgot-password flow, shared across all account types (User, Driver, Admin)
+  - name: Vehicles
+    description: Vehicle reference data used during driver registration
+  - name: Admin
+    description: Admin-only management endpoints
+
+paths:
+  # ============================= AUTH: LOGIN =============================
+  /auth/user/login:
+    post:
+      tags: [Auth]
+      summary: User login
+      description: Authenticates a rider/customer with email and password. Public endpoint, no token required.
+      operationId: loginUser
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid email or password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/driver/login:
+    post:
+      tags: [Auth]
+      summary: Driver login
+      description: Authenticates a delivery driver with email and password. Public endpoint, no token required.
+      operationId: loginDriver
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverLoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid email or password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Driver account is not approved yet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/admin/login:
+    post:
+      tags: [Auth]
+      summary: Admin login
+      description: |
+        Authenticates an admin/dashboard user with email and password only
+        (no FCM token, admins do not receive mobile push notifications).
+        Public endpoint, no token required.
+      operationId: loginAdmin
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminLoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid email or password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ============================= AUTH: TOKEN & ROLE =============================
+  /auth/change-role:
+    post:
+      tags: [Auth]
+      summary: Change role
+      description: |
+        Changes the role of a given account (e.g. promote a user to admin, or switch
+        a driver's role). Requires a valid bearer access token belonging to a caller
+        with sufficient privileges.
+      operationId: changeRole
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeRoleRequest'
+      responses:
+        '200':
+          description: Role updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Caller is not allowed to change roles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Target account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/refresh-token:
+    post:
+      tags: [Auth]
+      summary: Refresh token
+      description: |
+        Exchanges a valid refresh token for a new access/refresh token pair.
+        Requires a bearer token (the refresh token) in the Authorization header.
+      operationId: refreshToken
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenOnlyResponse'
+        '401':
+          description: Refresh token is invalid, expired or revoked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/fcm-token:
+    patch:
+      tags: [Auth]
+      summary: Update FCM token
+      description: |
+        Updates the Firebase Cloud Messaging token for the currently authenticated
+        account, e.g. after app reinstall or token rotation. Requires a valid bearer
+        access token.
+      operationId: updateFcmToken
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFcmTokenRequest'
+      responses:
+        '200':
+          description: FCM token updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+        '401':
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ============================= REGISTRATION =============================
+  /auth/user/register:
+    post:
+      tags: [Registration]
+      summary: Register user
+      description: |
+        Creates a new rider/customer account. Fields match the "Sign up" screen in Figma
+        (first name, last name, email, password, confirm password, phone number, gender,
+        terms & conditions acceptance). Public endpoint, no token required.
+      operationId: registerUser
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegisterRequest'
+      responses:
+        '201':
+          description: Account created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '409':
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error (e.g. passwords do not match, weak password)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/driver/register:
+    post:
+      tags: [Registration]
+      summary: Register driver (Apply)
+      description: |
+        Creates a new driver application. Fields match the "Apply" screen in Figma
+        (country, first/second legal name, vehicle type, vehicle number, vehicle
+        license photo, email, phone number, national ID number, national ID photo,
+        password, confirm password, gender). Public endpoint, no token required.
+        The application is created with `status = pending` and must go through
+        `POST /admin/drivers/{driverId}/approve` before the driver can log in.
+      operationId: registerDriver
+      security: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DriverRegisterRequest'
+      responses:
+        '201':
+          description: Driver application submitted successfully, pending admin approval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverResponse'
+        '409':
+          description: Email, phone number or national ID already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error (e.g. passwords do not match, missing document)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ============================= VEHICLES =============================
+  /vehicles:
+    get:
+      tags: [Vehicles]
+      summary: Get vehicles list
+      description: |
+        Returns the list of vehicle types available for driver registration
+        (e.g. Car, Motorcycle, Bike), as shown in the "Vehicle type" dropdown
+        on the Apply screen. Public endpoint, no token required.
+      operationId: getVehiclesList
+      security: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: List of vehicles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleListResponse'
+
+  # ============================= ADMIN =============================
+  /admin/drivers/{driverId}/approve:
+    post:
+      tags: [Admin]
+      summary: Approve/reject driver apply request
+      description: |
+        Allows an admin to approve or reject a pending driver application submitted
+        via `POST /auth/driver/register`. Requires a valid admin bearer access token.
+      operationId: approveDriver
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: driverId
+          in: path
+          required: true
+          description: ID of the driver application to review
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApproveDriverRequest'
+      responses:
+        '200':
+          description: Driver application updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverResponse'
+        '401':
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Caller is not an admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Driver application not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Application has already been reviewed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ============================= PASSWORD RECOVERY =============================
+  /auth/forgot-password/send-otp:
+    post:
+      tags: [Password Recovery]
+      summary: Send OTP
+      description: |
+        Step 1 of the forgot-password flow, shared across User, Driver and Admin
+        accounts. Sends a one-time verification code to the email associated with
+        the account, matching the "Forget password" screen in Figma. Public endpoint,
+        no token required.
+      operationId: sendPasswordResetOtp
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendOtpRequest'
+      responses:
+        '200':
+          description: OTP sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+        '404':
+          description: No account found for this email
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Too many OTP requests, please retry later
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/forgot-password/verify-otp:
+    post:
+      tags: [Password Recovery]
+      summary: Verify OTP
+      description: |
+        Step 2 of the forgot-password flow. Verifies the code sent by
+        `send-otp`, matching the "Email verification" screen in Figma. On success,
+        returns a short-lived `reset_password_token` that must be passed to
+        `reset-password` to complete the flow. Public endpoint, no token required.
+      operationId: verifyPasswordResetOtp
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyOtpRequest'
+      responses:
+        '200':
+          description: OTP verified successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyOtpResponse'
+        '400':
+          description: OTP is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/forgot-password/reset-password:
+    post:
+      tags: [Password Recovery]
+      summary: Reset password
+      description: |
+        Step 3 (final) of the forgot-password flow, matching the "Reset password"
+        screen in Figma. Requires the `reset_password_token` returned by
+        `verify-otp` (short-lived, single-use) rather than a normal session
+        token, so this endpoint is public / no bearer token required.
+      operationId: resetPassword
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        '200':
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+        '400':
+          description: Reset token is invalid, expired or already used
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error (e.g. passwords do not match)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >
+        Standard access token bearer auth. For `POST /auth/refresh-token`, the
+        refresh token is passed the same way (`Authorization: Bearer <refresh_token>`).
+
+  schemas:
+    # ---------- Base envelope ----------
+    BaseResponse:
+      type: object
+      description: Base response shape shared by every endpoint in this API.
+      properties:
+        success:
+          type: boolean
+          example: true
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Request completed successfully
+        data:
+          type: object
+          nullable: true
+          description: Endpoint-specific payload. See each endpoint's response schema.
+        errors:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/ApiError'
+        meta:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/PaginationMeta'
+      required: [success, code, message]
+
+    ErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+      example:
+        success: false
+        code: 422
+        message: Validation failed
+        data: null
+        errors:
+          - field: email
+            message: Email is already registered
+        meta: null
+
+    ApiError:
+      type: object
+      properties:
+        field:
+          type: string
+          nullable: true
+          example: email
+        message:
+          type: string
+          example: Email is already registered
+
+    PaginationMeta:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 42
+        total_pages:
+          type: integer
+          example: 3
+
+    # ---------- Auth requests ----------
+    UserLoginRequest:
+      type: object
+      required: [email, password, fcm_token]
+      properties:
+        email:
+          type: string
+          format: email
+          example: rider@example.com
+        password:
+          type: string
+          format: password
+          example: P@ssw0rd!
+        fcm_token:
+          type: string
+          description: Firebase Cloud Messaging device token, used to target push notifications.
+          example: dGhpc19pc19hX2Zha2VfZmNtX3Rva2Vu
+
+    DriverLoginRequest:
+      type: object
+      required: [email, password, fcm_token]
+      properties:
+        email:
+          type: string
+          format: email
+          example: driver@example.com
+        password:
+          type: string
+          format: password
+          example: P@ssw0rd!
+        fcm_token:
+          type: string
+          example: dGhpc19pc19hX2Zha2VfZmNtX3Rva2Vu
+
+    AdminLoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: admin@flowerapp.com
+        password:
+          type: string
+          format: password
+          example: P@ssw0rd!
+
+    ChangeRoleRequest:
+      type: object
+      required: [user_id, role]
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum: [user, driver, admin]
+          example: driver
+
+    RefreshTokenRequest:
+      type: object
+      required: [refresh_token]
+      properties:
+        refresh_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+    UpdateFcmTokenRequest:
+      type: object
+      required: [fcm_token]
+      properties:
+        fcm_token:
+          type: string
+          example: dGhpc19pc19hX25ld19mY21fdG9rZW4
+
+    # ---------- Registration requests ----------
+    UserRegisterRequest:
+      type: object
+      required:
+        - first_name
+        - last_name
+        - email
+        - password
+        - confirm_password
+        - phone_number
+        - gender
+        - agree_terms
+      properties:
+        first_name:
+          type: string
+          example: Sara
+        last_name:
+          type: string
+          example: Ahmed
+        email:
+          type: string
+          format: email
+          example: sara.ahmed@example.com
+        password:
+          type: string
+          format: password
+          example: P@ssw0rd!
+        confirm_password:
+          type: string
+          format: password
+          example: P@ssw0rd!
+        phone_number:
+          type: string
+          example: "+201001234567"
+        gender:
+          type: string
+          enum: [male, female]
+          example: female
+        agree_terms:
+          type: boolean
+          description: Must be true — user accepted Terms & Conditions.
+          example: true
+
+    DriverRegisterRequest:
+      type: object
+      required:
+        - country
+        - first_legal_name
+        - second_legal_name
+        - vehicle_type_id
+        - vehicle_number
+        - vehicle_license
+        - email
+        - phone_number
+        - id_number
+        - id_image
+        - password
+        - confirm_password
+        - gender
+      properties:
+        country:
+          type: string
+          example: Egypt
+        first_legal_name:
+          type: string
+          example: Mohamed
+        second_legal_name:
+          type: string
+          example: Hassan
+        vehicle_type_id:
+          type: string
+          format: uuid
+          description: ID of a vehicle type returned by GET /vehicles
+        vehicle_number:
+          type: string
+          example: ABC-1234
+        vehicle_license:
+          type: string
+          format: binary
+          description: Photo of the vehicle license.
+        email:
+          type: string
+          format: email
+          example: mohamed.hassan@example.com
+        phone_number:
+          type: string
+          example: "+201009876543"
+        id_number:
+          type: string
+          description: National ID number.
+          example: "29901012345678"
+        id_image:
+          type: string
+          format: binary
+          description: Photo of the national ID.
+        password:
+          type: string
+          format: password
+          example: P@ssw0rd!
+        confirm_password:
+          type: string
+          format: password
+          example: P@ssw0rd!
+        gender:
+          type: string
+          enum: [male, female]
+          example: male
+
+    ApproveDriverRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [approved, rejected]
+          example: approved
+        rejection_reason:
+          type: string
+          nullable: true
+          description: Required when status = rejected.
+          example: Vehicle license photo is unreadable
+
+    # ---------- Password recovery requests ----------
+    SendOtpRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+          example: sara.ahmed@example.com
+
+    VerifyOtpRequest:
+      type: object
+      required: [email, otp_code]
+      properties:
+        email:
+          type: string
+          format: email
+          example: sara.ahmed@example.com
+        otp_code:
+          type: string
+          description: 4-digit verification code sent to the user's email.
+          example: "4821"
+
+    ResetPasswordRequest:
+      type: object
+      required: [reset_password_token, new_password, confirm_password]
+      properties:
+        reset_password_token:
+          type: string
+          description: Short-lived, single-use token returned by verify-otp.
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.reset...
+        new_password:
+          type: string
+          format: password
+          example: NewP@ssw0rd!
+        confirm_password:
+          type: string
+          format: password
+          example: NewP@ssw0rd!
+
+    # ---------- Domain entities ----------
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        first_name:
+          type: string
+          example: Sara
+        last_name:
+          type: string
+          example: Ahmed
+        email:
+          type: string
+          format: email
+        phone_number:
+          type: string
+        gender:
+          type: string
+          enum: [male, female]
+        role:
+          type: string
+          enum: [user, driver, admin]
+        status:
+          type: string
+          enum: [active, blocked]
+        created_at:
+          type: string
+          format: date-time
+
+    Driver:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        first_legal_name:
+          type: string
+        second_legal_name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone_number:
+          type: string
+        country:
+          type: string
+        id_number:
+          type: string
+        vehicle_type:
+          $ref: '#/components/schemas/Vehicle'
+        vehicle_number:
+          type: string
+        gender:
+          type: string
+          enum: [male, female]
+        role:
+          type: string
+          enum: [driver]
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        rejection_reason:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    Vehicle:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Car
+        icon_url:
+          type: string
+          format: uri
+          example: https://cdn.flowerapp.com/vehicles/car.png
+        description:
+          type: string
+          example: Standard car, suitable for most deliveries.
+        capacity_kg:
+          type: number
+          format: float
+          example: 50
+        is_active:
+          type: boolean
+          example: true
+
+    AuthTokens:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        token_type:
+          type: string
+          example: Bearer
+        expires_in:
+          type: integer
+          description: Access token lifetime in seconds.
+          example: 3600
+
+    # ---------- Typed response envelopes ----------
+    AuthResponse:
+      description: BaseResponse where `data` is an AuthData object (tokens + account profile).
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                tokens:
+                  $ref: '#/components/schemas/AuthTokens'
+                account:
+                  oneOf:
+                    - $ref: '#/components/schemas/User'
+                    - $ref: '#/components/schemas/Driver'
+
+    TokenOnlyResponse:
+      description: BaseResponse where `data` is just a refreshed token pair.
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/AuthTokens'
+
+    UserResponse:
+      description: BaseResponse where `data` is a single User.
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/User'
+
+    DriverResponse:
+      description: BaseResponse where `data` is a single Driver.
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Driver'
+
+    VehicleListResponse:
+      description: BaseResponse where `data` is an array of Vehicle and `meta` holds pagination info.
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Vehicle'
+            meta:
+              $ref: '#/components/schemas/PaginationMeta'
+
+    VerifyOtpResponse:
+      description: BaseResponse where `data` holds the reset password token.
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                reset_password_token:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.reset...
+                expires_in:
+                  type: integer
+                  description: Reset token lifetime in seconds.
+                  example: 600

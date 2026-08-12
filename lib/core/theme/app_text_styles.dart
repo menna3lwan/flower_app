@@ -3,12 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../constants/app_colors.dart';
 
-/// Typography scale for the app, built on Poppins to match the rounded,
-/// geometric sans used throughout the Figma design.
-///
-/// Screens should always reach for one of these named styles (optionally
-/// via `.copyWith`) instead of constructing a bare [TextStyle] inline —
-/// that is what keeps the type scale consistent as the app grows.
+/// Typography scale (Poppins) — reach for one of these named styles instead of a bare `TextStyle`.
 abstract final class AppTextStyles {
   const AppTextStyles._();
 

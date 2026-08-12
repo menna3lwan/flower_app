@@ -1,12 +1,4 @@
-/// Key-value local storage contract used for lightweight persistence
-/// (auth token, "remember me" flag, onboarding-seen flag, ...).
-///
-/// [InMemoryLocalStorageService] is a placeholder that only lives for the
-/// current app session — it is enough for the skeleton to demonstrate the
-/// seam without adding a persistence package before any feature actually
-/// needs durable storage. Swap in a `shared_preferences`/`hive`-backed
-/// implementation later and register it in `core/di/injector.dart`; every
-/// caller depends on this interface, not the concrete class.
+/// Key-value local storage contract; `InMemoryLocalStorageService` is a session-only placeholder impl.
 abstract interface class LocalStorageService {
   Future<void> setString(String key, String value);
   Future<String?> getString(String key);

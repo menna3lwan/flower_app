@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 import '../../../../common/extensions/context_extensions.dart';
+import '../../../../common/extensions/localization_extensions.dart';
 import '../../../../common/widgets/app_back_app_bar.dart';
 import '../../../../common/widgets/buttons/primary_button.dart';
 import '../../../../common/widgets/inputs/app_text_field.dart';
@@ -36,8 +37,9 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
-      appBar: const AppBackAppBar(title: 'Reset password'),
+      appBar: AppBackAppBar(title: l10n.resetPasswordTitle),
       body: BlocConsumer<ResetPasswordCubit, ResetPasswordState>(
         listener: (context, state) {
           if (state is ResetPasswordSuccess) {
@@ -57,28 +59,28 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AppTextField(
-                      label: 'Current password',
+                      label: l10n.currentPassword,
                       controller: _currentPasswordController,
                       obscureText: true,
                       validator: Validators.password,
                     ),
                     const SizedBox(height: AppDimens.space16),
                     AppTextField(
-                      label: 'New password',
+                      label: l10n.newPassword,
                       controller: _newPasswordController,
                       obscureText: true,
                       validator: Validators.password,
                     ),
                     const SizedBox(height: AppDimens.space16),
                     AppTextField(
-                      label: 'Confirm password',
+                      label: l10n.confirmPassword,
                       controller: _confirmPasswordController,
                       obscureText: true,
                       validator: (value) => Validators.confirmPassword(value, _newPasswordController.text),
                     ),
                     const SizedBox(height: AppDimens.space24),
                     PrimaryButton(
-                      label: 'Update',
+                      label: l10n.update,
                       isLoading: isSubmitting,
                       onPressed: () {
                         if (_formKey.currentState?.validate() ?? false) {

@@ -10,14 +10,15 @@ import '../datasources/catalog_local_data_source.dart';
 class CatalogRepositoryImpl implements CatalogRepository {
   const CatalogRepositoryImpl(this._dataSource);
 
-  final CatalogLocalDataSourceImpl _dataSource;
+  // Depends on the abstract CatalogLocalDataSource (DIP), never the concrete impl.
+  final CatalogLocalDataSource _dataSource;
 
   @override
   Future<Result<List<CategoryEntity>>> getCategories() async {
     try {
       return Result.success(await _dataSource.getCategories());
     } catch (_) {
-      return const Result.failure(UnexpectedFailure());
+      return  Result.failure(UnexpectedFailure());
     }
   }
 
@@ -26,7 +27,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
     try {
       return Result.success(await _dataSource.getOccasions());
     } catch (_) {
-      return const Result.failure(UnexpectedFailure());
+      return  Result.failure(UnexpectedFailure());
     }
   }
 
@@ -37,7 +38,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
       final sorted = [...products]..sort((a, b) => b.rating.compareTo(a.rating));
       return Result.success(sorted);
     } catch (_) {
-      return const Result.failure(UnexpectedFailure());
+      return  Result.failure(UnexpectedFailure());
     }
   }
 
@@ -46,7 +47,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
     try {
       return Result.success(await _dataSource.getAllProducts());
     } catch (_) {
-      return const Result.failure(UnexpectedFailure());
+      return  Result.failure(UnexpectedFailure());
     }
   }
 
@@ -56,18 +57,18 @@ class CatalogRepositoryImpl implements CatalogRepository {
       final products = await _dataSource.getAllProducts();
       return Result.success(products.where((p) => p.categoryId == categoryId).toList());
     } catch (_) {
-      return const Result.failure(UnexpectedFailure());
+      return  Result.failure(UnexpectedFailure());
     }
   }
 
   @override
   Future<Result<List<ProductEntity>>> getProductsByOccasion(String occasionId) async {
     try {
-      final ids = await _dataSource.occasionProductIds(occasionId);
+      final ids = await _dataSource.getProductIdsForOccasion(occasionId);
       final products = await _dataSource.getAllProducts();
       return Result.success(products.where((p) => ids.contains(p.id)).toList());
     } catch (_) {
-      return const Result.failure(UnexpectedFailure());
+      return  Result.failure(UnexpectedFailure());
     }
   }
 
@@ -78,7 +79,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
     } on ServerException catch (e) {
       return Result.failure(NotFoundFailure(e.message));
     } catch (_) {
-      return const Result.failure(UnexpectedFailure());
+      return  Result.failure(UnexpectedFailure());
     }
   }
 
@@ -87,12 +88,12 @@ class CatalogRepositoryImpl implements CatalogRepository {
     try {
       final products = await _dataSource.getAllProducts();
       final normalized = query.trim().toLowerCase();
-      if (normalized.isEmpty) return const Result.success([]);
+      if (normalized.isEmpty) return  Result.success([]);
       return Result.success(
         products.where((p) => p.name.toLowerCase().contains(normalized)).toList(),
       );
     } catch (_) {
-      return const Result.failure(UnexpectedFailure());
+      return  Result.failure(UnexpectedFailure());
     }
   }
 }

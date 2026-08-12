@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// The recurring "< Title" app bar used on every non-tab screen
-/// (Login, Product details, Cart, Checkout, Orders, ...).
-///
-/// A dedicated widget avoids every screen re-declaring an `AppBar` with
-/// the same leading back button and title style.
+/// The recurring "< Title" app bar used on every non-tab screen (Login, Product details, Cart, ...).
 class AppBackAppBar extends StatelessWidget implements PreferredSizeWidget {
   const AppBackAppBar({
     required this.title,

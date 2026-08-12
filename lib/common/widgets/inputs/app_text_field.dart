@@ -2,14 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../extensions/localization_extensions.dart';
 
-/// Standard labeled text field: small label above an outlined box, which
-/// is the pattern used by every form in the Figma design (Email,
-/// Password, First name, Address, ...).
-///
-/// A single shared widget here means the outline/label/error styling
-/// only needs to be defined once (in `AppTheme.light`'s
-/// `inputDecorationTheme`) and every form field in the app inherits it.
+/// Standard labeled text field (small label above an outlined box) used by every form in the Figma design.
 class AppTextField extends StatelessWidget {
   const AppTextField({
     required this.label,
@@ -58,7 +53,7 @@ class AppTextField extends StatelessWidget {
           enabled: enabled,
           style: AppTextStyles.bodyLarge,
           decoration: InputDecoration(
-            hintText: hint ?? 'Enter $label'.toLowerCase(),
+            hintText: hint ?? context.l10n.enterField(label),
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
           ),

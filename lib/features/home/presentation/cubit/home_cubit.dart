@@ -2,12 +2,7 @@ import '../../../../core/base/base_cubit.dart';
 import '../../../catalog/domain/repositories/catalog_repository.dart';
 import 'home_state.dart';
 
-/// Loads everything the Home screen renders (categories row, best-seller
-/// row, occasion row) in parallel and exposes it as a single
-/// [HomeLoaded] snapshot. Modeled as one Cubit rather than three
-/// independent ones because the Home screen is one cohesive view — the
-/// user does not perceive "categories" and "best sellers" as separately
-/// loadable regions.
+/// Loads everything the Home screen renders and exposes it as a single [HomeLoaded] snapshot, not three Cubits.
 class HomeCubit extends BaseCubit<HomeState> {
   HomeCubit(this._catalogRepository) : super(const HomeLoading());
 

@@ -1,10 +1,6 @@
 import '../error/failures.dart';
 
-/// Explicit success/failure wrapper returned by every repository method.
-///
-/// Modeling this as a sealed class (rather than throwing) forces callers
-/// (use cases, cubits) to handle both branches via [when]/[fold] — there
-/// is no code path where a failure can be silently ignored.
+/// Explicit success/failure wrapper returned by every repository method; forces callers to handle both branches.
 sealed class Result<T> {
   const Result();
 

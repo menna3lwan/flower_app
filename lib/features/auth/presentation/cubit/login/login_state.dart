@@ -2,9 +2,7 @@ import 'package:equatable/equatable.dart';
 
 import '../../../../../core/domain/entities/user_entity.dart';
 
-/// Every state the Login screen can be in, modeled as a sealed hierarchy
-/// (MVI: this *is* the "Model" the view renders from). The Cubit is the
-/// only thing that can move between these — `LoginView` just reacts.
+/// Every state the Login screen can be in (MVI Model); only [LoginCubit] moves between them, the view just reacts.
 sealed class LoginState extends Equatable {
   const LoginState();
 

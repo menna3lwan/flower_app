@@ -2,10 +2,7 @@ import '../../../../../core/base/base_cubit.dart';
 import '../../../domain/repositories/auth_repository.dart';
 import 'login_state.dart';
 
-/// Orchestrates the Login screen: calls [AuthRepository], maps the
-/// [Result] to a [LoginState]. No validation/business rules live here —
-/// field-level validation stays in `Validators` + `TextFormField`, and
-/// credential verification stays in the repository/data source.
+/// Orchestrates the Login screen: calls [AuthRepository] and maps the [Result] to a [LoginState], nothing more.
 class LoginCubit extends BaseCubit<LoginState> {
   LoginCubit(this._authRepository) : super(const LoginInitial());
 

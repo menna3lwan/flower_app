@@ -2,11 +2,7 @@ import 'package:equatable/equatable.dart';
 
 import 'product_entity.dart';
 
-/// A [ProductEntity] paired with a cart-specific quantity.
-///
-/// Wrapping rather than mutating the product keeps [ProductEntity]
-/// immutable and free of cart concerns — the cart feature owns this
-/// entity, the catalog features own [ProductEntity].
+/// A [ProductEntity] paired with a cart-specific quantity, wrapping rather than mutating the product.
 class CartItemEntity extends Equatable {
   const CartItemEntity({
     required this.product,

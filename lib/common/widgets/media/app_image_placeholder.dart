@@ -3,15 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimens.dart';
 
-/// Decorative placeholder used everywhere the design shows a product,
-/// occasion, or avatar photo.
-///
-/// This is a **UI skeleton** (see project brief: no API integration at
-/// this stage), so there are no real product photos or a network image
-/// pipeline yet. Every "image" slot renders this instead of a broken
-/// network request — once a real media/CDN integration lands, this is
-/// the single widget that gets swapped for `Image.network`/
-/// `CachedNetworkImage`.
+/// Decorative placeholder for every product/occasion/avatar photo slot until a real media pipeline lands.
 class AppImagePlaceholder extends StatelessWidget {
   const AppImagePlaceholder({
     this.icon = Icons.local_florist_rounded,

@@ -8,9 +8,7 @@ extension StringExtensions on String {
   bool get isBlank => trim().isEmpty;
 }
 
-/// Currency formatting for the app's single supported currency (EGP), to
-/// avoid re-implementing "EGP {amount}" string interpolation on every
-/// screen that shows a price.
+/// Currency formatting for the app's single supported currency (EGP).
 extension PriceFormatting on num {
   String get asEgp => 'EGP ${toStringAsFixed(0)}';
 }

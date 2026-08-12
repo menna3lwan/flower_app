@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimens.dart';
 
-/// Full-width, pill-shaped filled button — the "Login" / "Checkout" /
-/// "Place order" style button used throughout the design.
-///
-/// Centralizing the loading-spinner-vs-label swap here means every
-/// submit-style button in the app gets consistent disabled/loading
-/// behavior for free, instead of each screen reimplementing it.
+/// Full-width, pill-shaped filled button used for every submit-style action ("Login", "Checkout", ...).
 class PrimaryButton extends StatelessWidget {
   const PrimaryButton({
     required this.label,
@@ -30,7 +26,7 @@ class PrimaryButton extends StatelessWidget {
           ? const SizedBox(
               height: 22,
               width: 22,
-              child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white),
+              child: CircularProgressIndicator(strokeWidth: 2.4, color: AppColors.onPrimary),
             )
           : Row(
               mainAxisAlignment: MainAxisAlignment.center,

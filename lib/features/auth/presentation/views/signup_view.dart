@@ -3,11 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 import '../../../../common/extensions/context_extensions.dart';
+import '../../../../common/extensions/localization_extensions.dart';
 import '../../../../common/widgets/app_back_app_bar.dart';
 import '../../../../common/widgets/buttons/primary_button.dart';
 import '../../../../common/widgets/inputs/app_text_field.dart';
 import '../../../../core/constants/app_dimens.dart';
-import '../../../../core/constants/app_strings.dart';
 import '../../../../core/domain/entities/user_entity.dart';
 import '../../../../core/routing/app_routes.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -15,7 +15,7 @@ import '../../../../core/utils/validators.dart';
 import '../cubit/signup/signup_cubit.dart';
 import '../cubit/signup/signup_state.dart';
 
-/// Sign up screen — matches the Figma "Sign up" frame.
+/// Sign up screen matching the Figma "Sign up" frame.
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
 
@@ -60,8 +60,9 @@ class _SignUpViewState extends State<SignUpView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
-      appBar: const AppBackAppBar(title: AppStrings.signUp),
+      appBar: AppBackAppBar(title: l10n.signUp),
       body: BlocConsumer<SignUpCubit, SignUpState>(
         listener: (context, state) {
           if (state is SignUpSuccess) {
@@ -84,7 +85,7 @@ class _SignUpViewState extends State<SignUpView> {
                       children: [
                         Expanded(
                           child: AppTextField(
-                            label: AppStrings.firstName,
+                            label: l10n.firstName,
                             controller: _firstNameController,
                             validator: Validators.required,
                           ),
@@ -92,7 +93,7 @@ class _SignUpViewState extends State<SignUpView> {
                         const SizedBox(width: AppDimens.space12),
                         Expanded(
                           child: AppTextField(
-                            label: AppStrings.lastName,
+                            label: l10n.lastName,
                             controller: _lastNameController,
                             validator: Validators.required,
                           ),
@@ -101,7 +102,7 @@ class _SignUpViewState extends State<SignUpView> {
                     ),
                     const SizedBox(height: AppDimens.space16),
                     AppTextField(
-                      label: AppStrings.email,
+                      label: l10n.email,
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       validator: Validators.email,
@@ -112,7 +113,7 @@ class _SignUpViewState extends State<SignUpView> {
                       children: [
                         Expanded(
                           child: AppTextField(
-                            label: AppStrings.password,
+                            label: l10n.password,
                             controller: _passwordController,
                             obscureText: true,
                             validator: Validators.password,
@@ -121,7 +122,7 @@ class _SignUpViewState extends State<SignUpView> {
                         const SizedBox(width: AppDimens.space12),
                         Expanded(
                           child: AppTextField(
-                            label: AppStrings.confirmPassword,
+                            label: l10n.confirmPassword,
                             controller: _confirmPasswordController,
                             obscureText: true,
                             validator: (value) => Validators.confirmPassword(value, _passwordController.text),
@@ -131,13 +132,13 @@ class _SignUpViewState extends State<SignUpView> {
                     ),
                     const SizedBox(height: AppDimens.space16),
                     AppTextField(
-                      label: AppStrings.phoneNumber,
+                      label: l10n.phoneNumber,
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
                       validator: Validators.phone,
                     ),
                     const SizedBox(height: AppDimens.space20),
-                    Text(AppStrings.gender, style: AppTextStyles.titleMedium),
+                    Text(l10n.gender, style: AppTextStyles.titleMedium),
                     ValueListenableBuilder<Gender>(
                       valueListenable: _gender,
                       builder: (context, gender, _) {
@@ -148,14 +149,14 @@ class _SignUpViewState extends State<SignUpView> {
                               groupValue: gender,
                               onChanged: (value) => _gender.value = value!,
                             ),
-                            const Text(AppStrings.female),
+                            Text(l10n.female),
                             const SizedBox(width: AppDimens.space16),
                             Radio<Gender>(
                               value: Gender.male,
                               groupValue: gender,
                               onChanged: (value) => _gender.value = value!,
                             ),
-                            const Text(AppStrings.male),
+                            Text(l10n.male),
                           ],
                         );
                       },
@@ -163,13 +164,13 @@ class _SignUpViewState extends State<SignUpView> {
                     const SizedBox(height: AppDimens.space16),
                     Wrap(
                       children: [
-                        Text('${AppStrings.termsAgreement} ', style: AppTextStyles.bodySmall),
-                        Text(AppStrings.termsAndConditions, style: AppTextStyles.link),
+                        Text('${l10n.termsAgreement} ', style: AppTextStyles.bodySmall),
+                        Text(l10n.termsAndConditions, style: AppTextStyles.link),
                       ],
                     ),
                     const SizedBox(height: AppDimens.space24),
                     PrimaryButton(
-                      label: AppStrings.signUp,
+                      label: l10n.signUp,
                       isLoading: isSubmitting,
                       onPressed: _submit,
                     ),
@@ -177,10 +178,10 @@ class _SignUpViewState extends State<SignUpView> {
                     Center(
                       child: Wrap(
                         children: [
-                          Text('${AppStrings.alreadyHaveAccount} ', style: AppTextStyles.bodyMedium),
+                          Text('${l10n.alreadyHaveAccount} ', style: AppTextStyles.bodyMedium),
                           GestureDetector(
                             onTap: () => Get.back(),
-                            child: Text(AppStrings.login, style: AppTextStyles.link),
+                            child: Text(l10n.login, style: AppTextStyles.link),
                           ),
                         ],
                       ),

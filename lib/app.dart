@@ -1,31 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 
-import 'core/constants/app_strings.dart';
+import 'core/localization/app_localizations_delegate.dart';
+import 'core/localization/supported_locales.dart';
 import 'core/routing/app_pages.dart';
 import 'core/theme/app_theme.dart';
 import 'foundation_preview_screen.dart';
 
-/// Root widget. Uses [GetMaterialApp] (rather than [MaterialApp]) purely
-/// for GetX's navigation/dialog/snackbar utilities — no GetX state
-/// management is used anywhere; state stays in Cubits per the MVI rule.
-///
-/// `home` currently points at [FoundationPreviewScreen] instead of a
-/// named initial route: [AppPages.pages] is intentionally empty at this
-/// stage (see that file's doc comment), so there is nothing yet for
-/// `initialRoute` to resolve. Once the first feature is wired, switch to
-/// `initialRoute: AppRoutes.splash` / `AppRoutes.login` and remove
-/// `home`.
+/// Root widget; uses [GetMaterialApp] only for GetX navigation/dialog/locale utilities, never state management.
 class FlowerApp extends StatelessWidget {
-  const FlowerApp({super.key});
+  const FlowerApp({required this.initialLocale, super.key});
+
+  final Locale initialLocale;
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: AppStrings.appName,
+      title: 'Flowery',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       getPages: AppPages.pages,
+      locale: initialLocale,
+      fallbackLocale: SupportedLocales.fallback,
+      supportedLocales: SupportedLocales.all,
+      localizationsDelegates: const [
+        AppLocalizationsDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       home: const FoundationPreviewScreen(),
     );
   }

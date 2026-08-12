@@ -1,29 +1,27 @@
 import 'package:flutter/material.dart';
 
 import '../../core/constants/app_dimens.dart';
-import '../../core/constants/app_strings.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../extensions/localization_extensions.dart';
 import '../widgets/buttons/primary_button.dart';
 
-/// Generic two-action confirmation dialog (title, message, Cancel /
-/// Confirm) — e.g. the "LOGOUT — Confirm logout!!" dialog in the Figma
-/// Profile screen. `showConfirmDialog` returns `true` only when the
-/// user tapped the confirm action, `false`/`null` otherwise, so callers
-/// can `if (await showConfirmDialog(...)) { ... }`.
+/// Generic two-action confirmation dialog; resolves `true` only when the user taps confirm, `false`/`null` otherwise.
 Future<bool?> showConfirmDialog(
   BuildContext context, {
   required String title,
   required String message,
-  String confirmLabel = AppStrings.confirmLogout,
-  String cancelLabel = AppStrings.cancel,
+  String? confirmLabel,
+  String? cancelLabel,
 }) {
+  final resolvedConfirmLabel = confirmLabel ?? context.l10n.confirm;
+  final resolvedCancelLabel = cancelLabel ?? context.l10n.cancel;
   return showDialog<bool>(
     context: context,
     builder: (context) => ConfirmDialog(
       title: title,
       message: message,
-      confirmLabel: confirmLabel,
-      cancelLabel: cancelLabel,
+      confirmLabel: resolvedConfirmLabel,
+      cancelLabel: resolvedCancelLabel,
     ),
   );
 }

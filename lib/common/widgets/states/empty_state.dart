@@ -4,9 +4,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimens.dart';
 import '../../../core/theme/app_text_styles.dart';
 
-/// Centered icon + message used for empty search results, empty cart,
-/// empty order lists, etc. — one widget instead of ad-hoc `Center(Column(...))`
-/// blocks duplicated per screen.
+/// Centered icon + message for empty search results, empty cart, empty order lists, etc.
 class EmptyState extends StatelessWidget {
   const EmptyState({
     required this.message,

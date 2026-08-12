@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Small ergonomics layer over [BuildContext] so widgets read
-/// `context.textTheme` / `context.screenWidth` instead of the more
-/// verbose `Theme.of(context).textTheme`.
-///
-/// Lives in `common` (not `core`) because it is inherently tied to the
-/// Flutter widget tree ([BuildContext], [ScaffoldMessenger]) — `core`
-/// stays framework-agnostic wherever practical.
+/// Ergonomics layer over [BuildContext]; lives in `common` (not `core`) since it's tied to the widget tree.
 extension ContextExtensions on BuildContext {
   TextTheme get textTheme => Theme.of(this).textTheme;
 

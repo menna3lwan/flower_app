@@ -1,6 +1,4 @@
-/// Pure, stateless form-field validators shared across every auth/profile
-/// form. Kept outside any widget or Cubit so they stay trivially testable
-/// and reusable between `TextFormField.validator` callbacks.
+/// Pure, stateless form-field validators shared across every auth/profile form.
 abstract final class Validators {
   const Validators._();
 

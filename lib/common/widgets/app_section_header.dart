@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../core/constants/app_dimens.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../extensions/localization_extensions.dart';
 
-/// "{Title}" + "View All" row used above every horizontal product/category
-/// list on Home, and as the page header on full listing screens.
+/// "{Title}" + "View All" row used above every horizontal product/category list and as a listing page header.
 class AppSectionHeader extends StatelessWidget {
   const AppSectionHeader({
     required this.title,
@@ -30,7 +30,7 @@ class AppSectionHeader extends StatelessWidget {
               children: [
                 Text(title, style: AppTextStyles.titleLarge),
                 if (subtitle != null) ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppDimens.space4),
                   Text(subtitle!, style: AppTextStyles.bodySmall),
                 ],
               ],
@@ -39,7 +39,7 @@ class AppSectionHeader extends StatelessWidget {
           if (onViewAllTap != null)
             GestureDetector(
               onTap: onViewAllTap,
-              child: Text('View All', style: AppTextStyles.link),
+              child: Text(context.l10n.viewAll, style: AppTextStyles.link),
             ),
         ],
       ),
