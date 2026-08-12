@@ -1,0 +1,23 @@
+name: shared
+description: >
+  Domain models genuinely used by both the customer and rider apps —
+  currently `UserEntity` (both apps authenticate a user/account) and
+  `AddressEntity` (both apps read/display a pickup or delivery address).
+  Catalog/cart/order entities are intentionally NOT here: they are
+  customer-app-specific today (an `OrderEntity` composes a customer
+  `CartItemEntity`/`ProductEntity` — pulling that chain in here would drag
+  the whole customer catalog domain into a package the rider app also
+  depends on). Only add a model here when it is genuinely shared, not
+  because two classes happen to look similar.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  equatable: ^2.0.5
+
+dev_dependencies:
+  test: ^1.25.0
+  flutter_lints: ^4.0.0

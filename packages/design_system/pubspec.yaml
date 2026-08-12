@@ -1,0 +1,30 @@
+name: design_system
+description: >
+  Flowery's shared visual language, extracted from the Figma design file:
+  brand colors, typography, spacing/dimension tokens, and the Material
+  ThemeData built from them, plus the shared brand-asset path registry
+  (logo/brand icon). Both the customer and rider apps depend on this
+  package so they render with one consistent brand — never a feature or
+  an application.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  google_fonts: ^6.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/

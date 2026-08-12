@@ -1,38 +1,14 @@
-name: flower_app
-description: "Flower App — a Clean Architecture + MVI (Cubit) Flutter skeleton built from the Flower App Figma design."
+name: flowery_workspace
+description: >
+  Monorepo workspace root for the Flowery apps — NOT a buildable Flutter
+  app itself (no `lib/`). Real code lives in `apps/customer_app`,
+  `apps/rider_app`, and `packages/*`; this manifest only exists to hold
+  the dev-tooling dependency (Melos) used to bootstrap/analyze/test the
+  whole workspace. See `melos.yaml` and `README.md`.
 publish_to: 'none'
-
-version: 1.0.0+1
 
 environment:
   sdk: ^3.5.0
 
-dependencies:
-  flutter:
-    sdk: flutter
-
-  # State management (Cubit/Bloc, presentation layer only)
-  flutter_bloc: ^8.1.6
-  equatable: ^2.0.5
-
-  # Dependency injection
-  get_it: ^7.7.0
-
-  # Navigation / utilities
-  get: ^4.6.6
-
-  # UI
-  google_fonts: ^6.2.1
-  cupertino_icons: ^1.0.8
-
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^4.0.0
-
-flutter:
-  uses-material-design: true
-
-  assets:
-    - assets/images/
-    - assets/icons/
+  melos: ^6.1.0
