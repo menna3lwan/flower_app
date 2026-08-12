@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 import 'package:common/extensions/context_extensions.dart';
+import 'package:common/formatters/capitalize_first_letter_formatter.dart';
 import 'package:common/widgets/app_back_app_bar.dart';
 import 'package:common/widgets/buttons/primary_button.dart';
 import 'package:common/widgets/inputs/app_text_field.dart';
@@ -87,6 +88,8 @@ class _SignUpViewState extends State<SignUpView> {
                             label: AppStrings.firstName,
                             controller: _firstNameController,
                             validator: Validators.required,
+                            textCapitalization: TextCapitalization.sentences,
+                            inputFormatters: const [CapitalizeFirstLetterFormatter()],
                           ),
                         ),
                         const SizedBox(width: AppDimens.space12),
@@ -95,6 +98,8 @@ class _SignUpViewState extends State<SignUpView> {
                             label: AppStrings.lastName,
                             controller: _lastNameController,
                             validator: Validators.required,
+                            textCapitalization: TextCapitalization.sentences,
+                            inputFormatters: const [CapitalizeFirstLetterFormatter()],
                           ),
                         ),
                       ],

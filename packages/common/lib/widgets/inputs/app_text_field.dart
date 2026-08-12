@@ -2,14 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:design_system/constants/app_colors.dart';
 import 'package:design_system/theme/app_text_styles.dart';
+import 'package:flutter/services.dart';
 
-/// Standard labeled text field: small label above an outlined box, which
-/// is the pattern used by every form in the Figma design (Email,
-/// Password, First name, Address, ...).
-///
-/// A single shared widget here means the outline/label/error styling
-/// only needs to be defined once (in `AppTheme.light`'s
-/// `inputDecorationTheme`) and every form field in the app inherits it.
 class AppTextField extends StatelessWidget {
   const AppTextField({
     required this.label,
@@ -24,6 +18,8 @@ class AppTextField extends StatelessWidget {
     this.onTap,
     this.maxLines = 1,
     this.enabled = true,
+    this.inputFormatters,
+    this.textCapitalization = TextCapitalization.none,
     super.key,
   });
 
@@ -39,6 +35,10 @@ class AppTextField extends StatelessWidget {
   final VoidCallback? onTap;
   final int maxLines;
   final bool enabled;
+
+  final List<TextInputFormatter>? inputFormatters;
+
+  final TextCapitalization textCapitalization;
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +56,8 @@ class AppTextField extends StatelessWidget {
           onTap: onTap,
           maxLines: maxLines,
           enabled: enabled,
+          inputFormatters: inputFormatters,
+          textCapitalization: textCapitalization,
           style: AppTextStyles.bodyLarge,
           decoration: InputDecoration(
             hintText: hint ?? 'Enter $label'.toLowerCase(),
