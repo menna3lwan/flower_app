@@ -14,11 +14,12 @@ abstract final class AppAssets {
   static const String _imagesPath = 'packages/design_system/assets/images';
   static const String _iconsPath = 'packages/design_system/assets/icons';
 
-  /// The Flowery brand mark. Add the exported Figma asset at
-  /// `packages/design_system/assets/images/logo.png` to back this path.
-  static const String logo = '$_imagesPath/logo.png';
+  /// The Flowery brand mark — real asset synced from `development`
+  /// (`assets/images/flower_app_logo.png` there).
+  static const String logo = '$_imagesPath/flower_app_logo.png';
 
-  /// Brand icon (app icon / small mark). Add the exported Figma asset at
-  /// `packages/design_system/assets/icons/app_icon.png` to back this path.
-  static const String appIcon = '$_iconsPath/app_icon.png';
+  /// Brand icon (app icon / small mark) — real asset synced from
+  /// `development` (`assets/images/flowery_icon.svg` there; moved under
+  /// this package's `assets/icons/` to match its role).
+  static const String appIcon = '$_iconsPath/flowery_icon.svg';
 }

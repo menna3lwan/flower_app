@@ -28,3 +28,14 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+
+  # `assets/fonts/` also ships IMFellEnglish.ttf, Outfit.ttf and roboto.ttf
+  # (synced from `development` as-is) — only Inter is registered as a font
+  # family here because that's the only one `development` itself declares;
+  # the others are currently unused there too. The active theme typeface
+  # (Poppins, via `google_fonts` in `theme/app_text_styles.dart`) is
+  # unrelated and unchanged by this asset sync.
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/inter.ttf
