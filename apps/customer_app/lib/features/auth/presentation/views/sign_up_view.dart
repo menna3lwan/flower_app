@@ -6,7 +6,7 @@ import 'package:common/extensions/context_extensions.dart';
 import 'package:common/formatters/capitalize_first_letter_formatter.dart';
 import 'package:common/widgets/app_back_app_bar.dart';
 import 'package:common/widgets/buttons/primary_button.dart';
-import 'package:common/widgets/inputs/app_text_field.dart';
+import 'package:common/widgets/inputs/app_outlined_text_field.dart';
 import 'package:design_system/constants/app_dimens.dart';
 import '../../../../constants/app_strings.dart';
 import 'package:shared/domain/entities/user_entity.dart';
@@ -84,18 +84,20 @@ class _SignUpViewState extends State<SignUpView> {
                     Row(
                       children: [
                         Expanded(
-                          child: AppTextField(
+                          child: AppOutlinedTextField(
                             label: AppStrings.firstName,
+                            hint: AppStrings.signUpFirstNameHint,
                             controller: _firstNameController,
                             validator: Validators.required,
                             textCapitalization: TextCapitalization.sentences,
                             inputFormatters: const [CapitalizeFirstLetterFormatter()],
                           ),
                         ),
-                        const SizedBox(width: AppDimens.space12),
+                        const SizedBox(width: AppDimens.space16),
                         Expanded(
-                          child: AppTextField(
+                          child: AppOutlinedTextField(
                             label: AppStrings.lastName,
+                            hint: AppStrings.signUpLastNameHint,
                             controller: _lastNameController,
                             validator: Validators.required,
                             textCapitalization: TextCapitalization.sentences,
@@ -104,29 +106,32 @@ class _SignUpViewState extends State<SignUpView> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: AppDimens.space16),
-                    AppTextField(
+                    const SizedBox(height: AppDimens.space24),
+                    AppOutlinedTextField(
                       label: AppStrings.email,
+                      hint: AppStrings.signUpEmailHint,
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       validator: Validators.email,
                     ),
-                    const SizedBox(height: AppDimens.space16),
+                    const SizedBox(height: AppDimens.space24),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: AppTextField(
+                          child: AppOutlinedTextField(
                             label: AppStrings.password,
+                            hint: AppStrings.signUpPasswordHint,
                             controller: _passwordController,
                             obscureText: true,
                             validator: Validators.password,
                           ),
                         ),
-                        const SizedBox(width: AppDimens.space12),
+                        const SizedBox(width: AppDimens.space16),
                         Expanded(
-                          child: AppTextField(
+                          child: AppOutlinedTextField(
                             label: AppStrings.confirmPassword,
+                            hint: AppStrings.signUpConfirmPasswordHint,
                             controller: _confirmPasswordController,
                             obscureText: true,
                             validator: (value) => Validators.confirmPassword(value, _passwordController.text),
@@ -134,9 +139,10 @@ class _SignUpViewState extends State<SignUpView> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: AppDimens.space16),
-                    AppTextField(
+                    const SizedBox(height: AppDimens.space24),
+                    AppOutlinedTextField(
                       label: AppStrings.phoneNumber,
+                      hint: AppStrings.signUpPhoneNumberHint,
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
                       validator: Validators.phone,

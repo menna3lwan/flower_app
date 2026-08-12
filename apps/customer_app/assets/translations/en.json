@@ -34,6 +34,12 @@
   "currentPassword": "Current password",
   "newPassword": "New password",
   "enterFieldTemplate": "Enter {field}",
+  "signUpFirstNameHint": "Enter first name",
+  "signUpLastNameHint": "Enter last name",
+  "signUpEmailHint": "Enter your email",
+  "signUpPasswordHint": "Enter password",
+  "signUpConfirmPasswordHint": "Confirm password",
+  "signUpPhoneNumberHint": "Enter phone number",
 
   "deliverTo": "Deliver to",
   "categories": "Categories",

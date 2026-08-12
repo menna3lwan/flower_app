@@ -40,6 +40,17 @@ abstract final class AppStrings {
   static String get currentPassword => 'currentPassword'.tr();
   static String get newPassword => 'newPassword'.tr();
 
+  // Sign up field placeholders — Figma Dev Mode values verified against
+  // the Sign Up frame; kept distinct from `enterYourEmail`/
+  // `enterYourPassword` (used on Login) since the two screens' Figma
+  // copy differs word-for-word and this scopes the fix to Sign Up only.
+  static String get signUpFirstNameHint => 'signUpFirstNameHint'.tr();
+  static String get signUpLastNameHint => 'signUpLastNameHint'.tr();
+  static String get signUpEmailHint => 'signUpEmailHint'.tr();
+  static String get signUpPasswordHint => 'signUpPasswordHint'.tr();
+  static String get signUpConfirmPasswordHint => 'signUpConfirmPasswordHint'.tr();
+  static String get signUpPhoneNumberHint => 'signUpPhoneNumberHint'.tr();
+
   // Home.
   static String get deliverTo => 'deliverTo'.tr();
   static String get categories => 'categories'.tr();

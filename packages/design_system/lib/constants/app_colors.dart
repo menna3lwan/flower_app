@@ -26,4 +26,12 @@ abstract final class AppColors {
   static const Color white = Color(0xFFFFFFFF);
   static const Color disabled = Color(0xFFBDBDBD);
   static const Color starRating = Color(0xFFFFB800);
+
+  /// Figma "White/70" token (#A6A6A6) — the placeholder color measured on
+  /// the Sign Up outlined text fields (Dev Mode inspection, Sign up
+  /// frame). Deliberately distinct from [textHint] (#ACACAC), which is
+  /// an existing, separately-used approximation elsewhere in the app;
+  /// kept as its own constant rather than changing [textHint] so this
+  /// fix stays scoped to the fields it was verified against.
+  static const Color placeholderGray = Color(0xFFA6A6A6);
 }

@@ -34,6 +34,12 @@
   "currentPassword": "كلمة المرور الحالية",
   "newPassword": "كلمة المرور الجديدة",
   "enterFieldTemplate": "أدخل {field}",
+  "signUpFirstNameHint": "أدخل الاسم الأول",
+  "signUpLastNameHint": "أدخل اسم العائلة",
+  "signUpEmailHint": "أدخل بريدك الإلكتروني",
+  "signUpPasswordHint": "أدخل كلمة المرور",
+  "signUpConfirmPasswordHint": "تأكيد كلمة المرور",
+  "signUpPhoneNumberHint": "أدخل رقم الهاتف",
 
   "deliverTo": "التوصيل إلى",
   "categories": "الفئات",
