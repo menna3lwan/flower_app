@@ -10,7 +10,7 @@ import '../datasources/catalog_local_data_source.dart';
 class CatalogRepositoryImpl implements CatalogRepository {
   const CatalogRepositoryImpl(this._dataSource);
 
-  final CatalogLocalDataSourceImpl _dataSource;
+  final CatalogLocalDataSource _dataSource;
 
   @override
   Future<Result<List<CategoryEntity>>> getCategories() async {

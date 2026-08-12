@@ -2,17 +2,17 @@ import 'package:shared/domain/entities/user_entity.dart';
 import 'package:core/error/exceptions.dart';
 import 'package:core/error/failures.dart';
 import 'package:core/result/result.dart';
+import 'package:core/storage/local_storage_service.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_local_data_source.dart';
 
-/// Translates [AuthLocalDataSource] exceptions into [Failure]s and wraps
-/// every outcome in a [Result] — this is the only place in the codebase
-/// that touches `try/catch` for auth operations, keeping the Cubit above
-/// it exception-free.
 class AuthRepositoryImpl implements AuthRepository {
-  const AuthRepositoryImpl(this._dataSource);
+  const AuthRepositoryImpl(this._dataSource, this._localStorageService);
 
   final AuthLocalDataSource _dataSource;
+  final LocalStorageService _localStorageService;
+
+  static const String _accessTokenKey = 'auth_access_token';
 
   @override
   Future<Result<UserEntity>> login({
@@ -21,6 +21,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     try {
       final user = await _dataSource.login(email: email, password: password);
+      await _localStorageService.setString(_accessTokenKey, 'placeholder-access-token-${user.id}');
       return Result.success(user);
     } on ServerException catch (e) {
       return Result.failure(AuthFailure(e.message));

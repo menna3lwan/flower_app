@@ -2,26 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'package:design_system/constants/app_colors.dart';
 import 'package:design_system/constants/app_dimens.dart';
+import '../../constants/app_strings.dart';
 import '../../core/domain/entities/product_entity.dart';
 import 'package:core/extensions/string_extensions.dart';
 import 'package:design_system/theme/app_text_styles.dart';
 import 'package:common/widgets/media/app_image_placeholder.dart';
 
-/// Product card used in the Best seller row, Occasion grid, Categories
-/// grid and Search results — image, name, price (with strikethrough +
-/// discount badge when applicable) and an "Add to cart" button.
-///
-/// This is an app-level shared widget (not feature-owned) because five
-/// different `customer_app` features render it; it depends only on
-/// [ProductEntity] — never on a feature's Cubit/state. It intentionally
-/// lives in `customer_app`, not the shared `common` package: `ProductEntity`
-/// is a customer-catalog-only concept the Rider app has no use for, so
-/// putting this widget in `common` would make a package the Rider app
-/// also depends on implicitly carry customer-only domain knowledge.
-///
-/// [width] lets callers size it for a horizontal `ListView` (Home rows)
-/// versus a `GridView` (Categories/listing pages) without duplicating
-/// the card body.
 class ProductCard extends StatelessWidget {
   const ProductCard({
     required this.product,
@@ -98,7 +84,7 @@ class ProductCard extends StatelessWidget {
                 child: ElevatedButton.icon(
                   onPressed: onAddToCart,
                   icon: const Icon(Icons.shopping_cart_outlined, size: 18),
-                  label: const Text('Add to cart'),
+                  label: Text(AppStrings.addToCart),
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(40),
                     textStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.onPrimary),

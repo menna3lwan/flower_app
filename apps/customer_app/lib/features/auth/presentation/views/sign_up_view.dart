@@ -61,7 +61,7 @@ class _SignUpViewState extends State<SignUpView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBackAppBar(title: AppStrings.signUp),
+      appBar: AppBackAppBar(title: AppStrings.signUp),
       body: BlocConsumer<SignUpCubit, SignUpState>(
         listener: (context, state) {
           if (state is SignUpSuccess) {
@@ -148,14 +148,14 @@ class _SignUpViewState extends State<SignUpView> {
                               groupValue: gender,
                               onChanged: (value) => _gender.value = value!,
                             ),
-                            const Text(AppStrings.female),
+                            Text(AppStrings.female),
                             const SizedBox(width: AppDimens.space16),
                             Radio<Gender>(
                               value: Gender.male,
                               groupValue: gender,
                               onChanged: (value) => _gender.value = value!,
                             ),
-                            const Text(AppStrings.male),
+                            Text(AppStrings.male),
                           ],
                         );
                       },

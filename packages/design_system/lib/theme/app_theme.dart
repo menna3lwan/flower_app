@@ -4,12 +4,6 @@ import '../constants/app_colors.dart';
 import '../constants/app_dimens.dart';
 import './app_text_styles.dart';
 
-/// Single entry point for the app's [ThemeData].
-///
-/// Every visual default (button shape, input border, app bar style) is
-/// declared once here so feature screens can rely on `Theme.of(context)`
-/// and the shared widgets in `common/widgets` instead of re-specifying
-/// decoration inline.
 abstract final class AppTheme {
   const AppTheme._();
 
@@ -59,7 +53,10 @@ abstract final class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.textPrimary,
           minimumSize: const Size.fromHeight(AppDimens.buttonHeight),
-          side: const BorderSide(color: AppColors.divider),
+          // Figma Dev Mode: the "Continue as guest" outlined button's
+          // stroke is the Design System's `Gray` style, not `divider` —
+          // corrected after direct inspection (see AppColors.gray).
+          side: const BorderSide(color: AppColors.gray),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppDimens.radiusPill),
           ),
@@ -82,19 +79,19 @@ abstract final class AppTheme {
           vertical: AppDimens.space16,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
-          borderSide: const BorderSide(color: AppColors.divider),
+          borderRadius: BorderRadius.circular(AppDimens.radiusExtraSmall),
+          borderSide: const BorderSide(color: AppColors.gray),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
-          borderSide: const BorderSide(color: AppColors.divider),
+          borderRadius: BorderRadius.circular(AppDimens.radiusExtraSmall),
+          borderSide: const BorderSide(color: AppColors.gray),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
+          borderRadius: BorderRadius.circular(AppDimens.radiusExtraSmall),
           borderSide: const BorderSide(color: AppColors.primary),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
+          borderRadius: BorderRadius.circular(AppDimens.radiusExtraSmall),
           borderSide: const BorderSide(color: AppColors.error),
         ),
       ),

@@ -1,0 +1,60 @@
+{
+  // Flutter/Dart debug configurations for the Flowery monorepo.
+  // All paths are workspace-relative (\${workspaceFolder}) so this file works
+  // for any developer regardless of where they clone the repo.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Customer App",
+      "cwd": "apps/customer_app",
+      "program": "lib/main.dart",
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "Customer App (Profile Mode)",
+      "cwd": "apps/customer_app",
+      "program": "lib/main.dart",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "Customer App (Release Mode)",
+      "cwd": "apps/customer_app",
+      "program": "lib/main.dart",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release"
+    },
+    {
+      "name": "Rider App",
+      "cwd": "apps/rider_app",
+      "program": "lib/main.dart",
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "Rider App (Profile Mode)",
+      "cwd": "apps/rider_app",
+      "program": "lib/main.dart",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "Rider App (Release Mode)",
+      "cwd": "apps/rider_app",
+      "program": "lib/main.dart",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Customer App + Rider App",
+      "configurations": ["Customer App", "Rider App"]
+    }
+  ]
+}

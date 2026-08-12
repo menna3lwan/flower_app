@@ -28,6 +28,10 @@ dependencies:
   # Navigation / utilities (routing/utilities only — never state management)
   get: ^4.6.6
 
+  # Localization (English + Arabic, LTR/RTL). Reads assets/translations/*.json
+  # (see AppAssets.translationsPath); AppStrings' getters call `.tr()`.
+  easy_localization: ^3.0.7
+
   cupertino_icons: ^1.0.8
 
 dev_dependencies:

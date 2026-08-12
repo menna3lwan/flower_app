@@ -1,14 +1,5 @@
 import 'package:shared/domain/entities/user_entity.dart';
 import 'package:core/error/exceptions.dart';
-
-/// Placeholder data source standing in for a future remote (REST/Firebase)
-/// or local (secure storage) implementation.
-///
-/// Per the project brief this phase ships **no API integration** — every
-/// method here simulates network latency with [Future.delayed] and
-/// returns deterministic dummy data. [AuthRepositoryImpl] is the only
-/// caller, and it depends on this abstract type rather than the concrete
-/// class, so swapping in a real HTTP client later is a one-file change.
 abstract interface class AuthLocalDataSource {
   Future<UserEntity> login({required String email, required String password});
 
@@ -34,17 +25,23 @@ abstract interface class AuthLocalDataSource {
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   static const _simulatedLatency = Duration(milliseconds: 600);
 
+  static const _validEmail = 'test@flowery.com';
+  static const _validPassword = 'Password123';
+
   @override
   Future<UserEntity> login({required String email, required String password}) async {
     await Future.delayed(_simulatedLatency);
     if (email.trim().isEmpty || password.isEmpty) {
       throw const ServerException('Invalid credentials.');
     }
-    return UserEntity(
+    if (email.trim().toLowerCase() != _validEmail || password != _validPassword) {
+      throw const ServerException('Invalid email or password');
+    }
+    return const UserEntity(
       id: 'user-1',
       firstName: 'Nour',
       lastName: 'Mohamed',
-      email: email,
+      email: _validEmail,
     );
   }
 

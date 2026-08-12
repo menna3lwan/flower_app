@@ -1,81 +1,94 @@
-/// Centralized user-facing copy.
-///
-/// At this skeleton stage there is no localization pipeline, but routing
-/// every string literal through here means adding `intl`/ARB files later
-/// is a mechanical extraction instead of a codebase-wide hunt for text.
+import 'package:easy_localization/easy_localization.dart';
+
 abstract final class AppStrings {
   const AppStrings._();
 
-  static const String appName = 'Flowery';
+  static String get appName => 'appName'.tr();
 
   // Auth.
-  static const String login = 'Login';
-  static const String signUp = 'Sign up';
-  static const String email = 'Email';
-  static const String password = 'Password';
-  static const String confirmPassword = 'Confirm password';
-  static const String rememberMe = 'Remember me';
-  static const String forgetPassword = 'Forget password?';
-  static const String continueAsGuest = 'Continue as guest';
-  static const String dontHaveAccount = "Don't have an account?";
-  static const String alreadyHaveAccount = 'Already have an account?';
-  static const String firstName = 'First name';
-  static const String lastName = 'Last name';
-  static const String phoneNumber = 'Phone number';
-  static const String gender = 'Gender';
-  static const String female = 'Female';
-  static const String male = 'Male';
-  static const String termsAgreement = 'Creating an account, you agree to our';
-  static const String termsAndConditions = 'Terms & Conditions';
+  static String get login => 'login'.tr();
+  static String get signUp => 'signUp'.tr();
+  static String get email => 'email'.tr();
+  static String get password => 'password'.tr();
+  static String get confirmPassword => 'confirmPassword'.tr();
+  static String get rememberMe => 'rememberMe'.tr();
+  static String get forgetPassword => 'forgetPassword'.tr();
+  static String get continueAsGuest => 'continueAsGuest'.tr();
+  static String get dontHaveAccount => 'dontHaveAccount'.tr();
+
+  static String get enterYourEmail => 'enterYourEmail'.tr();
+  static String get enterYourPassword => 'enterYourPassword'.tr();
+  static String get invalidEmail => 'invalidEmail'.tr();
+  static String get invalidPassword => 'invalidPassword'.tr();
+  static String get alreadyHaveAccount => 'alreadyHaveAccount'.tr();
+  static String get firstName => 'firstName'.tr();
+  static String get lastName => 'lastName'.tr();
+  static String get phoneNumber => 'phoneNumber'.tr();
+  static String get gender => 'gender'.tr();
+  static String get female => 'female'.tr();
+  static String get male => 'male'.tr();
+  static String get termsAgreement => 'termsAgreement'.tr();
+  static String get termsAndConditions => 'termsAndConditions'.tr();
+  static String get forgotPasswordTitle => 'forgotPasswordTitle'.tr();
+  static String get forgotPasswordSubtitle => 'forgotPasswordSubtitle'.tr();
+  static String get confirm => 'confirm'.tr();
+  static String get passwordSectionTitle => 'passwordSectionTitle'.tr();
+  static String get verificationCodeTitle => 'verificationCodeTitle'.tr();
+  static String get verificationCodeSubtitle => 'verificationCodeSubtitle'.tr();
+  static String get resendCode => 'resendCode'.tr();
+  static String get resetPasswordTitle => 'resetPasswordTitle'.tr();
+  static String get currentPassword => 'currentPassword'.tr();
+  static String get newPassword => 'newPassword'.tr();
 
   // Home.
-  static const String deliverTo = 'Deliver to';
-  static const String categories = 'Categories';
-  static const String bestSeller = 'Best seller';
-  static const String occasion = 'Occasion';
-  static const String viewAll = 'View All';
-  static const String search = 'Search';
-  static const String searchEmptyState = 'Search For Any Product You Want';
+  static String get deliverTo => 'deliverTo'.tr();
+  static String get categories => 'categories'.tr();
+  static String get bestSeller => 'bestSeller'.tr();
+  static String get occasion => 'occasion'.tr();
+  static String get viewAll => 'viewAll'.tr();
+  static String get search => 'search'.tr();
+  static String get searchEmptyState => 'searchEmptyState'.tr();
 
   // Product.
-  static const String description = 'Description';
-  static const String bouquetIncludes = 'Bouquet Includes';
-  static const String addToCart = 'Add to cart';
-  static const String inStock = 'In stock';
+  static String get description => 'description'.tr();
+  static String get bouquetIncludes => 'bouquetIncludes'.tr();
+  static String get addToCart => 'addToCart'.tr();
+  static String get inStock => 'inStock'.tr();
 
   // Cart & checkout.
-  static const String cart = 'Cart';
-  static const String subTotal = 'Sub Total';
-  static const String deliveryFee = 'Delivery Fee';
-  static const String total = 'Total';
-  static const String checkout = 'Checkout';
-  static const String address = 'Address';
-  static const String payment = 'Payment';
-  static const String trackOrder = 'Track order';
-  static const String isGift = 'It is a gift';
-  static const String deliverToLabel = 'Deliver to';
-  static const String addNewAddress = 'Add new address';
-  static const String next = 'Next';
-  static const String paymentMethod = 'Payment method';
-  static const String cashOnDelivery = 'Cash on delivery';
-  static const String creditCard = 'Credit card';
-  static const String placeOrder = 'Place order';
-  static const String orderPlacedSuccess = 'Your order placed successfully!';
-  static const String estimatedArrival = 'Estimated arrival';
-  static const String showMap = 'Show map';
+  static String get cart => 'cart'.tr();
+  static String get subTotal => 'subTotal'.tr();
+  static String get deliveryFee => 'deliveryFee'.tr();
+  static String get total => 'total'.tr();
+  static String get checkout => 'checkout'.tr();
+  static String get address => 'address'.tr();
+  static String get payment => 'payment'.tr();
+  static String get trackOrder => 'trackOrder'.tr();
+  static String get isGift => 'isGift'.tr();
+
+  static String get deliverToLabel => 'deliverTo'.tr();
+  static String get addNewAddress => 'addNewAddress'.tr();
+  static String get next => 'next'.tr();
+  static String get paymentMethod => 'paymentMethod'.tr();
+  static String get cashOnDelivery => 'cashOnDelivery'.tr();
+  static String get creditCard => 'creditCard'.tr();
+  static String get placeOrder => 'placeOrder'.tr();
+  static String get orderPlacedSuccess => 'orderPlacedSuccess'.tr();
+  static String get estimatedArrival => 'estimatedArrival'.tr();
+  static String get showMap => 'showMap'.tr();
 
   // Orders / profile.
-  static const String myOrders = 'My orders';
-  static const String active = 'Active';
-  static const String completed = 'Completed';
-  static const String profile = 'Profile';
-  static const String editProfile = 'Edit profile';
-  static const String savedAddress = 'Saved address';
-  static const String notifications = 'Notifications';
-  static const String aboutUs = 'About us';
-  static const String logout = 'Logout';
-  static const String confirmLogout = 'Confirm logout!!';
-  static const String cancel = 'Cancel';
-  static const String update = 'Update';
-  static const String save = 'Save';
+  static String get myOrders => 'myOrders'.tr();
+  static String get active => 'active'.tr();
+  static String get completed => 'completed'.tr();
+  static String get profile => 'profile'.tr();
+  static String get editProfile => 'editProfile'.tr();
+  static String get savedAddress => 'savedAddress'.tr();
+  static String get notifications => 'notifications'.tr();
+  static String get aboutUs => 'aboutUs'.tr();
+  static String get logout => 'logout'.tr();
+  static String get confirmLogout => 'confirmLogout'.tr();
+  static String get cancel => 'cancel'.tr();
+  static String get update => 'update'.tr();
+  static String get save => 'save'.tr();
 }

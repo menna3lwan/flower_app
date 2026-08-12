@@ -5,17 +5,18 @@ import 'package:design_system/constants/app_dimens.dart';
 import 'package:design_system/theme/app_text_styles.dart';
 import '../buttons/primary_button.dart';
 
-/// Shared full-screen error state with an optional retry action, so every
-/// feature's `Error` state variant renders consistently.
 class ErrorView extends StatelessWidget {
   const ErrorView({
     required this.message,
     this.onRetry,
+    this.retryLabel,
     super.key,
   });
 
   final String message;
   final VoidCallback? onRetry;
+
+  final String? retryLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +29,9 @@ class ErrorView extends StatelessWidget {
             const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
             const SizedBox(height: AppDimens.space16),
             Text(message, textAlign: TextAlign.center, style: AppTextStyles.bodyLarge),
-            if (onRetry != null) ...[
+            if (onRetry != null && retryLabel != null) ...[
               const SizedBox(height: AppDimens.space24),
-              PrimaryButton(label: 'Retry', onPressed: onRetry),
+              PrimaryButton(label: retryLabel!, onPressed: onRetry),
             ],
           ],
         ),

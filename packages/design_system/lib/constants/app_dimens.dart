@@ -1,8 +1,3 @@
-/// Spacing, radius, and sizing tokens used across the design system.
-///
-/// Keeping these as named constants (rather than magic numbers scattered
-/// through widget code) is what lets every screen share the same rhythm
-/// and makes future re-theming a one-file change.
 abstract final class AppDimens {
   const AppDimens._();
 
@@ -16,14 +11,14 @@ abstract final class AppDimens {
   static const double space32 = 32;
   static const double space40 = 40;
 
-  // Radius scale.
+  static const double space48 = 48;
+  static const double radiusExtraSmall = 4;
   static const double radiusSmall = 8;
   static const double radiusMedium = 12;
   static const double radiusLarge = 16;
   static const double radiusPill = 100;
 
-  // Component sizing.
-  static const double buttonHeight = 56;
+  static const double buttonHeight = 48;
   static const double inputHeight = 56;
   static const double iconSize = 24;
   static const double avatarSize = 88;

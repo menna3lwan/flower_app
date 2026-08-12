@@ -11,4 +11,7 @@ environment:
   sdk: ^3.5.0
 
 dev_dependencies:
-  melos: ^6.1.0
+  # melos.yaml's `scripts` use the >= 8.0.0 schema (command nested inside
+  # `exec`, not split across `run`/`exec`) — keep this constraint on the
+  # 8.x line so `dart run melos` resolves a version that understands it.
+  melos: ^8.2.2

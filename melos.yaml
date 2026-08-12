@@ -8,27 +8,33 @@ command:
   bootstrap:
     runPubGetInParallel: true
 
+# Script schema follows Melos >= 8.0.0: the command lives under `exec`
+# itself (as the `command` key, alongside options like `concurrency`),
+# not split across a `run: melos exec -- ...` line and a separate `exec:`
+# options block — that pre-8.0 split is no longer supported.
 scripts:
   analyze:
     description: Run `flutter analyze` in every package/app.
-    run: melos exec -- flutter analyze
     exec:
+      command: flutter analyze
       concurrency: 1
 
   test:
     description: Run `flutter test` in every package/app that has a test/ directory.
-    run: melos exec --dir-exists=test -- flutter test
     exec:
+      command: flutter test
       concurrency: 1
+    packageFilters:
+      dirExists: test
 
   format:
     description: Check formatting across the whole workspace.
-    run: melos exec -- dart format --set-exit-if-changed .
     exec:
+      command: dart format --set-exit-if-changed .
       concurrency: 1
 
   clean:
     description: Remove build artifacts from every package/app.
-    run: melos exec -- flutter clean
     exec:
+      command: flutter clean
       concurrency: 1
