@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../constants/app_colors.dart';
 
-/// Typography scale (Poppins) — reach for one of these named styles instead of a bare `TextStyle`.
+/// Typography scale (Inter, bundled locally — matches the Figma Design System's confirmed font family) — reach for one of these named styles instead of a bare `TextStyle`.
 abstract final class AppTextStyles {
   const AppTextStyles._();
 
-  static TextStyle get _base => GoogleFonts.poppins(color: AppColors.textPrimary);
+  static const String _fontFamily = 'Inter';
+
+  static TextStyle get _base => const TextStyle(fontFamily: _fontFamily, color: AppColors.textPrimary);
 
   static TextStyle get displayLarge => _base.copyWith(
         fontSize: 28,

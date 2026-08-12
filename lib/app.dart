@@ -5,8 +5,8 @@ import 'package:get/get.dart';
 import 'core/localization/app_localizations_delegate.dart';
 import 'core/localization/supported_locales.dart';
 import 'core/routing/app_pages.dart';
+import 'core/routing/app_routes.dart';
 import 'core/theme/app_theme.dart';
-import 'foundation_preview_screen.dart';
 
 /// Root widget; uses [GetMaterialApp] only for GetX navigation/dialog/locale utilities, never state management.
 class FlowerApp extends StatelessWidget {
@@ -20,6 +20,7 @@ class FlowerApp extends StatelessWidget {
       title: 'Flowery',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
+      initialRoute: AppRoutes.splash,
       getPages: AppPages.pages,
       locale: initialLocale,
       fallbackLocale: SupportedLocales.fallback,
@@ -30,7 +31,6 @@ class FlowerApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: const FoundationPreviewScreen(),
     );
   }
 }

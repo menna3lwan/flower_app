@@ -5,7 +5,7 @@ import '../domain/repositories/auth_repository.dart';
 import '../presentation/cubit/forgot_password/forgot_password_cubit.dart';
 import '../presentation/cubit/login/login_cubit.dart';
 import '../presentation/cubit/reset_password/reset_password_cubit.dart';
-import '../presentation/cubit/signup/signup_cubit.dart';
+import '../presentation/cubit/sign_up/sign_up_cubit.dart';
 
 /// Registers every dependency the auth feature owns; Cubits are factories so each screen gets a fresh instance.
 void setupAuthDependencies() {

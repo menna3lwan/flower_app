@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 abstract final class AppColors {
   const AppColors._();
 
-  /// Brand main color — primary buttons, active tabs, links, price tags.
-  static const Color primary = Color(0xFFD6336C);
+  /// Brand main color — primary buttons, active tabs, links, price tags. Verified against the Figma Design System's "Main color" swatch.
+  static const Color primary = Color(0xFFD21E6A);
   static const Color primaryDark = Color(0xFFB4275A);
   static const Color primaryLight = Color(0xFFFBE4EA);
 

@@ -27,4 +27,5 @@ abstract final class AppDimens {
   static const double bottomNavHeight = 64;
   static const double categoryIconSize = 56;
   static const double productCardImageHeight = 160;
+  static const double splashLogoWidth = 160;
 }

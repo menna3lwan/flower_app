@@ -4,13 +4,12 @@ abstract final class AppAssets {
 
   static const String _imagesPath = 'assets/images';
   static const String _iconsPath = 'assets/icons';
-  static const String _logosPath = 'assets/logos';
   static const String _illustrationsPath = 'assets/illustrations';
   static const String _animationsPath = 'assets/animations';
 
   // Logos.
-  /// The Flowery brand mark (Figma: Design System > flower icon, 1024×1024).
-  static const String appLogo = '$_logosPath/app_logo.png';
+  /// The Flowery brand mark — real asset extracted from Figma, used on the Splash screen.
+  static const String appLogo = '$_imagesPath/flower_app_logo.png';
 
   // Illustrations (decorative, branded — not photography).
   /// Pink wave shape behind the checkmark on the order-confirmation screen.

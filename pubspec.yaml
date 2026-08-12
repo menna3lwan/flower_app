@@ -24,7 +24,6 @@ dependencies:
   get: ^4.6.6
 
   # UI
-  google_fonts: ^6.2.1
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
@@ -41,3 +40,9 @@ flutter:
     - assets/logos/
     - assets/illustrations/
     - assets/translations/
+    - assets/animations/
+
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/inter.ttf
