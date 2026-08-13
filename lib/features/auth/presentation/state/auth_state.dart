@@ -2,9 +2,10 @@ import 'package:equatable/equatable.dart';
 
 import '../../../../core/domain/entities/user_entity.dart';
 
-/// Every state the unified Auth flow (Login, Sign Up, Forgot Password)
-/// can be in — this is the "Model" the three Views render from. Only
-/// `AuthCubit` moves between these; a View just reacts.
+/// Every state the unified Auth flow (Login, Sign Up, Forgot Password,
+/// Verification, Reset Password) can be in — this is the "Model" the
+/// five Views render from. Only `AuthCubit` moves between these; a View
+/// just reacts.
 ///
 /// Login/Sign Up/guest-login all resolve to [AuthLoginSuccess] — from
 /// the View's perspective they mean the same thing (a [UserEntity] now
@@ -14,6 +15,10 @@ import '../../../../core/domain/entities/user_entity.dart';
 /// account was actually created, not just that some session started.
 /// Forgot Password's success carries no user (no one is authenticated
 /// yet), so it's a distinct shape, not an overload of the others.
+/// [AuthCodeVerified] and [AuthPasswordResetSuccess] are likewise
+/// distinct from each other and from the rest — each drives a different
+/// navigation target (Verification → Login, Reset Password → Login) and
+/// carries no payload the View needs.
 sealed class AuthState extends Equatable {
   const AuthState();
 
@@ -54,6 +59,14 @@ final class AuthPasswordResetEmailSent extends AuthState {
 
   @override
   List<Object?> get props => [email];
+}
+
+final class AuthCodeVerified extends AuthState {
+  const AuthCodeVerified();
+}
+
+final class AuthPasswordResetSuccess extends AuthState {
+  const AuthPasswordResetSuccess();
 }
 
 final class AuthFailed extends AuthState {

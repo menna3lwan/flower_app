@@ -62,7 +62,7 @@ class _LoginViewState extends State<LoginView> {
     return Scaffold(
       appBar: AppBackAppBar(
         title: AppStrings.login,
-        titleStyle: AppTextStyles.titleLarge.copyWith(fontSize: 20, fontWeight: FontWeight.w500),
+        titleStyle: AppTextStyles.appBarTitleEmphasis,
       ),
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {

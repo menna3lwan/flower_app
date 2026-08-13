@@ -1,112 +1,200 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
+import 'package:customer_app/common/extensions/context_extensions.dart';
 import 'package:customer_app/common/widgets/app_back_app_bar.dart';
 import 'package:customer_app/common/widgets/buttons/primary_button.dart';
 import 'package:customer_app/core/constants/app_dimens.dart';
 import 'package:customer_app/core/localization/app_strings.dart';
 import '../../../../core/routing/customer_routes.dart';
 import 'package:customer_app/core/theme/app_text_styles.dart';
+import '../cubit/auth_cubit.dart';
+import '../intent/auth_intent.dart';
+import '../state/auth_state.dart';
 
-class OtpVerificationView extends StatelessWidget {
+/// "Verification code" screen — 4-digit OTP entry reached from Forgot
+/// Password.
+///
+/// Per the confirmed Figma flow (`docs/Flower_App_Figma_Analysis.md`,
+/// corroborated by the Reset Password frame asking for a *current*
+/// password, which a forgot-password user wouldn't have), a valid code
+/// goes straight to [AuthCodeVerified] → Login, not to Reset Password.
+/// Reset Password stays a Profile-only, change-password screen.
+class OtpVerificationView extends StatefulWidget {
   const OtpVerificationView({super.key});
 
+  @override
+  State<OtpVerificationView> createState() => _OtpVerificationViewState();
+}
+
+class _OtpVerificationViewState extends State<OtpVerificationView> {
   // Figma Dev Mode (Verification code frame, node 74:7065): each code box
   // is 74×68 — distinctly bigger than a standard AppTextField and unique
   // to this one screen, so it's kept as an explicit, Figma-cited literal
   // rather than force-fit into an unrelated AppDimens token.
   static const double _codeBoxWidth = 74;
   static const double _codeBoxHeight = 68;
+  static const int _codeLength = 4;
+
+  late final String _email;
+  final _controllers = List.generate(_codeLength, (_) => TextEditingController());
+  final _focusNodes = List.generate(_codeLength, (_) => FocusNode());
+
+  @override
+  void initState() {
+    super.initState();
+    // Forgot Password passes the email the user entered as the route
+    // argument (`Get.toNamed(..., arguments: email)`) so this screen can
+    // verify the code against the right account without asking again.
+    final arguments = Get.arguments;
+    _email = arguments is String ? arguments : '';
+  }
+
+  @override
+  void dispose() {
+    for (final controller in _controllers) {
+      controller.dispose();
+    }
+    for (final node in _focusNodes) {
+      node.dispose();
+    }
+    super.dispose();
+  }
+
+  String get _code => _controllers.map((c) => c.text).join();
+
+  void _onDigitChanged(int index, String value) {
+    if (value.isNotEmpty && index < _codeLength - 1) {
+      _focusNodes[index + 1].requestFocus();
+    } else if (value.isEmpty && index > 0) {
+      _focusNodes[index - 1].requestFocus();
+    }
+  }
+
+  void _submit(BuildContext context) {
+    if (_code.length < _codeLength) {
+      context.showSnackBar(AppStrings.verificationCodeIncomplete);
+      return;
+    }
+    context.read<AuthCubit>().onIntent(VerifyCodeRequested(email: _email, code: _code));
+  }
+
+  void _resend(BuildContext context) {
+    context.read<AuthCubit>().onIntent(ForgotPasswordRequested(_email));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBackAppBar(title: AppStrings.passwordSectionTitle),
-      body: SafeArea(
-        // Matches Login/Sign Up/Reset Password: scrollable instead of a
-        // plain Padding, so this doesn't overflow once the number
-        // keyboard is open on shorter screens.
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppDimens.space16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Same centered title+subtitle block pattern as Forgot
-              // Password — see that screen's comment for why a plain
-              // `textAlign: center` isn't enough on its own here.
-              SizedBox(
-                width: double.infinity,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      AppStrings.verificationCodeTitle,
-                      style: AppTextStyles.titleLarge,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: AppDimens.space16),
-                    Text(
-                      AppStrings.verificationCodeSubtitle,
-                      style: AppTextStyles.bodyMedium,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-              // Figma measures ~32px between the subtitle and the code boxes.
-              const SizedBox(height: AppDimens.space32),
-              // Figma lays the 4 boxes out as a fixed-16px-gap group,
-              // centered as a block — not spread edge-to-edge with
-              // `spaceBetween` (which stretches the gaps to fill the row
-              // instead of keeping them at a fixed 16px).
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+      body: BlocConsumer<AuthCubit, AuthState>(
+        listener: (context, state) {
+          if (state is AuthCodeVerified) {
+            Get.offAllNamed(CustomerRoutes.login);
+          } else if (state is AuthPasswordResetEmailSent) {
+            // Reached only via `_resend` above (the initial email send
+            // already happened on Forgot Password, before this screen
+            // existed) — surface it as a resend confirmation, not a
+            // navigation trigger.
+            context.showSnackBar(AppStrings.verificationCodeResent);
+          } else if (state is AuthFailed) {
+            context.showSnackBar(state.message);
+          }
+        },
+        builder: (context, state) {
+          final isSubmitting = state is AuthLoading;
+          return SafeArea(
+            // Matches Login/Sign Up/Reset Password: scrollable instead of a
+            // plain Padding, so this doesn't overflow once the number
+            // keyboard is open on shorter screens.
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(AppDimens.space16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  for (var index = 0; index < 4; index++) ...[
-                    if (index > 0) const SizedBox(width: AppDimens.space16),
-                    SizedBox(
-                      width: _codeBoxWidth,
-                      height: _codeBoxHeight,
-                      child: TextField(
-                        textAlign: TextAlign.center,
-                        keyboardType: TextInputType.number,
-                        maxLength: 1,
-                        style: AppTextStyles.titleLarge,
-                        decoration: const InputDecoration(counterText: ''),
-                      ),
+                  // Same centered title+subtitle block pattern as Forgot
+                  // Password — see that screen's comment for why a plain
+                  // `textAlign: center` isn't enough on its own here.
+                  SizedBox(
+                    width: double.infinity,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          AppStrings.verificationCodeTitle,
+                          style: AppTextStyles.titleLarge,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: AppDimens.space16),
+                        Text(
+                          AppStrings.verificationCodeSubtitle,
+                          style: AppTextStyles.bodyMedium,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
-                  ],
-                ],
-              ),
-              const SizedBox(height: AppDimens.space24),
-              // Figma's Verification code frame has no button on it (entry
-              // of the 4th digit is the only progression shown) — kept
-              // here anyway: there's no auto-advance logic wired to this
-              // static screen (no Cubit), so removing it would strand the
-              // user with no way to reach Reset Password. Flagged in the
-              // review report rather than silently dropped or built out.
-              PrimaryButton(
-                label: AppStrings.confirm,
-                onPressed: () => Get.toNamed(CustomerRoutes.resetPassword),
-              ),
-              const SizedBox(height: AppDimens.space16),
-              // Figma: only the "Resend" word is pink/underlined, the
-              // leading "Didn't receive the code?" stays default-colored
-              // — matches the two-tone rich-text pattern already used for
-              // Sign Up's "Terms & Conditions" line.
-              Center(
-                child: Text.rich(
-                  TextSpan(
+                  ),
+                  // Figma measures ~32px between the subtitle and the code boxes.
+                  const SizedBox(height: AppDimens.space32),
+                  // Figma lays the 4 boxes out as a fixed-16px-gap group,
+                  // centered as a block — not spread edge-to-edge with
+                  // `spaceBetween` (which stretches the gaps to fill the row
+                  // instead of keeping them at a fixed 16px).
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      TextSpan(text: '${AppStrings.resendCodePrefix} ', style: AppTextStyles.bodyMedium),
-                      TextSpan(text: AppStrings.resendCodeAction, style: AppTextStyles.link),
+                      for (var index = 0; index < _codeLength; index++) ...[
+                        if (index > 0) const SizedBox(width: AppDimens.space16),
+                        SizedBox(
+                          width: _codeBoxWidth,
+                          height: _codeBoxHeight,
+                          child: TextField(
+                            controller: _controllers[index],
+                            focusNode: _focusNodes[index],
+                            enabled: !isSubmitting,
+                            textAlign: TextAlign.center,
+                            keyboardType: TextInputType.number,
+                            maxLength: 1,
+                            style: AppTextStyles.titleLarge,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            decoration: const InputDecoration(counterText: ''),
+                            onChanged: (value) => _onDigitChanged(index, value),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
-                ),
+                  const SizedBox(height: AppDimens.space24),
+                  PrimaryButton(
+                    label: AppStrings.confirm,
+                    isLoading: isSubmitting,
+                    onPressed: () => _submit(context),
+                  ),
+                  const SizedBox(height: AppDimens.space16),
+                  // Figma: only the "Resend" word is pink/underlined, the
+                  // leading "Didn't receive the code?" stays default-colored
+                  // — matches the two-tone rich-text pattern already used for
+                  // Sign Up's "Terms & Conditions" line.
+                  Center(
+                    child: GestureDetector(
+                      onTap: isSubmitting ? null : () => _resend(context),
+                      child: Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(text: '${AppStrings.resendCodePrefix} ', style: AppTextStyles.bodyMedium),
+                            TextSpan(text: AppStrings.resendCodeAction, style: AppTextStyles.link),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

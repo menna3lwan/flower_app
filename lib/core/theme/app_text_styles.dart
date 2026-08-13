@@ -27,6 +27,16 @@ abstract final class AppTextStyles {
         fontWeight: FontWeight.w500,
       );
 
+  // Figma Dev Mode: the Login screen's AppBar title measures 20px/w500 —
+  // distinct from the shared AppBar default (`titleLarge`, 18px/w600
+  // used by Sign Up/Forgot Password/Verification/Reset Password), so it
+  // gets its own named token rather than an inline `.copyWith(fontSize:
+  // 20, ...)` literal in the View.
+  static TextStyle get appBarTitleEmphasis => _base.copyWith(
+        fontSize: 20,
+        fontWeight: FontWeight.w500,
+      );
+
   static TextStyle get bodyLarge => _base.copyWith(
         fontSize: 15,
         fontWeight: FontWeight.w400,
