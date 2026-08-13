@@ -1,31 +1,16 @@
 # Flowery
 
-Flowery is a flower delivery product built as a **Flutter monorepo** containing two independent apps that share one design system and one technical foundation.
-
-| App | What it's for |
-|---|---|
-| **Customer app** (`apps/customer_app`) | The shopping app — browse a flower catalog, add to cart, check out, pay, and track delivery. |
-| **Rider app** (`apps/rider_app`) | The delivery app — apply to become a rider, accept incoming orders, and move a delivery through pickup → in‑transit → delivered. |
-
-They're separate products for separate users (a customer never sees rider screens, and vice versa) developed in one repository so they can share a design system, reusable widgets, and technical infrastructure (error handling, DI, base Cubit) — see [Project structure](#project-structure).
+Flowery is a flower delivery e-commerce app — browse a flower catalog, add to cart, check out, pay, and track delivery. This repository **is** the Flutter app itself: a single, standard Flutter project (no monorepo, no `apps/` layer, no separate packages) organized with Clean Architecture and a feature-first `lib/` layout — see [Project structure](#project-structure).
 
 ---
 
 ## Main features
 
-**Customer app**
 - Authentication — login, sign up, forgot/reset password, continue as guest
 - Home & catalog — categories, best sellers, occasions, search, product details
 - Cart, checkout (address + payment method), and order placement
 - Order history and live order tracking
 - Profile — edit details, saved addresses, reset password, logout
-
-**Rider app**
-- Onboarding and "apply to become a rider" flow
-- Authentication — login, forgot/reset password
-- Incoming delivery requests — accept / reject
-- Delivery workflow — pickup → in‑transit → delivered, with map screens at each step
-- Order history and profile management
 
 > See [Current status](#current-status) for what's actually implemented today versus planned.
 
@@ -33,49 +18,66 @@ They're separate products for separate users (a customer never sees rider screen
 
 ## Architecture
 
-- **Monorepo** — two apps + four shared packages, managed with [Melos](https://melos.invertase.dev), so shared code lives in one place instead of being duplicated across two repos.
-- **Clean Architecture** — every feature is split into `presentation` (views + Cubit + sealed state) → `domain` (entities + repository contracts) → `data` (repository implementations + data sources). Business logic lives in Cubits/repositories, never in a widget.
-- **MVI + Cubit** — `flutter_bloc`'s `Cubit` is the state handler. A user action calls a Cubit method (the "intent"), the Cubit updates a sealed `State`, and the view reacts via `BlocBuilder`/`BlocConsumer`.
-- **GetIt** — dependency injection / service locator. Each app has its own composition root; `packages/core` registers cross-cutting infrastructure.
+- **Clean Architecture** — every feature is split into `presentation` (view + Cubit + sealed intent/state) → `domain` (entities + repository contracts) → `data` (repository implementations + data sources). Business logic lives in Cubits/repositories, never in a widget.
+- **MVI + Cubit** — `flutter_bloc`'s `Cubit` is the state handler. A user action dispatches a sealed `Intent` (e.g. `AuthIntent`), the Cubit's `onIntent()` handles it and updates a sealed `State`, and the view reacts via `BlocBuilder`/`BlocConsumer`.
+- **GetIt** — dependency injection / service locator (`lib/core/di/`). Dependencies are registered once at startup; Cubits, repositories, and data sources are never instantiated directly inside a view.
 - **GetX** — used **only** for navigation (`GetMaterialApp`, `Get.toNamed`, ...). It is not used for state management anywhere in this codebase.
-- **SOLID / OOP** — repositories are accessed through interfaces, every class has one responsibility, and states are `sealed` so handling is exhaustive by construction.
+- **SOLID / OOP** — repositories are accessed through interfaces, every class has one responsibility, and intents/states are `sealed` so handling is exhaustive by construction.
 
-```mermaid
-graph TD
-    customer_app --> core
-    customer_app --> common
-    customer_app --> design_system
-    customer_app --> shared
-    rider_app --> core
-    rider_app --> common
-    rider_app --> design_system
-    rider_app --> shared
-    common --> design_system
-```
-
-Packages never depend on an app, and the two apps never depend on each other.
-
-**Data flow:** `View → Cubit (intent) → Repository interface → Repository impl → Data source → Result<Success|Failure> → State → View`
+**Data flow:** `View → Intent → Cubit → Repository interface → Repository impl → Data source → Result<Success|Failure> → State → View`
 
 ---
 
 ## Project structure
 
 ```text
-apps/
-├── customer_app/     # Flowery — customer / e-commerce app
-└── rider_app/        # Flowery Rider — delivery / tracking app
-
-packages/
-├── core/              # network/error/result contracts, DI instance, base Cubit — no UI
-├── common/            # reusable, app-agnostic widgets (buttons, inputs, dialogs, state views)
-├── design_system/     # colors, typography, spacing, theme, shared brand assets
-└── shared/            # domain models used by both apps (User, Address) — pure Dart
-
-docs/                  # Figma analysis and other reference docs
-README.md
-melos.yaml
+flower_app/
+├── android/
+├── ios/
+├── assets/
+│   ├── images/
+│   ├── icons/
+│   ├── fonts/
+│   ├── animations/
+│   └── translations/
+├── lib/
+│   ├── core/
+│   │   ├── base/            # BaseCubit — safeEmit() guard against emitting after close()
+│   │   ├── constants/       # AppAssets, AppAnimations, AppColors, AppDimens
+│   │   ├── theme/           # AppTextStyles, AppTheme
+│   │   ├── localization/    # AppStrings (wraps easy_localization's .tr())
+│   │   ├── network/         # ApiClient contract, endpoints, connectivity check
+│   │   ├── storage/         # LocalStorageService contract
+│   │   ├── routing/         # GetX route names + GetPage table
+│   │   ├── di/              # GetIt setup (app-level + per-feature injectors)
+│   │   ├── error/           # Failure / Exception types
+│   │   ├── result/          # Result<Success|Failure>
+│   │   ├── extensions/
+│   │   ├── usecase/
+│   │   ├── utils/           # Validators
+│   │   └── domain/entities/ # Cross-feature entities (User, Address, Cart, Order, ...)
+│   ├── common/
+│   │   ├── widgets/         # Buttons, inputs, dialogs, loading/error/empty states
+│   │   ├── dialogs/
+│   │   ├── extensions/
+│   │   └── formatters/
+│   └── features/
+│       ├── auth/            # Login, Sign Up, Forgot Password — one AuthCubit
+│       ├── home/
+│       ├── catalog/
+│       ├── cart/            # scaffold only
+│       ├── checkout/        # scaffold only
+│       ├── orders/          # scaffold only
+│       ├── notifications/   # scaffold only
+│       └── profile/         # scaffold only
+├── test/
+├── docs/
+├── pubspec.yaml
+├── analysis_options.yaml
+└── README.md
 ```
+
+Each feature follows `presentation/{view,cubit,intent,state}` → `domain/{entities,repositories,use_cases}` → `data/{models,repositories,data_sources}` — layers that aren't actually needed for a given feature (e.g. no `use_cases/` where a repository call needs no orchestration) aren't manufactured just to fill the template.
 
 ---
 
@@ -90,13 +92,13 @@ Figma is the **source of truth for UI/UX** — layout, spacing, components, and 
 
 ## Design system
 
-Shared across both apps via `packages/design_system` and `packages/common`:
+Centralized under `lib/core/` so tokens and shared widgets are never scattered through the UI:
 
-- **Colors, typography, spacing, and radii** as named tokens (`AppColors`, `AppDimens`, `AppTextStyles`) — never hardcode a raw value in a widget.
-- **Theme** — one shared `ThemeData` (`AppTheme.light`) consumed by both apps.
-- **Shared components** — buttons, text fields, dialogs, loading/error/empty states, in `packages/common`.
-- **Assets** — brand assets (logo, icon, fonts) in `packages/design_system`; app-specific images/icons/animations in each app's own `assets/`, all referenced through an `AppAssets` registry, never a raw path string.
-- **English / Arabic** — translation files exist per app; not yet wired into a runtime localization pipeline (copy currently comes from a centralized strings file).
+- **Colors, typography, spacing, and radii** as named tokens (`AppColors`, `AppDimens`, `AppTextStyles` in `core/constants/` and `core/theme/`) — never hardcode a raw value in a widget.
+- **Theme** — one `ThemeData` (`AppTheme.light`).
+- **Shared components** — buttons, text fields, dialogs, loading/error/empty states, in `lib/common/widgets/`.
+- **Assets** — every asset path is a constant on `AppAssets`/`AppAnimations`, never a raw string literal; physical files live under `assets/`.
+- **English / Arabic** — translation files (`assets/translations/*.json`) drive `AppStrings`' `.tr()`-backed getters; no screen calls `Text('Login')` directly.
 - **RTL / LTR** — shared widgets use Flutter's standard directionality-aware layout; no language switcher is wired up yet.
 
 ---
@@ -105,46 +107,31 @@ Shared across both apps via `packages/design_system` and `packages/common`:
 
 | Area | Status |
 |---|---|
-| Customer — Auth (login, sign up, forgot/reset password) | ✅ Implemented |
-| Customer — Splash | ✅ Implemented |
-| Customer — Home / Catalog | 🟡 In progress (data + Cubit exist, views pending) |
-| Customer — Cart, Checkout, Orders, Notifications, Profile | ⬜ Planned |
-| Rider — all features (onboarding, auth, apply, home, delivery, orders, profile) | ⬜ Planned (architecture scaffold only) |
-| Routing (both apps) | ⬜ Not wired yet — no screen is routed via `GetPage` |
+| Auth (login, sign up, forgot/reset password) | ✅ Implemented |
+| Splash | ✅ Implemented |
+| Home / Catalog | 🟡 In progress (data + Cubit exist, views pending) |
+| Cart, Checkout, Orders, Notifications, Profile | ⬜ Planned |
+| Routing | ✅ Auth flow + Splash wired via `GetPage`; remaining screens pending |
 | API / backend integration | ⬜ Not started — data sources are in-memory placeholders |
 
 ---
 
 ## Setup
 
-**Requirements:** Flutter/Dart SDK compatible with `^3.5.0`, and Melos.
+**Requirements:** Flutter/Dart SDK compatible with `^3.5.0`.
 
 ```bash
 git clone https://github.com/menna3lwan/flower_app.git
 cd flower_app
-dart pub global activate melos
-melos bootstrap
-```
-
-Run the Customer app:
-
-```bash
-cd apps/customer_app
+flutter pub get
 flutter run
 ```
 
-Run the Rider app:
+Analyze and test:
 
 ```bash
-cd apps/rider_app
-flutter run
-```
-
-Analyze and test the whole workspace:
-
-```bash
-melos run analyze
-melos run test
+flutter analyze
+flutter test
 ```
 
 ---
@@ -153,9 +140,9 @@ melos run test
 
 1. Create a feature branch (`feature/<short-description>`) off `development`.
 2. Follow Clean Architecture + MVI — `presentation/domain/data` per feature, business logic in Cubits/repositories only.
-3. Follow the existing naming and architecture rules (see `packages/core`/`design_system` for established patterns).
+3. Follow the existing naming and architecture conventions already established in `lib/core`/`lib/common`.
 4. Match the linked Figma design.
-5. Run `melos run analyze` and `melos run test` before opening a PR.
+5. Run `flutter analyze` and `flutter test` before opening a PR.
 6. Open a Pull Request against `development`.
 
 ---
@@ -166,3 +153,6 @@ melos run test
 |---|---|
 | `README.md` | This file — project overview, architecture, setup |
 | `docs/Flower_App_Figma_Analysis.md` | Full Figma flow analysis, screen inventory, and design system reference |
+| `docs/FLOWERY_CODEBASE_GUIDE_AR.md` | Arabic-language deep dive into the codebase and architecture |
+| `docs/ECOMMERCE_MVI_REFACTOR_REPORT.md` | Report of the refactor that removed the old Rider app and introduced MVI for Auth (superseded — see below) |
+| `docs/SINGLE_APP_RESTRUCTURE_REPORT.md` | Report of the refactor that collapsed the monorepo into this single Flutter project |

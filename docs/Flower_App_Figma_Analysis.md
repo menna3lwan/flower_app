@@ -3,6 +3,8 @@
 **Source of truth:** [Figma — Flower app](https://www.figma.com/design/jefwMXqsdkzUdJgfyM9otG/Flower-app?node-id=217-640)
 **Status:** Analysis only. No implementation was performed or modified while producing this document.
 
+> **Repository scope note:** This document analyzes the *entire* Figma file, which contains designs for two applications (see section 2). This repository (`flower_app`) implements **Application 1 — the Customer / E-commerce app — only**. Application 2 (Rider / Tracking app) content below is kept as an accurate record of what exists in the Figma source file, for reference only; it is not being built here and should not be treated as a pending feature of this repo.
+
 ---
 
 ## 1. Figma Overview
@@ -423,6 +425,8 @@ Each of the above also has a generated tint/shade ramp (10–90% opacity variant
 ---
 
 ## 10. Future Clean Architecture / MVI Feature Mapping
+
+> **Superseded note:** this section was written before the decision to scope this repository to the Customer / E-commerce app only. The Rider-side bullets below (`onboarding/`, `apply/`, Rider `home/`, Rider `orders/`, `location_tracking/`) are **not** being implemented here and are kept only as a record of the original two-app mapping. For this repo, only the Customer-only bullets are the actual current feature plan (see the [README](../README.md) for what's implemented today).
 
 Mapping only the features that actually exist in Figma — no placeholders.
 

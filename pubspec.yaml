@@ -1,17 +1,50 @@
-name: flowery_workspace
-description: >
-  Monorepo workspace root for the Flowery apps — NOT a buildable Flutter
-  app itself (no `lib/`). Real code lives in `apps/customer_app`,
-  `apps/rider_app`, and `packages/*`; this manifest only exists to hold
-  the dev-tooling dependency (Melos) used to bootstrap/analyze/test the
-  whole workspace. See `melos.yaml` and `README.md`.
+name: customer_app
+description: "Flowery — the E-commerce/Customer Flutter app (browse, cart, checkout, order tracking, profile)."
 publish_to: 'none'
+
+version: 1.0.0+1
 
 environment:
   sdk: ^3.5.0
 
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management (Cubit/Bloc, presentation layer only — see core/base/base_cubit.dart).
+  flutter_bloc: ^8.1.6
+  equatable: ^2.0.5
+
+  # Dependency injection (core/di/injector.dart is the single GetIt instance).
+  get_it: ^7.7.0
+
+  # Navigation / utilities only — never state management (see core/routing/).
+  get: ^4.6.6
+
+  # Design system typography (see core/theme/app_text_styles.dart).
+  google_fonts: ^6.2.1
+
+  # Localization (English + Arabic, LTR/RTL). Reads assets/translations/*.json
+  # (see AppAssets.translationsPath); AppStrings' getters call `.tr()`.
+  easy_localization: ^3.0.7
+
+  cupertino_icons: ^1.0.8
+
 dev_dependencies:
-  # melos.yaml's `scripts` use the >= 8.0.0 schema (command nested inside
-  # `exec`, not split across `run`/`exec`) — keep this constraint on the
-  # 8.x line so `dart run melos` resolves a version that understands it.
-  melos: ^8.2.2
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/translations/
+    - assets/animations/
+
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/inter.ttf
