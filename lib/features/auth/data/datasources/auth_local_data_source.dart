@@ -16,6 +16,8 @@ abstract interface class AuthLocalDataSource {
 
   Future<void> sendPasswordResetEmail(String email);
 
+  Future<void> verifyCode({required String email, required String code});
+
   Future<void> resetPassword({
     required String currentPassword,
     required String newPassword,
@@ -80,6 +82,17 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   @override
   Future<void> sendPasswordResetEmail(String email) async {
     await Future.delayed(_simulatedLatency);
+  }
+
+
+  static const _validVerificationCode = '1234';
+
+  @override
+  Future<void> verifyCode({required String email, required String code}) async {
+    await Future.delayed(_simulatedLatency);
+    if (code != _validVerificationCode) {
+      throw const ServerException('Invalid or expired verification code.');
+    }
   }
 
   @override

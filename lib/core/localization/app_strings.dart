@@ -20,6 +20,14 @@ abstract final class AppStrings {
   static String get enterYourPassword => 'enterYourPassword'.tr();
   static String get invalidEmail => 'invalidEmail'.tr();
   static String get invalidPassword => 'invalidPassword'.tr();
+
+  static String get fieldRequired => 'fieldRequired'.tr();
+  static String get invalidPhoneNumber => 'invalidPhoneNumber'.tr();
+  static String get confirmPasswordRequired => 'confirmPasswordRequired'.tr();
+  static String get passwordsDoNotMatch => 'passwordsDoNotMatch'.tr();
+  static String get verificationCodeIncomplete => 'verificationCodeIncomplete'.tr();
+  static String get verificationCodeResent => 'verificationCodeResent'.tr();
+
   static String get alreadyHaveAccount => 'alreadyHaveAccount'.tr();
   static String get firstName => 'firstName'.tr();
   static String get lastName => 'lastName'.tr();
@@ -35,19 +43,13 @@ abstract final class AppStrings {
   static String get passwordSectionTitle => 'passwordSectionTitle'.tr();
   static String get verificationCodeTitle => 'verificationCodeTitle'.tr();
   static String get verificationCodeSubtitle => 'verificationCodeSubtitle'.tr();
-  // Split into two spans so only "Resend" renders as the pink/underlined
-  // link (Figma: rest of the sentence stays default-colored) — see
-  // OtpVerificationView's `Text.rich` usage.
+
   static String get resendCodePrefix => 'resendCodePrefix'.tr();
   static String get resendCodeAction => 'resendCodeAction'.tr();
   static String get resetPasswordTitle => 'resetPasswordTitle'.tr();
   static String get currentPassword => 'currentPassword'.tr();
   static String get newPassword => 'newPassword'.tr();
 
-  // Sign up field placeholders — Figma Dev Mode values verified against
-  // the Sign Up frame; kept distinct from `enterYourEmail`/
-  // `enterYourPassword` (used on Login) since the two screens' Figma
-  // copy differs word-for-word and this scopes the fix to Sign Up only.
   static String get signUpFirstNameHint => 'signUpFirstNameHint'.tr();
   static String get signUpLastNameHint => 'signUpLastNameHint'.tr();
   static String get signUpEmailHint => 'signUpEmailHint'.tr();

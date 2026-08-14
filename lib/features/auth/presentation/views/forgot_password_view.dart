@@ -32,6 +32,10 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
     super.dispose();
   }
 
+  String? _validateEmail(String? value) {
+    return Validators.email(value) == null ? null : AppStrings.invalidEmail;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +43,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is AuthPasswordResetEmailSent) {
-            Get.toNamed(CustomerRoutes.otpVerification);
+            Get.toNamed(CustomerRoutes.otpVerification, arguments: _emailController.text.trim());
           } else if (state is AuthFailed) {
             context.showSnackBar(state.message);
           }
@@ -57,22 +61,11 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Figma Dev Mode (Forget password frame, node 74:6982):
-                    // title+subtitle form one centered block. `textAlign:
-                    // center` alone doesn't center them here — the outer
-                    // Column is left-aligned (`CrossAxisAlignment.start`),
-                    // so a single-line Text like the title only gets a box
-                    // as wide as its own text and stays pinned to the left
-                    // edge. Wrapping both in a full-width, center-aligned
-                    // Column fixes that regardless of line count.
                     SizedBox(
                       width: double.infinity,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // Title is the "Title Large" token (18px/w600),
-                          // not headlineMedium (22px/w700) — headlineMedium
-                          // was too heavy/large for this screen's title.
                           Text(AppStrings.forgotPasswordTitle, style: AppTextStyles.titleLarge, textAlign: TextAlign.center),
                           // Figma measures 16px between the title and subtitle.
                           const SizedBox(height: AppDimens.space16),
@@ -84,18 +77,14 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                         ],
                       ),
                     ),
-                    // Figma measures ~32px between the subtitle and the
                     // Email field.
                     const SizedBox(height: AppDimens.space32),
                     AppTextField(
                       label: AppStrings.email,
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      validator: Validators.email,
+                      validator: _validateEmail,
                     ),
-                    // Figma measures ~48px between the field and the
-                    // primary button (same pre-button gap as Login/Reset
-                    // Password — a consistent app-wide pattern).
                     const SizedBox(height: AppDimens.space48),
                     PrimaryButton(
                       label: AppStrings.confirm,

@@ -62,7 +62,7 @@ class _LoginViewState extends State<LoginView> {
     return Scaffold(
       appBar: AppBackAppBar(
         title: AppStrings.login,
-        titleStyle: AppTextStyles.titleLarge.copyWith(fontSize: 20, fontWeight: FontWeight.w500),
+        titleStyle: AppTextStyles.appBarTitleEmphasis,
       ),
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
@@ -99,6 +99,12 @@ class _LoginViewState extends State<LoginView> {
                       enabled: !isSubmitting,
                       validator: _validatePassword,
                     ),
+                    // Figma Dev Mode (Login frame, "Email&Pass. field" group):
+                    // uniform 24px gap between Email→Password AND
+                    // Password→Remember-me row — this SizedBox was missing,
+                    // so the checkbox row sat flush against the Password
+                    // field instead of matching that rhythm.
+                    const SizedBox(height: AppDimens.space24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

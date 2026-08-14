@@ -27,6 +27,11 @@ abstract final class AppTextStyles {
         fontWeight: FontWeight.w500,
       );
 
+  static TextStyle get appBarTitleEmphasis => _base.copyWith(
+        fontSize: 20,
+        fontWeight: FontWeight.w500,
+      );
+
   static TextStyle get bodyLarge => _base.copyWith(
         fontSize: 15,
         fontWeight: FontWeight.w400,
