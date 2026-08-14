@@ -77,6 +77,21 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Result<void>> verifyCode({
+    required String email,
+    required String code,
+  }) async {
+    try {
+      await _dataSource.verifyCode(email: email, code: code);
+      return Result.success(null);
+    } on ServerException catch (e) {
+      return Result.failure(AuthFailure(e.message));
+    } catch (_) {
+      return Result.failure(UnexpectedFailure());
+    }
+  }
+
+  @override
   Future<Result<void>> resetPassword({
     required String currentPassword,
     required String newPassword,

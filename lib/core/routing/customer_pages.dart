@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 
 import 'package:customer_app/core/di/injector.dart';
 import 'package:customer_app/features/auth/presentation/cubit/auth_cubit.dart';
-import 'package:customer_app/features/auth/presentation/cubit/reset_password_cubit.dart';
 import 'package:customer_app/features/auth/presentation/views/forgot_password_view.dart';
 import 'package:customer_app/features/auth/presentation/views/login_view.dart';
 import 'package:customer_app/features/auth/presentation/views/otp_verification_view.dart';
@@ -52,12 +51,20 @@ abstract final class CustomerPages {
     ),
     GetPage(
       name: CustomerRoutes.otpVerification,
-      page: () => const OtpVerificationView(),
+      page: () => BlocProvider(
+        create: (_) => sl<AuthCubit>(),
+        child: const OtpVerificationView(),
+      ),
     ),
+    // Reset Password isn't reached from the Forgot Password/Verification
+    // chain (see OtpVerificationView's doc comment) — Figma only shows it
+    // as a Profile > change-password screen. It's still registered here
+    // (and still driven by AuthCubit, per the single-Cubit rule) so the
+    // route exists once Profile links to it.
     GetPage(
       name: CustomerRoutes.resetPassword,
       page: () => BlocProvider(
-        create: (_) => sl<ResetPasswordCubit>(),
+        create: (_) => sl<AuthCubit>(),
         child: const ResetPasswordView(),
       ),
     ),

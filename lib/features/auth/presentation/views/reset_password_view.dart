@@ -10,10 +10,16 @@ import 'package:customer_app/core/constants/app_dimens.dart';
 import 'package:customer_app/core/localization/app_strings.dart';
 import '../../../../core/routing/customer_routes.dart';
 import 'package:customer_app/core/utils/validators.dart';
-import '../cubit/reset_password_cubit.dart';
-import '../state/reset_password_state.dart';
+import '../cubit/auth_cubit.dart';
+import '../intent/auth_intent.dart';
+import '../state/auth_state.dart';
 
 /// "Reset password" screen — Current/New/Confirm password fields.
+///
+/// Reached from Profile (change password while signed in), not from the
+/// Forgot Password/Verification chain — see [OtpVerificationView]'s doc
+/// comment for why: this screen asks for the user's *current* password,
+/// which a forgot-password user wouldn't have.
 class ResetPasswordView extends StatefulWidget {
   const ResetPasswordView({super.key});
 
@@ -35,20 +41,29 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
     super.dispose();
   }
 
+  String? _validatePassword(String? value) {
+    return Validators.password(value) == null ? null : AppStrings.invalidPassword;
+  }
+
+  String? _validateConfirmPassword(String? value) {
+    if (value == null || value.isEmpty) return AppStrings.confirmPasswordRequired;
+    return value == _newPasswordController.text ? null : AppStrings.passwordsDoNotMatch;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBackAppBar(title: AppStrings.resetPasswordTitle),
-      body: BlocConsumer<ResetPasswordCubit, ResetPasswordState>(
+      body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
-          if (state is ResetPasswordSuccess) {
+          if (state is AuthPasswordResetSuccess) {
             Get.offAllNamed(CustomerRoutes.login);
-          } else if (state is ResetPasswordFailed) {
+          } else if (state is AuthFailed) {
             context.showSnackBar(state.message);
           }
         },
         builder: (context, state) {
-          final isSubmitting = state is ResetPasswordSubmitting;
+          final isSubmitting = state is AuthLoading;
           return SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(AppDimens.space16),
@@ -61,7 +76,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                       label: AppStrings.currentPassword,
                       controller: _currentPasswordController,
                       obscureText: true,
-                      validator: Validators.password,
+                      validator: _validatePassword,
                     ),
                     // Figma Dev Mode (Reset password frame, node 76:7947):
                     // 24px between stacked fields, not 16px.
@@ -70,14 +85,14 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                       label: AppStrings.newPassword,
                       controller: _newPasswordController,
                       obscureText: true,
-                      validator: Validators.password,
+                      validator: _validatePassword,
                     ),
                     const SizedBox(height: AppDimens.space24),
                     AppTextField(
                       label: AppStrings.confirmPassword,
                       controller: _confirmPasswordController,
                       obscureText: true,
-                      validator: (value) => Validators.confirmPassword(value, _newPasswordController.text),
+                      validator: _validateConfirmPassword,
                     ),
                     // Figma measures ~48px before the primary button here
                     // too — same pre-button gap as Login/Forgot Password.
@@ -87,9 +102,11 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                       isLoading: isSubmitting,
                       onPressed: () {
                         if (_formKey.currentState?.validate() ?? false) {
-                          context.read<ResetPasswordCubit>().resetPassword(
-                                currentPassword: _currentPasswordController.text,
-                                newPassword: _newPasswordController.text,
+                          context.read<AuthCubit>().onIntent(
+                                ResetPasswordRequested(
+                                  currentPassword: _currentPasswordController.text,
+                                  newPassword: _newPasswordController.text,
+                                ),
                               );
                         }
                       },

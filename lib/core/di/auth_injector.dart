@@ -5,7 +5,6 @@ import '../../features/auth/data/datasources/auth_local_data_source.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/presentation/cubit/auth_cubit.dart';
-import '../../features/auth/presentation/cubit/reset_password_cubit.dart';
 
 Future<void> setupAuthDependencies() async {
   sl
@@ -13,6 +12,5 @@ Future<void> setupAuthDependencies() async {
     ..registerLazySingleton<AuthRepository>(
       () => AuthRepositoryImpl(sl<AuthLocalDataSource>(), sl<LocalStorageService>()),
     )
-    ..registerFactory<AuthCubit>(() => AuthCubit(sl<AuthRepository>()))
-    ..registerFactory<ResetPasswordCubit>(() => ResetPasswordCubit(sl<AuthRepository>()));
+    ..registerFactory<AuthCubit>(() => AuthCubit(sl<AuthRepository>()));
 }

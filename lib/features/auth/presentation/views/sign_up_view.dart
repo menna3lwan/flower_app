@@ -62,6 +62,27 @@ class _SignUpViewState extends State<SignUpView> {
     }
   }
 
+  String? _validateRequired(String? value) {
+    return Validators.required(value) == null ? null : AppStrings.fieldRequired;
+  }
+
+  String? _validateEmail(String? value) {
+    return Validators.email(value) == null ? null : AppStrings.invalidEmail;
+  }
+
+  String? _validatePassword(String? value) {
+    return Validators.password(value) == null ? null : AppStrings.invalidPassword;
+  }
+
+  String? _validateConfirmPassword(String? value) {
+    if (value == null || value.isEmpty) return AppStrings.confirmPasswordRequired;
+    return value == _passwordController.text ? null : AppStrings.passwordsDoNotMatch;
+  }
+
+  String? _validatePhone(String? value) {
+    return Validators.phone(value) == null ? null : AppStrings.invalidPhoneNumber;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,7 +112,7 @@ class _SignUpViewState extends State<SignUpView> {
                             label: AppStrings.firstName,
                             hint: AppStrings.signUpFirstNameHint,
                             controller: _firstNameController,
-                            validator: Validators.required,
+                            validator: _validateRequired,
                             textCapitalization: TextCapitalization.sentences,
                             inputFormatters: const [CapitalizeFirstLetterFormatter()],
                           ),
@@ -102,7 +123,7 @@ class _SignUpViewState extends State<SignUpView> {
                             label: AppStrings.lastName,
                             hint: AppStrings.signUpLastNameHint,
                             controller: _lastNameController,
-                            validator: Validators.required,
+                            validator: _validateRequired,
                             textCapitalization: TextCapitalization.sentences,
                             inputFormatters: const [CapitalizeFirstLetterFormatter()],
                           ),
@@ -115,7 +136,7 @@ class _SignUpViewState extends State<SignUpView> {
                       hint: AppStrings.signUpEmailHint,
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      validator: Validators.email,
+                      validator: _validateEmail,
                     ),
                     const SizedBox(height: AppDimens.space24),
                     Row(
@@ -127,7 +148,7 @@ class _SignUpViewState extends State<SignUpView> {
                             hint: AppStrings.signUpPasswordHint,
                             controller: _passwordController,
                             obscureText: true,
-                            validator: Validators.password,
+                            validator: _validatePassword,
                           ),
                         ),
                         const SizedBox(width: AppDimens.space16),
@@ -137,7 +158,7 @@ class _SignUpViewState extends State<SignUpView> {
                             hint: AppStrings.signUpConfirmPasswordHint,
                             controller: _confirmPasswordController,
                             obscureText: true,
-                            validator: (value) => Validators.confirmPassword(value, _passwordController.text),
+                            validator: _validateConfirmPassword,
                           ),
                         ),
                       ],
@@ -148,7 +169,7 @@ class _SignUpViewState extends State<SignUpView> {
                       hint: AppStrings.signUpPhoneNumberHint,
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
-                      validator: Validators.phone,
+                      validator: _validatePhone,
                     ),
                     const SizedBox(height: AppDimens.space20),
                     Text(AppStrings.gender, style: AppTextStyles.titleMedium),

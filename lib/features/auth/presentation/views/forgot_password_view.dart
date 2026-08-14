@@ -32,6 +32,10 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
     super.dispose();
   }
 
+  String? _validateEmail(String? value) {
+    return Validators.email(value) == null ? null : AppStrings.invalidEmail;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +43,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is AuthPasswordResetEmailSent) {
-            Get.toNamed(CustomerRoutes.otpVerification);
+            Get.toNamed(CustomerRoutes.otpVerification, arguments: _emailController.text.trim());
           } else if (state is AuthFailed) {
             context.showSnackBar(state.message);
           }
@@ -91,7 +95,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                       label: AppStrings.email,
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      validator: Validators.email,
+                      validator: _validateEmail,
                     ),
                     // Figma measures ~48px between the field and the
                     // primary button (same pre-button gap as Login/Reset

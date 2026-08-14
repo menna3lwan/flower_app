@@ -27,6 +27,12 @@ abstract interface class AuthRepository {
 
   Future<Result<void>> sendPasswordResetEmail(String email);
 
+  /// Confirms the code sent by [sendPasswordResetEmail] to `email`.
+  Future<Result<void>> verifyCode({
+    required String email,
+    required String code,
+  });
+
   Future<Result<void>> resetPassword({
     required String currentPassword,
     required String newPassword,

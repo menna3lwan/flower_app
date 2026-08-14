@@ -20,6 +20,18 @@ abstract final class AppStrings {
   static String get enterYourPassword => 'enterYourPassword'.tr();
   static String get invalidEmail => 'invalidEmail'.tr();
   static String get invalidPassword => 'invalidPassword'.tr();
+
+  // Validation messages — shared across every Auth field's `validator:`
+  // callback (see e.g. LoginView._validateEmail for the wrapping
+  // pattern: `Validators.x` decides valid/invalid, these supply the
+  // localized copy actually shown).
+  static String get fieldRequired => 'fieldRequired'.tr();
+  static String get invalidPhoneNumber => 'invalidPhoneNumber'.tr();
+  static String get confirmPasswordRequired => 'confirmPasswordRequired'.tr();
+  static String get passwordsDoNotMatch => 'passwordsDoNotMatch'.tr();
+  static String get verificationCodeIncomplete => 'verificationCodeIncomplete'.tr();
+  static String get verificationCodeResent => 'verificationCodeResent'.tr();
+
   static String get alreadyHaveAccount => 'alreadyHaveAccount'.tr();
   static String get firstName => 'firstName'.tr();
   static String get lastName => 'lastName'.tr();
