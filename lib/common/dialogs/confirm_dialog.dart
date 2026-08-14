@@ -49,7 +49,8 @@ class ConfirmDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.radiusLarge)),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppDimens.radiusLarge)),
       child: Padding(
         padding: const EdgeInsets.all(AppDimens.space24),
         child: Column(
@@ -57,7 +58,8 @@ class ConfirmDialog extends StatelessWidget {
           children: [
             Text(title, style: AppTextStyles.titleLarge),
             const SizedBox(height: AppDimens.space8),
-            Text(message, style: AppTextStyles.bodyMedium, textAlign: TextAlign.center),
+            Text(message,
+                style: AppTextStyles.bodyMedium, textAlign: TextAlign.center),
             const SizedBox(height: AppDimens.space24),
             Row(
               children: [

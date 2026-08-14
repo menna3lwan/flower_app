@@ -18,15 +18,40 @@ abstract final class AppStrings {
 
   static String get enterYourEmail => 'enterYourEmail'.tr();
   static String get enterYourPassword => 'enterYourPassword'.tr();
+
+  /// Placeholder for a field the caller didn't give an explicit hint for.
+  static String enterField(String field) =>
+      'enterFieldTemplate'.tr(namedArgs: {'field': field});
+
+  // Field validation — one message per rule, so "missing" and "malformed"
+  // never collapse into the same text.
+  static String get emailRequired => 'emailRequired'.tr();
   static String get invalidEmail => 'invalidEmail'.tr();
-  static String get invalidPassword => 'invalidPassword'.tr();
+  static String get passwordRequired => 'passwordRequired'.tr();
+  static String passwordTooShort(int minLength) =>
+      'passwordTooShort'.tr(namedArgs: {'count': '$minLength'});
+  static String get firstNameRequired => 'firstNameRequired'.tr();
+  static String get lastNameRequired => 'lastNameRequired'.tr();
+  static String get phoneRequired => 'phoneRequired'.tr();
+  static String get verificationCodeRequired => 'verificationCodeRequired'.tr();
 
   static String get fieldRequired => 'fieldRequired'.tr();
   static String get invalidPhoneNumber => 'invalidPhoneNumber'.tr();
   static String get confirmPasswordRequired => 'confirmPasswordRequired'.tr();
   static String get passwordsDoNotMatch => 'passwordsDoNotMatch'.tr();
-  static String get verificationCodeIncomplete => 'verificationCodeIncomplete'.tr();
+  static String get verificationCodeIncomplete =>
+      'verificationCodeIncomplete'.tr();
   static String get verificationCodeResent => 'verificationCodeResent'.tr();
+
+  static String get invalidCredentials => 'invalidCredentials'.tr();
+  static String get invalidVerificationCode => 'invalidVerificationCode'.tr();
+  static String get emailNotFound => 'emailNotFound'.tr();
+  static String get noInternetConnection => 'noInternetConnection'.tr();
+  static String get somethingWentWrong => 'somethingWentWrong'.tr();
+
+  // Success feedback.
+  static String get accountCreatedSuccess => 'accountCreatedSuccess'.tr();
+  static String get passwordResetSuccess => 'passwordResetSuccess'.tr();
 
   static String get alreadyHaveAccount => 'alreadyHaveAccount'.tr();
   static String get firstName => 'firstName'.tr();
@@ -47,6 +72,7 @@ abstract final class AppStrings {
   static String get resendCodePrefix => 'resendCodePrefix'.tr();
   static String get resendCodeAction => 'resendCodeAction'.tr();
   static String get resetPasswordTitle => 'resetPasswordTitle'.tr();
+  static String get resetPasswordSubtitle => 'resetPasswordSubtitle'.tr();
   static String get currentPassword => 'currentPassword'.tr();
   static String get newPassword => 'newPassword'.tr();
 
@@ -54,7 +80,8 @@ abstract final class AppStrings {
   static String get signUpLastNameHint => 'signUpLastNameHint'.tr();
   static String get signUpEmailHint => 'signUpEmailHint'.tr();
   static String get signUpPasswordHint => 'signUpPasswordHint'.tr();
-  static String get signUpConfirmPasswordHint => 'signUpConfirmPasswordHint'.tr();
+  static String get signUpConfirmPasswordHint =>
+      'signUpConfirmPasswordHint'.tr();
   static String get signUpPhoneNumberHint => 'signUpPhoneNumberHint'.tr();
 
   // Home.
@@ -108,4 +135,6 @@ abstract final class AppStrings {
   static String get cancel => 'cancel'.tr();
   static String get update => 'update'.tr();
   static String get save => 'save'.tr();
+
+  static String? get invalidPassword => null;
 }

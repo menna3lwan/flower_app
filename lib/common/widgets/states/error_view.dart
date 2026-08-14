@@ -26,9 +26,11 @@ class ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
+            const Icon(Icons.error_outline_rounded,
+                size: 48, color: AppColors.error),
             const SizedBox(height: AppDimens.space16),
-            Text(message, textAlign: TextAlign.center, style: AppTextStyles.bodyLarge),
+            Text(message,
+                textAlign: TextAlign.center, style: AppTextStyles.bodyLarge),
             if (onRetry != null && retryLabel != null) ...[
               const SizedBox(height: AppDimens.space24),
               PrimaryButton(label: retryLabel!, onPressed: onRetry),

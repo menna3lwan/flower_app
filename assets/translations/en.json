@@ -1,6 +1,5 @@
 {
   "appName": "Flowery",
-
   "login": "Login",
   "signUp": "Sign up",
   "email": "Email",
@@ -13,7 +12,6 @@
   "enterYourEmail": "Enter your email",
   "enterYourPassword": "Enter your password",
   "invalidEmail": "This Email is not valid",
-  "invalidPassword": "Invalid password",
   "fieldRequired": "This field is required",
   "invalidPhoneNumber": "Enter a valid phone number",
   "confirmPasswordRequired": "Please confirm your password",
@@ -47,7 +45,6 @@
   "signUpPasswordHint": "Enter password",
   "signUpConfirmPasswordHint": "Confirm password",
   "signUpPhoneNumberHint": "Enter phone number",
-
   "deliverTo": "Deliver to",
   "categories": "Categories",
   "bestSeller": "Best seller",
@@ -55,12 +52,10 @@
   "viewAll": "View All",
   "search": "Search",
   "searchEmptyState": "Search For Any Product You Want",
-
   "description": "Description",
   "bouquetIncludes": "Bouquet Includes",
   "addToCart": "Add to cart",
   "inStock": "In stock",
-
   "cart": "Cart",
   "subTotal": "Sub Total",
   "deliveryFee": "Delivery Fee",
@@ -79,7 +74,6 @@
   "orderPlacedSuccess": "Your order placed successfully!",
   "estimatedArrival": "Estimated arrival",
   "showMap": "Show map",
-
   "myOrders": "My orders",
   "active": "Active",
   "completed": "Completed",
@@ -94,7 +88,6 @@
   "update": "Update",
   "save": "Save",
   "retry": "Retry",
-
   "foundationPreviewTitle": "Foundation preview",
   "foundationPreviewHeading": "Core + Common + Assets",
   "foundationPreviewBody": "This screen only exercises the shared foundation — no feature business logic runs here.",
@@ -109,5 +102,20 @@
   "foundationShowDialogButton": "Show confirm dialog",
   "foundationDialogTitle": "Confirm",
   "foundationDialogMessage": "This dialog is a shared common/ component.",
-  "foundationLanguageSection": "Language"
+  "foundationLanguageSection": "Language",
+  "emailRequired": "Email is required",
+  "passwordRequired": "Password is required",
+  "passwordTooShort": "Password must be at least {count} characters",
+  "phoneRequired": "Phone number is required",
+  "firstNameRequired": "First name is required",
+  "lastNameRequired": "Last name is required",
+  "verificationCodeRequired": "Verification code is required",
+  "invalidCredentials": "Invalid email or password",
+  "invalidVerificationCode": "Invalid or expired verification code",
+  "emailNotFound": "No account found with this email",
+  "noInternetConnection": "No internet connection",
+  "somethingWentWrong": "Something went wrong. Please try again.",
+  "accountCreatedSuccess": "Account created successfully. Please log in.",
+  "passwordResetSuccess": "Your password has been reset. Please log in.",
+  "resetPasswordSubtitle": "Password must not be empty and must contain 6 characters with upper case letter and one number at least"
 }

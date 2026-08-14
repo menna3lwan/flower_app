@@ -16,7 +16,8 @@ class CatalogLocalDataSourceImpl implements CatalogLocalDataSource {
   static const _simulatedLatency = Duration(milliseconds: 500);
 
   static const _categories = [
-    CategoryEntity(id: 'cat-flowers', name: 'Flowers', iconName: 'local_florist'),
+    CategoryEntity(
+        id: 'cat-flowers', name: 'Flowers', iconName: 'local_florist'),
     CategoryEntity(id: 'cat-gift', name: 'Gift', iconName: 'card_giftcard'),
     CategoryEntity(id: 'cat-card', name: 'Card', iconName: 'card_membership'),
     CategoryEntity(id: 'cat-jewellery', name: 'Jewellery', iconName: 'diamond'),
@@ -52,7 +53,8 @@ class CatalogLocalDataSourceImpl implements CatalogLocalDataSource {
       discountPercentage: 20,
       rating: 4.9,
       categoryId: 'cat-flowers',
-      description: '15 Pink rose Bouquet — Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      description:
+          '15 Pink rose Bouquet — Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
       includes: ['15 Pink roses', 'Wrapping paper', 'Greeting card'],
     ),
     const ProductEntity(

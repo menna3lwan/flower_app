@@ -12,6 +12,12 @@ abstract final class AppDimens {
   static const double space40 = 40;
 
   static const double space48 = 48;
+  static const double labelToFieldGap = 6;
+
+  /// Verification-screen OTP box. Four of these sit in a centered row.
+  static const double otpBoxWidth = 74;
+  static const double otpBoxHeight = 68;
+
   static const double radiusExtraSmall = 4;
   static const double radiusSmall = 8;
   static const double radiusMedium = 12;

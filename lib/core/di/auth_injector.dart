@@ -10,7 +10,8 @@ Future<void> setupAuthDependencies() async {
   sl
     ..registerLazySingleton<AuthLocalDataSource>(AuthLocalDataSourceImpl.new)
     ..registerLazySingleton<AuthRepository>(
-      () => AuthRepositoryImpl(sl<AuthLocalDataSource>(), sl<LocalStorageService>()),
+      () => AuthRepositoryImpl(
+          sl<AuthLocalDataSource>(), sl<LocalStorageService>()),
     )
     ..registerFactory<AuthCubit>(() => AuthCubit(sl<AuthRepository>()));
 }

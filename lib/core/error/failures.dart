@@ -1,12 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-/// Base type for every recoverable failure that can cross a repository
-/// boundary into the presentation layer.
-///
-/// Cubits should never see a raw [Exception] — the data layer is
-/// responsible for catching exceptions and mapping them to a concrete
-/// [Failure] subtype so the UI can react to a closed, well-known set of
-/// error cases instead of an open-ended throwable.
 sealed class Failure extends Equatable {
   const Failure(this.message);
 
@@ -23,7 +16,8 @@ final class NetworkFailure extends Failure {
 
 /// The data source responded but with an error payload/status.
 final class ServerFailure extends Failure {
-  const ServerFailure([super.message = 'Something went wrong. Please try again.']);
+  const ServerFailure(
+      [super.message = 'Something went wrong. Please try again.']);
 }
 
 /// Input supplied by the user failed validation before reaching a use case.
@@ -39,6 +33,17 @@ final class NotFoundFailure extends Failure {
 /// Authentication/authorization failed (bad credentials, expired session).
 final class AuthFailure extends Failure {
   const AuthFailure([super.message = 'Authentication failed.']);
+}
+
+/// The email/password pair supplied at Login was rejected.
+final class InvalidCredentialsFailure extends Failure {
+  const InvalidCredentialsFailure() : super('Invalid email or password.');
+}
+
+/// The OTP entered on the Verification screen was wrong or has expired.
+final class InvalidVerificationCodeFailure extends Failure {
+  const InvalidVerificationCodeFailure()
+      : super('Invalid or expired verification code.');
 }
 
 /// Fallback for anything that doesn't map to a more specific failure.

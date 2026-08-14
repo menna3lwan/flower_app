@@ -21,22 +21,26 @@ class HomeCubit extends BaseCubit<HomeState> {
     final occasionsResult = await _catalogRepository.getOccasions();
 
     if (categoriesResult.isFailure) {
-      safeEmit(categoriesResult.fold((f) => HomeError(f.message), (_) => const HomeError('')));
+      safeEmit(categoriesResult.fold(
+          (f) => HomeError(f.message), (_) => const HomeError('')));
       return;
     }
     if (bestSellersResult.isFailure) {
-      safeEmit(bestSellersResult.fold((f) => HomeError(f.message), (_) => const HomeError('')));
+      safeEmit(bestSellersResult.fold(
+          (f) => HomeError(f.message), (_) => const HomeError('')));
       return;
     }
     if (occasionsResult.isFailure) {
-      safeEmit(occasionsResult.fold((f) => HomeError(f.message), (_) => const HomeError('')));
+      safeEmit(occasionsResult.fold(
+          (f) => HomeError(f.message), (_) => const HomeError('')));
       return;
     }
 
     safeEmit(
       HomeLoaded(
         categories: categoriesResult.fold((_) => const [], (data) => data),
-        bestSellers: bestSellersResult.fold((_) => const [], (data) => data.take(6).toList()),
+        bestSellers: bestSellersResult.fold(
+            (_) => const [], (data) => data.take(6).toList()),
         occasions: occasionsResult.fold((_) => const [], (data) => data),
       ),
     );

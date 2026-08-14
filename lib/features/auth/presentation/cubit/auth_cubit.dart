@@ -21,9 +21,11 @@ class AuthCubit extends BaseCubit<AuthState> {
   Future<void> _login(LoginRequested intent) async {
     safeEmit(const AuthLoading());
     final result = await _authRepository.login(
-        email: intent.email, password: intent.password);
+      email: intent.email,
+      password: intent.password,
+    );
     result.fold(
-      (failure) => safeEmit(AuthFailed(failure.message)),
+      (failure) => safeEmit(AuthFailed(failure)),
       (user) => safeEmit(AuthLoginSuccess(user)),
     );
   }
@@ -32,7 +34,7 @@ class AuthCubit extends BaseCubit<AuthState> {
     safeEmit(const AuthLoading());
     final result = await _authRepository.continueAsGuest();
     result.fold(
-      (failure) => safeEmit(AuthFailed(failure.message)),
+      (failure) => safeEmit(AuthFailed(failure)),
       (user) => safeEmit(AuthLoginSuccess(user)),
     );
   }
@@ -48,8 +50,8 @@ class AuthCubit extends BaseCubit<AuthState> {
       gender: intent.gender,
     );
     result.fold(
-      (failure) => safeEmit(AuthFailed(failure.message)),
-      (user) => safeEmit(AuthSignUpSuccess(user)),
+      (failure) => safeEmit(AuthFailed(failure)),
+      (_) => safeEmit(const AuthSignUpSuccess()),
     );
   }
 
@@ -57,7 +59,7 @@ class AuthCubit extends BaseCubit<AuthState> {
     safeEmit(const AuthLoading());
     final result = await _authRepository.sendPasswordResetEmail(intent.email);
     result.fold(
-      (failure) => safeEmit(AuthFailed(failure.message)),
+      (failure) => safeEmit(AuthFailed(failure)),
       (_) => safeEmit(AuthPasswordResetEmailSent(intent.email)),
     );
   }
@@ -65,21 +67,23 @@ class AuthCubit extends BaseCubit<AuthState> {
   Future<void> _verifyCode(VerifyCodeRequested intent) async {
     safeEmit(const AuthLoading());
     final result = await _authRepository.verifyCode(
-        email: intent.email, code: intent.code);
+      email: intent.email,
+      code: intent.code,
+    );
     result.fold(
-      (failure) => safeEmit(AuthFailed(failure.message)),
-      (_) => safeEmit(const AuthCodeVerified()),
+      (failure) => safeEmit(AuthFailed(failure)),
+      (_) => safeEmit(AuthCodeVerified(intent.email)),
     );
   }
 
   Future<void> _resetPassword(ResetPasswordRequested intent) async {
     safeEmit(const AuthLoading());
     final result = await _authRepository.resetPassword(
-      currentPassword: intent.currentPassword,
+      email: intent.email,
       newPassword: intent.newPassword,
     );
     result.fold(
-      (failure) => safeEmit(AuthFailed(failure.message)),
+      (failure) => safeEmit(AuthFailed(failure)),
       (_) => safeEmit(const AuthPasswordResetSuccess()),
     );
   }

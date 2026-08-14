@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:customer_app/core/constants/app_colors.dart';
+import 'package:customer_app/core/constants/app_dimens.dart';
+import 'package:customer_app/core/localization/app_strings.dart';
 import 'package:customer_app/core/theme/app_text_styles.dart';
-import 'package:flutter/services.dart';
 
 class AppTextField extends StatelessWidget {
   const AppTextField({
@@ -35,9 +37,7 @@ class AppTextField extends StatelessWidget {
   final VoidCallback? onTap;
   final int maxLines;
   final bool enabled;
-
   final List<TextInputFormatter>? inputFormatters;
-
   final TextCapitalization textCapitalization;
 
   @override
@@ -45,8 +45,11 @@ class AppTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: AppTextStyles.bodySmall.copyWith(color: AppColors.textPrimary)),
-        const SizedBox(height: 6),
+        Text(
+          label,
+          style: AppTextStyles.bodySmall.copyWith(color: AppColors.textPrimary),
+        ),
+        const SizedBox(height: AppDimens.labelToFieldGap),
         TextFormField(
           controller: controller,
           obscureText: obscureText,
@@ -60,7 +63,7 @@ class AppTextField extends StatelessWidget {
           textCapitalization: textCapitalization,
           style: AppTextStyles.bodyLarge,
           decoration: InputDecoration(
-            hintText: hint ?? 'Enter $label'.toLowerCase(),
+            hintText: hint ?? AppStrings.enterField(label),
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
           ),

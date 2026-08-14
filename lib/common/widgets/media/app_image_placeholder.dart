@@ -27,7 +27,8 @@ class AppImagePlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: borderRadius ?? BorderRadius.circular(AppDimens.radiusMedium),
+      borderRadius:
+          borderRadius ?? BorderRadius.circular(AppDimens.radiusMedium),
       child: Container(
         color: AppColors.primaryLight,
         alignment: Alignment.center,

@@ -13,6 +13,7 @@ import 'package:customer_app/core/theme/app_text_styles.dart';
 import 'package:customer_app/core/utils/validators.dart';
 import '../cubit/auth_cubit.dart';
 import '../intent/auth_intent.dart';
+import '../mappers/auth_failure_message.dart';
 import '../state/auth_state.dart';
 
 class ForgotPasswordView extends StatefulWidget {
@@ -32,8 +33,12 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
     super.dispose();
   }
 
-  String? _validateEmail(String? value) {
-    return Validators.email(value) == null ? null : AppStrings.invalidEmail;
+  void _submit() {
+    if (_formKey.currentState?.validate() ?? false) {
+      context
+          .read<AuthCubit>()
+          .onIntent(ForgotPasswordRequested(_emailController.text.trim()));
+    }
   }
 
   @override
@@ -43,9 +48,10 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is AuthPasswordResetEmailSent) {
-            Get.toNamed(CustomerRoutes.otpVerification, arguments: _emailController.text.trim());
+            Get.toNamed(CustomerRoutes.otpVerification,
+                arguments: _emailController.text.trim());
           } else if (state is AuthFailed) {
-            context.showSnackBar(state.message);
+            context.showErrorSnackBar(state.failure.localizedMessage);
           }
         },
         builder: (context, state) {
@@ -66,7 +72,9 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(AppStrings.forgotPasswordTitle, style: AppTextStyles.titleLarge, textAlign: TextAlign.center),
+                          Text(AppStrings.forgotPasswordTitle,
+                              style: AppTextStyles.titleLarge,
+                              textAlign: TextAlign.center),
                           // Figma measures 16px between the title and subtitle.
                           const SizedBox(height: AppDimens.space16),
                           Text(
@@ -83,19 +91,15 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                       label: AppStrings.email,
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      validator: _validateEmail,
+                      hint: AppStrings.enterYourEmail,
+                      enabled: !isSubmitting,
+                      validator: Validators.email,
                     ),
                     const SizedBox(height: AppDimens.space48),
                     PrimaryButton(
                       label: AppStrings.confirm,
                       isLoading: isSubmitting,
-                      onPressed: () {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          context
-                              .read<AuthCubit>()
-                              .onIntent(ForgotPasswordRequested(_emailController.text.trim()));
-                        }
-                      },
+                      onPressed: _submit,
                     ),
                   ],
                 ),

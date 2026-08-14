@@ -11,7 +11,8 @@ import '../error/exceptions.dart';
 /// call site changes because they will depend on this interface, not the
 /// concrete client.
 abstract interface class ApiClient {
-  Future<Map<String, dynamic>> get(String path, {Map<String, dynamic>? queryParameters});
+  Future<Map<String, dynamic>> get(String path,
+      {Map<String, dynamic>? queryParameters});
 
   Future<Map<String, dynamic>> post(String path, {Map<String, dynamic>? body});
 
@@ -31,13 +32,18 @@ class UnimplementedApiClient implements ApiClient {
       );
 
   @override
-  Future<Map<String, dynamic>> get(String path, {Map<String, dynamic>? queryParameters}) => _unimplemented();
+  Future<Map<String, dynamic>> get(String path,
+          {Map<String, dynamic>? queryParameters}) =>
+      _unimplemented();
 
   @override
-  Future<Map<String, dynamic>> post(String path, {Map<String, dynamic>? body}) => _unimplemented();
+  Future<Map<String, dynamic>> post(String path,
+          {Map<String, dynamic>? body}) =>
+      _unimplemented();
 
   @override
-  Future<Map<String, dynamic>> put(String path, {Map<String, dynamic>? body}) => _unimplemented();
+  Future<Map<String, dynamic>> put(String path, {Map<String, dynamic>? body}) =>
+      _unimplemented();
 
   @override
   Future<void> delete(String path) => _unimplemented();

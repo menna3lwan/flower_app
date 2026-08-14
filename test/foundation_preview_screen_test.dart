@@ -1,11 +1,19 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'package:customer_app/foundation_preview_screen.dart';
 
+import 'support/localization_harness.dart';
+
 void main() {
-  testWidgets('FoundationPreviewScreen renders the design-system sections', (tester) async {
-    await tester.pumpWidget(
-      const MaterialApp(home: FoundationPreviewScreen()),
+  // The screen renders `AppStrings` values, which resolve `.tr()` against
+  // an EasyLocalization context — pumping it into a bare MaterialApp threw.
+  setUpAll(initializeTestLocalization);
+
+  testWidgets('FoundationPreviewScreen renders the design-system sections',
+      (tester) async {
+    await pumpLocalized(
+      tester,
+      localizedApp(home: const FoundationPreviewScreen()),
     );
 
     expect(find.text('Core + Common + Assets'), findsOneWidget);

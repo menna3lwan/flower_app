@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_text_styles.dart';
+
 class AppBackAppBar extends StatelessWidget implements PreferredSizeWidget {
   const AppBackAppBar({
     required this.title,
@@ -32,7 +34,12 @@ class AppBackAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         onPressed: onBackTap ?? () => Navigator.of(context).maybePop(),
       ),
-      title: Text(title, style: titleStyle),
+      // Figma Dev Mode confirmed this 20px/w500 style on the Login frame's
+      // AppBar title (see AppTextStyles.appBarTitleEmphasis). All five auth
+      // screens (Login, Sign Up, Forgot Password, OTP, Reset Password)
+      // share this one AppBackAppBar, so the correct fix is a shared
+      // default here rather than each call site repeating the override.
+      title: Text(title, style: titleStyle ?? AppTextStyles.appBarTitleEmphasis),
       actions: actions,
     );
   }

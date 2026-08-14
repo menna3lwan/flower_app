@@ -34,7 +34,8 @@ class CatalogRepositoryImpl implements CatalogRepository {
   Future<Result<List<ProductEntity>>> getBestSellers() async {
     try {
       final products = await _dataSource.getAllProducts();
-      final sorted = [...products]..sort((a, b) => b.rating.compareTo(a.rating));
+      final sorted = [...products]
+        ..sort((a, b) => b.rating.compareTo(a.rating));
       return Result.success(sorted);
     } catch (_) {
       return const Result.failure(UnexpectedFailure());
@@ -51,17 +52,20 @@ class CatalogRepositoryImpl implements CatalogRepository {
   }
 
   @override
-  Future<Result<List<ProductEntity>>> getProductsByCategory(String categoryId) async {
+  Future<Result<List<ProductEntity>>> getProductsByCategory(
+      String categoryId) async {
     try {
       final products = await _dataSource.getAllProducts();
-      return Result.success(products.where((p) => p.categoryId == categoryId).toList());
+      return Result.success(
+          products.where((p) => p.categoryId == categoryId).toList());
     } catch (_) {
       return const Result.failure(UnexpectedFailure());
     }
   }
 
   @override
-  Future<Result<List<ProductEntity>>> getProductsByOccasion(String occasionId) async {
+  Future<Result<List<ProductEntity>>> getProductsByOccasion(
+      String occasionId) async {
     try {
       final ids = await _dataSource.occasionProductIds(occasionId);
       final products = await _dataSource.getAllProducts();
@@ -89,7 +93,9 @@ class CatalogRepositoryImpl implements CatalogRepository {
       final normalized = query.trim().toLowerCase();
       if (normalized.isEmpty) return const Result.success([]);
       return Result.success(
-        products.where((p) => p.name.toLowerCase().contains(normalized)).toList(),
+        products
+            .where((p) => p.name.toLowerCase().contains(normalized))
+            .toList(),
       );
     } catch (_) {
       return const Result.failure(UnexpectedFailure());

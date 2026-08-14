@@ -48,10 +48,10 @@ final class VerifyCodeRequested extends AuthIntent {
 
 final class ResetPasswordRequested extends AuthIntent {
   const ResetPasswordRequested({
-    required this.currentPassword,
+    required this.email,
     required this.newPassword,
   });
 
-  final String currentPassword;
+  final String email;
   final String newPassword;
 }

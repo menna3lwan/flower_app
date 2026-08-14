@@ -26,5 +26,6 @@ Future<void> setupCoreDependencies() async {
   sl
     ..registerLazySingleton<NetworkInfo>(AlwaysOnlineNetworkInfo.new)
     ..registerLazySingleton<ApiClient>(UnimplementedApiClient.new)
-    ..registerLazySingleton<LocalStorageService>(InMemoryLocalStorageService.new);
+    ..registerLazySingleton<LocalStorageService>(
+        InMemoryLocalStorageService.new);
 }
