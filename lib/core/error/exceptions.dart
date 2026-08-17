@@ -16,6 +16,14 @@ class NetworkException implements Exception {
   final String message;
 }
 
+
+class ApiException implements Exception {
+  const ApiException({required this.statusCode, required this.message});
+
+  final int statusCode;
+  final String message;
+}
+
 /// Login was rejected because the email/password pair did not match.
 class InvalidCredentialsException implements Exception {
   const InvalidCredentialsException();

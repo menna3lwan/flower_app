@@ -117,5 +117,12 @@
   "somethingWentWrong": "Something went wrong. Please try again.",
   "accountCreatedSuccess": "Account created successfully. Please log in.",
   "passwordResetSuccess": "Your password has been reset. Please log in.",
-  "resetPasswordSubtitle": "Password must not be empty and must contain 6 characters with upper case letter and one number at least"
+  "resetPasswordSubtitle": "Password must not be empty and must contain 6 characters with upper case letter and one number at least",
+  "showPassword": "Show password",
+  "hidePassword": "Hide password",
+  "passwordRequirementsTitle": "Password requirements",
+  "passwordRuleMinLength": "At least 6 characters",
+  "passwordRuleUppercase": "At least one uppercase letter",
+  "passwordRuleNumber": "At least one number",
+  "passwordRequirementsNotMet": "Password does not meet the requirements below."
 }

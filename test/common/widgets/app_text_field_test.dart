@@ -90,4 +90,104 @@ void main() {
     expect(find.text(AppStrings.enterField('Email')), findsOneWidget);
     expect(find.text('enter email'), findsNothing);
   });
+
+  group('password visibility toggle', () {
+    Future<void> pumpPasswordField(
+      WidgetTester tester, {
+      TextEditingController? controller,
+    }) async {
+      await pumpLocalized(
+        tester,
+        localizedApp(
+          home: Scaffold(
+            body: AppTextField(
+              label: 'Password',
+              controller: controller,
+              obscureText: true,
+            ),
+          ),
+        ),
+      );
+    }
+
+    testWidgets('is not shown for a non-password field', (tester) async {
+      await pumpField(tester, hint: 'Enter your email');
+
+      expect(find.byIcon(Icons.visibility_outlined), findsNothing);
+      expect(find.byIcon(Icons.visibility_off_outlined), findsNothing);
+    });
+
+    testWidgets('starts obscured with the "show" icon visible',
+        (tester) async {
+      await pumpPasswordField(tester);
+
+      final field = tester.widget<TextFormField>(find.byType(TextFormField));
+      expect(field.obscureText, isTrue);
+      expect(find.byIcon(Icons.visibility_off_outlined), findsOneWidget);
+    });
+
+    testWidgets('tapping the icon reveals the password and flips the icon',
+        (tester) async {
+      await pumpPasswordField(tester);
+
+      await tester.tap(find.byIcon(Icons.visibility_off_outlined));
+      await tester.pump();
+
+      final field = tester.widget<TextFormField>(find.byType(TextFormField));
+      expect(field.obscureText, isFalse);
+      expect(find.byIcon(Icons.visibility_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.visibility_off_outlined), findsNothing);
+    });
+
+    testWidgets('tapping twice returns to obscured', (tester) async {
+      await pumpPasswordField(tester);
+
+      await tester.tap(find.byIcon(Icons.visibility_off_outlined));
+      await tester.pump();
+      await tester.tap(find.byIcon(Icons.visibility_outlined));
+      await tester.pump();
+
+      final field = tester.widget<TextFormField>(find.byType(TextFormField));
+      expect(field.obscureText, isTrue);
+    });
+
+    testWidgets('toggling does not change the typed value or cursor offset',
+        (tester) async {
+      final controller = TextEditingController(text: 'Password123');
+      addTearDown(controller.dispose);
+      await pumpPasswordField(tester, controller: controller);
+
+      controller.selection =
+          const TextSelection.collapsed(offset: 'Password123'.length);
+
+      await tester.tap(find.byIcon(Icons.visibility_off_outlined));
+      await tester.pump();
+
+      expect(controller.text, 'Password123');
+      expect(controller.selection.baseOffset, 'Password123'.length);
+    });
+
+    testWidgets('an explicit suffixIcon suppresses the auto toggle',
+        (tester) async {
+      await pumpLocalized(
+        tester,
+        localizedApp(
+          home: Scaffold(
+            body: AppTextField(
+              label: 'Password',
+              obscureText: true,
+              suffixIcon: const Icon(Icons.lock),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byIcon(Icons.lock), findsOneWidget);
+      expect(find.byIcon(Icons.visibility_off_outlined), findsNothing);
+    });
+  });
+}
+
+extension on TextFormField {
+   get obscureText => null;
 }

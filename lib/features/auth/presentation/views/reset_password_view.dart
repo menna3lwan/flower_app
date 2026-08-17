@@ -6,6 +6,8 @@ import 'package:customer_app/common/extensions/context_extensions.dart';
 import 'package:customer_app/common/widgets/app_back_app_bar.dart';
 import 'package:customer_app/common/widgets/buttons/primary_button.dart';
 import 'package:customer_app/common/widgets/inputs/app_text_field.dart';
+import 'package:customer_app/common/widgets/inputs/password_rules_checklist.dart';
+import 'package:customer_app/core/constants/app_colors.dart';
 import 'package:customer_app/core/constants/app_dimens.dart';
 import 'package:customer_app/core/localization/app_strings.dart';
 import '../../../../core/routing/customer_routes.dart';
@@ -98,6 +100,16 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                       obscureText: true,
                       enabled: !isSubmitting,
                       validator: Validators.password,
+                    ),
+                    const SizedBox(height: AppDimens.space8),
+                    Text(
+                      AppStrings.passwordRequirementsTitle,
+                      style: AppTextStyles.bodySmall
+                          .copyWith(color: AppColors.textPrimary),
+                    ),
+                    const SizedBox(height: AppDimens.space4),
+                    PasswordRulesChecklist(
+                      controller: _newPasswordController,
                     ),
                     const SizedBox(height: AppDimens.space24),
                     AppTextField(

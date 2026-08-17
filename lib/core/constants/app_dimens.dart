@@ -27,6 +27,8 @@ abstract final class AppDimens {
   static const double buttonHeight = 48;
   static const double inputHeight = 56;
   static const double iconSize = 24;
+  /// Small inline icon — e.g. the ✓/✕ markers in [PasswordRulesChecklist].
+  static const double iconSizeSmall = 16;
   static const double avatarSize = 88;
   static const double bottomNavHeight = 64;
   static const double categoryIconSize = 56;

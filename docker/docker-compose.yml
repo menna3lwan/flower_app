@@ -1,0 +1,89 @@
+services:
+  redis:
+    image: redis:alpine
+    container_name: redis-cache
+    ports:
+      - "6380:6379"
+    networks:
+      - myapp-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "--raw", "incr", "ping"]
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserverdb
+    ports:
+      - "3535:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD}
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - myapp-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "/opt/mssql-tools/bin/sqlcmd",
+          "-S",
+          "localhost",
+          "-U",
+          "sa",
+          "-P",
+          "${MSSQL_SA_PASSWORD}",
+          "-Q",
+          "SELECT 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  flowersapp.apigateway:
+    image: manaarnabil/flowersapp-apigateway:${APIGATEWAY_IMAGE_TAG}
+    container_name: flowersapp-apigateway
+    pull_policy: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/live"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    ports:
+      - "9090:8080"
+    networks:
+      - myapp-network
+    depends_on:
+      - sqlserver
+      - redis
+      - flowersapp.auth
+
+  flowersapp.auth:
+    image: manaarnabil/flowersapp-auth:${AUTH_IMAGE_TAG}
+    container_name: flowersapp-auth
+    pull_policy: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/live"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      - sqlserver
+      - redis
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=FlowersApp.AuthDb;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;
+      - REDIS_CONNECTION_STRING=redis:6379,password=${REDIS_PASSWORD},abortConnect=false
+      - JWT_KEY=${JWT_KEY}
+      - Jwt__Key=${JWT_KEY}
+    ports:
+      - "8081:8080"
+    networks:
+      - myapp-network
+
+volumes:
+  sqlserver_data:
+
+networks:
+  myapp-network:

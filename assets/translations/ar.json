@@ -117,5 +117,12 @@
   "somethingWentWrong": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
   "accountCreatedSuccess": "تم إنشاء الحساب بنجاح. يرجى تسجيل الدخول.",
   "passwordResetSuccess": "تمت إعادة تعيين كلمة المرور. يرجى تسجيل الدخول.",
-  "resetPasswordSubtitle": "يجب ألا تكون كلمة المرور فارغة، ويجب أن تحتوي على 6 أحرف على الأقل مع حرف كبير ورقم واحد على الأقل"
+  "resetPasswordSubtitle": "يجب ألا تكون كلمة المرور فارغة، ويجب أن تحتوي على 6 أحرف على الأقل مع حرف كبير ورقم واحد على الأقل",
+  "showPassword": "إظهار كلمة المرور",
+  "hidePassword": "إخفاء كلمة المرور",
+  "passwordRequirementsTitle": "متطلبات كلمة المرور",
+  "passwordRuleMinLength": "6 أحرف على الأقل",
+  "passwordRuleUppercase": "حرف كبير واحد على الأقل",
+  "passwordRuleNumber": "رقم واحد على الأقل",
+  "passwordRequirementsNotMet": "كلمة المرور لا تحقق المتطلبات الموضحة أدناه."
 }

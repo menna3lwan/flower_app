@@ -76,6 +76,19 @@ abstract final class AppStrings {
   static String get currentPassword => 'currentPassword'.tr();
   static String get newPassword => 'newPassword'.tr();
 
+  // Password visibility toggle + live requirements checklist — shared by
+  // every password field via AppTextField/PasswordRulesChecklist, never
+  // hardcoded per screen.
+  static String get showPassword => 'showPassword'.tr();
+  static String get hidePassword => 'hidePassword'.tr();
+  static String get passwordRequirementsTitle =>
+      'passwordRequirementsTitle'.tr();
+  static String get passwordRuleMinLength => 'passwordRuleMinLength'.tr();
+  static String get passwordRuleUppercase => 'passwordRuleUppercase'.tr();
+  static String get passwordRuleNumber => 'passwordRuleNumber'.tr();
+  static String get passwordRequirementsNotMet =>
+      'passwordRequirementsNotMet'.tr();
+
   static String get signUpFirstNameHint => 'signUpFirstNameHint'.tr();
   static String get signUpLastNameHint => 'signUpLastNameHint'.tr();
   static String get signUpEmailHint => 'signUpEmailHint'.tr();

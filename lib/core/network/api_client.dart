@@ -1,15 +1,9 @@
+import 'package:dio/dio.dart';
+
+import 'api_endpoints.dart';
 import '../error/exceptions.dart';
 
-/// Transport-agnostic HTTP contract the data layer will depend on once a
-/// real backend exists.
-///
-/// Deliberately has zero third-party dependency (no `dio`/`http` import)
-/// at this stage — adding an HTTP package before there is a single real
-/// endpoint to call would be an unused dependency, which violates YAGNI.
-/// When the backend lands, implement [ApiClient] with the team's chosen
-/// package and register it in `core/di/injector.dart`; no data source
-/// call site changes because they will depend on this interface, not the
-/// concrete client.
+
 abstract interface class ApiClient {
   Future<Map<String, dynamic>> get(String path,
       {Map<String, dynamic>? queryParameters});
@@ -21,8 +15,7 @@ abstract interface class ApiClient {
   Future<void> delete(String path);
 }
 
-/// Throws until a real client is registered — makes it impossible to
-/// silently ship a feature that thinks it's talking to a server.
+
 class UnimplementedApiClient implements ApiClient {
   const UnimplementedApiClient();
 
@@ -47,4 +40,86 @@ class UnimplementedApiClient implements ApiClient {
 
   @override
   Future<void> delete(String path) => _unimplemented();
+}
+
+
+class DioApiClient implements ApiClient {
+  DioApiClient(this._dio);
+
+  final Dio _dio;
+
+  @override
+  Future<Map<String, dynamic>> get(String path,
+      {Map<String, dynamic>? queryParameters}) {
+    return _handle(() => _dio.get(path, queryParameters: queryParameters));
+  }
+
+  @override
+  Future<Map<String, dynamic>> post(String path,
+      {Map<String, dynamic>? body}) {
+    return _handle(() => _dio.post(path, data: body));
+  }
+
+  @override
+  Future<Map<String, dynamic>> put(String path,
+      {Map<String, dynamic>? body}) {
+    return _handle(() => _dio.put(path, data: body));
+  }
+
+  @override
+  Future<void> delete(String path) {
+    return _handle(() => _dio.delete(path));
+  }
+
+  Future<Map<String, dynamic>> _handle(
+    Future<Response<dynamic>> Function() request,
+  ) async {
+    try {
+      final response = await request();
+      return _asMap(response.data);
+    } on DioException catch (error) {
+      _rethrowMapped(error);
+    }
+  }
+
+  Map<String, dynamic> _asMap(dynamic data) {
+    if (data == null) return const <String, dynamic>{};
+    if (data is Map<String, dynamic>) return data;
+
+    return <String, dynamic>{'data': data};
+  }
+
+  Never _rethrowMapped(DioException error) {
+    switch (error.type) {
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.receiveTimeout:
+      case DioExceptionType.connectionError:
+      // Timed out converting the request/response body — same practical
+      // meaning as the other timeouts from the caller's point of view.
+      case DioExceptionType.transformTimeout:
+        throw const NetworkException();
+      case DioExceptionType.badResponse:
+        final statusCode = error.response?.statusCode ?? 0;
+        throw ApiException(
+          statusCode: statusCode,
+          message: _extractServerMessage(error.response?.data) ??
+              'Server error (HTTP $statusCode).',
+        );
+      case DioExceptionType.cancel:
+        throw const ServerException('Request was cancelled.');
+      case DioExceptionType.badCertificate:
+      case DioExceptionType.unknown:
+        throw const ServerException();
+    }
+  }
+
+
+  String? _extractServerMessage(dynamic data) {
+    if (data is Map<String, dynamic>) {
+      final candidate = data['message'] ?? data['error'] ?? data['title'];
+      if (candidate is String && candidate.isNotEmpty) return candidate;
+    }
+    return null;
+  }
 }

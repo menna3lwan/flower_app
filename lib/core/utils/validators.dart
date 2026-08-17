@@ -1,4 +1,5 @@
 import '../localization/app_strings.dart';
+import 'password_policy.dart';
 
 abstract final class Validators {
   const Validators._();
@@ -6,7 +7,10 @@ abstract final class Validators {
   static final RegExp _emailPattern =
       RegExp(r'^[\w\.\-]+@([\w\-]+\.)+[\w\-]{2,}$');
 
-  static const int minPasswordLength = 6;
+  /// Kept in sync with [PasswordPolicy.minLength] — [PasswordPolicy] is the
+  /// single source of truth for the actual rule; this alias just avoids
+  /// touching every call site that already reads `Validators.minPasswordLength`.
+  static const int minPasswordLength = PasswordPolicy.minLength;
   static const int minPhoneLength = 8;
 
   static String? email(String? value) {
@@ -15,10 +19,19 @@ abstract final class Validators {
     return null;
   }
 
+  /// Validates against [PasswordPolicy] — the exact same rule set the live
+  /// [PasswordRulesChecklist] ticks off on screen, so a password that shows
+  /// all-green checkmarks always passes here too, and vice versa.
   static String? password(String? value) {
     if (value == null || value.isEmpty) return AppStrings.passwordRequired;
+    // Checked first, and reported with its own specific message, so the
+    // most common failure (just too short) keeps its precise wording
+    // instead of collapsing into the generic "doesn't meet requirements".
     if (value.length < minPasswordLength) {
       return AppStrings.passwordTooShort(minPasswordLength);
+    }
+    if (!PasswordPolicy.isValid(value)) {
+      return AppStrings.passwordRequirementsNotMet;
     }
     return null;
   }

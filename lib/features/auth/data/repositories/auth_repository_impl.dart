@@ -20,6 +20,17 @@ class AuthRepositoryImpl implements AuthRepository {
           const InvalidVerificationCodeFailure(),
         EmailNotFoundException() => const NotFoundFailure(),
         NetworkException() => const NetworkFailure(),
+        ApiException(:final statusCode, :final message)
+            when statusCode == 400 || statusCode == 422 =>
+          ValidationFailure(message),
+        ApiException(:final statusCode, :final message)
+            when statusCode == 401 || statusCode == 403 =>
+          AuthFailure(message),
+        ApiException(:final statusCode, :final message) when statusCode == 404 =>
+          NotFoundFailure(message),
+        ApiException(:final statusCode, :final message) when statusCode >= 500 =>
+          ServerFailure(message),
+        ApiException(:final message) => ServerFailure(message),
         ServerException() => const ServerFailure(),
         CacheException() => const ServerFailure(),
         _ => const UnexpectedFailure(),

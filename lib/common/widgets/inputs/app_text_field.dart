@@ -6,7 +6,17 @@ import 'package:customer_app/core/constants/app_dimens.dart';
 import 'package:customer_app/core/localization/app_strings.dart';
 import 'package:customer_app/core/theme/app_text_styles.dart';
 
-class AppTextField extends StatelessWidget {
+/// Shared text field used across every form in the app.
+///
+/// Password fields get a show/hide visibility toggle for free: pass
+/// `obscureText: true` and, as long as no explicit [suffixIcon] is
+/// supplied, a trailing eye icon is injected automatically. The toggle
+/// only flips how the existing text renders — it never touches
+/// [controller]'s value or selection, so the typed password and cursor
+/// position survive a tap untouched. This is implemented once, here, so no
+/// screen (Login, Sign Up, Reset Password, ...) needs its own copy of the
+/// same toggle logic.
+class AppTextField extends StatefulWidget {
   const AppTextField({
     required this.label,
     this.hint,
@@ -41,34 +51,67 @@ class AppTextField extends StatelessWidget {
   final TextCapitalization textCapitalization;
 
   @override
+  State<AppTextField> createState() => _AppTextFieldState();
+}
+
+class _AppTextFieldState extends State<AppTextField> {
+  // Seeded once from widget.obscureText and never re-derived from it again
+  // — otherwise a parent rebuild (e.g. on every keystroke, which is exactly
+  // what typing does) would reset text the user chose to reveal back to
+  // hidden on the very next frame.
+  late bool _obscured = widget.obscureText;
+
+  void _toggleObscured() => setState(() => _obscured = !_obscured);
+
+  @override
   Widget build(BuildContext context) {
+    final isPasswordField = widget.obscureText;
+    final effectiveSuffixIcon =
+        widget.suffixIcon ?? _buildVisibilityToggle(isPasswordField);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label,
+          widget.label,
           style: AppTextStyles.bodySmall.copyWith(color: AppColors.textPrimary),
         ),
         const SizedBox(height: AppDimens.labelToFieldGap),
         TextFormField(
-          controller: controller,
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          validator: validator,
-          readOnly: readOnly,
-          onTap: onTap,
-          maxLines: maxLines,
-          enabled: enabled,
-          inputFormatters: inputFormatters,
-          textCapitalization: textCapitalization,
+          controller: widget.controller,
+          obscureText: isPasswordField ? _obscured : false,
+          keyboardType: widget.keyboardType,
+          validator: widget.validator,
+          readOnly: widget.readOnly,
+          onTap: widget.onTap,
+          maxLines: widget.maxLines,
+          enabled: widget.enabled,
+          inputFormatters: widget.inputFormatters,
+          textCapitalization: widget.textCapitalization,
           style: AppTextStyles.bodyLarge,
           decoration: InputDecoration(
-            hintText: hint ?? AppStrings.enterField(label),
-            prefixIcon: prefixIcon,
-            suffixIcon: suffixIcon,
+            hintText: widget.hint ?? AppStrings.enterField(widget.label),
+            prefixIcon: widget.prefixIcon,
+            suffixIcon: effectiveSuffixIcon,
           ),
         ),
       ],
+    );
+  }
+
+  Widget? _buildVisibilityToggle(bool isPasswordField) {
+    if (!isPasswordField) return null;
+    return IconButton(
+      icon: Icon(
+        _obscured ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+        size: AppDimens.iconSize,
+        color: AppColors.textSecondary,
+      ),
+      tooltip: _obscured ? AppStrings.showPassword : AppStrings.hidePassword,
+      // A password field is always single-line, so this toggle is the only
+      // interactive control sharing the field's 56px height — no extra
+      // padding/sizing needed beyond IconButton's own default tap target.
+      onPressed: widget.enabled ? _toggleObscured : null,
     );
   }
 }

@@ -65,6 +65,29 @@ void main() {
         contains('${Validators.minPasswordLength}'),
       );
     });
+
+    testWidgets(
+        'reports the requirements message for a password that is long '
+        'enough but still fails a rule', (tester) async {
+      await _withLocale(tester, const Locale('en'));
+
+      // 6+ characters, so this is NOT the too-short case — it's missing
+      // the uppercase-letter and number rules instead, which
+      // Validators.password only started enforcing once it began sharing
+      // PasswordPolicy with the live rules checklist.
+      expect(
+        Validators.password('lowercase'),
+        AppStrings.passwordRequirementsNotMet,
+      );
+      expect(
+        Validators.password('UPPERCASE'),
+        AppStrings.passwordRequirementsNotMet,
+      );
+      expect(
+        Validators.password('NoNumbers'),
+        AppStrings.passwordRequirementsNotMet,
+      );
+    });
   });
 
   group('confirmPassword', () {
