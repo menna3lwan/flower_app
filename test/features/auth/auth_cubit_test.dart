@@ -72,6 +72,7 @@ void main() {
           lastName: 'Mohamed',
           email: 'test@flowery.com',
           password: 'Password123',
+          confirmPassword: 'Password123',
           phoneNumber: '01012345678',
           gender: Gender.female,
         ),
@@ -92,18 +93,27 @@ void main() {
       expect(cubit.state, const AuthPasswordResetEmailSent('test@flowery.com'));
     });
 
-    test('verify code carries the email into AuthCodeVerified', () async {
+    test('verify code carries the email and resetToken into AuthCodeVerified',
+        () async {
       final cubit = AuthCubit(
-        FakeAuthRepository(verifyCodeResult: const Result.success(null)),
+        FakeAuthRepository(
+          verifyCodeResult: const Result.success('reset-token-123'),
+        ),
       );
 
       await cubit.onIntent(
         const VerifyCodeRequested(email: 'test@flowery.com', code: '1234'),
       );
 
-      // Reset Password needs this email — losing it here would strand the
+      // Reset Password needs both — losing either here would strand the
       // last step of the flow.
-      expect(cubit.state, const AuthCodeVerified('test@flowery.com'));
+      expect(
+        cubit.state,
+        const AuthCodeVerified(
+          email: 'test@flowery.com',
+          resetToken: 'reset-token-123',
+        ),
+      );
     });
 
     test('an invalid code surfaces InvalidVerificationCodeFailure', () async {
@@ -124,7 +134,7 @@ void main() {
       );
     });
 
-    test('reset password passes the verified email to the repository',
+    test('reset password passes the verified resetToken to the repository',
         () async {
       final repository =
           FakeAuthRepository(resetPasswordResult: const Result.success(null));
@@ -132,13 +142,14 @@ void main() {
 
       await cubit.onIntent(
         const ResetPasswordRequested(
-          email: 'test@flowery.com',
+          resetToken: 'reset-token-123',
           newPassword: 'NewPassword123',
+          confirmNewPassword: 'NewPassword123',
         ),
       );
 
       expect(cubit.state, const AuthPasswordResetSuccess());
-      expect(repository.lastResetPasswordEmail, 'test@flowery.com');
+      expect(repository.lastResetToken, 'reset-token-123');
     });
   });
 }

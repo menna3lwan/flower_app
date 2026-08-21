@@ -2,22 +2,19 @@ import '../../../../core/domain/entities/user_entity.dart';
 import 'package:customer_app/core/error/exceptions.dart';
 import 'package:customer_app/core/error/failures.dart';
 import 'package:customer_app/core/result/result.dart';
-import 'package:customer_app/core/storage/local_storage_service.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_local_data_source.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  const AuthRepositoryImpl(this._dataSource, this._localStorageService);
+  const AuthRepositoryImpl(this._dataSource);
 
   final AuthLocalDataSource _dataSource;
-  final LocalStorageService _localStorageService;
-
-  static const String _accessTokenKey = 'auth_access_token';
 
   static Failure _mapException(Object error) => switch (error) {
         InvalidCredentialsException() => const InvalidCredentialsFailure(),
         InvalidVerificationCodeException() =>
           const InvalidVerificationCodeFailure(),
+        InvalidSessionException() => const AuthFailure(),
         EmailNotFoundException() => const NotFoundFailure(),
         NetworkException() => const NetworkFailure(),
         ApiException(:final statusCode, :final message)
@@ -28,6 +25,8 @@ class AuthRepositoryImpl implements AuthRepository {
           AuthFailure(message),
         ApiException(:final statusCode, :final message) when statusCode == 404 =>
           NotFoundFailure(message),
+        ApiException(:final statusCode, :final message) when statusCode == 409 =>
+          ConflictFailure(message),
         ApiException(:final statusCode, :final message) when statusCode >= 500 =>
           ServerFailure(message),
         ApiException(:final message) => ServerFailure(message),
@@ -49,14 +48,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
   }) {
-    return _guard(() async {
-      final user = await _dataSource.login(email: email, password: password);
-      await _localStorageService.setString(
-        _accessTokenKey,
-        'placeholder-access-token-${user.id}',
-      );
-      return user;
-    });
+    return _guard(() => _dataSource.login(email: email, password: password));
   }
 
   @override
@@ -65,6 +57,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String lastName,
     required String email,
     required String password,
+    required String confirmPassword,
     required String phoneNumber,
     required Gender gender,
   }) {
@@ -74,6 +67,7 @@ class AuthRepositoryImpl implements AuthRepository {
         lastName: lastName,
         email: email,
         password: password,
+        confirmPassword: confirmPassword,
         phoneNumber: phoneNumber,
         gender: gender,
       ),
@@ -91,7 +85,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Result<void>> verifyCode({
+  Future<Result<String>> verifyCode({
     required String email,
     required String code,
   }) {
@@ -100,11 +94,21 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Result<void>> resetPassword({
-    required String email,
+    required String resetToken,
     required String newPassword,
+    required String confirmNewPassword,
   }) {
     return _guard(
-      () => _dataSource.resetPassword(email: email, newPassword: newPassword),
+      () => _dataSource.resetPassword(
+        resetToken: resetToken,
+        newPassword: newPassword,
+        confirmNewPassword: confirmNewPassword,
+      ),
     );
+  }
+
+  @override
+  Future<Result<void>> refreshSession() {
+    return _guard(() => _dataSource.refreshSession());
   }
 }

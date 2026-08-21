@@ -115,6 +115,7 @@
   "emailNotFound": "No account found with this email",
   "noInternetConnection": "No internet connection",
   "somethingWentWrong": "Something went wrong. Please try again.",
+  "emailAlreadyRegistered": "An account with this email already exists.",
   "accountCreatedSuccess": "Account created successfully. Please log in.",
   "passwordResetSuccess": "Your password has been reset. Please log in.",
   "resetPasswordSubtitle": "Password must not be empty and must contain 6 characters with upper case letter and one number at least",

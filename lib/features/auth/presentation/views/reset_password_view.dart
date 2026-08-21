@@ -30,13 +30,13 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  late final String _email;
+  late final String _resetToken;
 
   @override
   void initState() {
     super.initState();
     final arguments = Get.arguments;
-    _email = arguments is String ? arguments : '';
+    _resetToken = arguments is String ? arguments : '';
   }
 
   @override
@@ -50,8 +50,9 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
     if (_formKey.currentState?.validate() ?? false) {
       context.read<AuthCubit>().onIntent(
             ResetPasswordRequested(
-              email: _email,
+              resetToken: _resetToken,
               newPassword: _newPasswordController.text,
+              confirmNewPassword: _confirmPasswordController.text,
             ),
           );
     }

@@ -46,6 +46,7 @@ class AuthCubit extends BaseCubit<AuthState> {
       lastName: intent.lastName,
       email: intent.email,
       password: intent.password,
+      confirmPassword: intent.confirmPassword,
       phoneNumber: intent.phoneNumber,
       gender: intent.gender,
     );
@@ -72,15 +73,18 @@ class AuthCubit extends BaseCubit<AuthState> {
     );
     result.fold(
       (failure) => safeEmit(AuthFailed(failure)),
-      (_) => safeEmit(AuthCodeVerified(intent.email)),
+      (resetToken) => safeEmit(
+        AuthCodeVerified(email: intent.email, resetToken: resetToken),
+      ),
     );
   }
 
   Future<void> _resetPassword(ResetPasswordRequested intent) async {
     safeEmit(const AuthLoading());
     final result = await _authRepository.resetPassword(
-      email: intent.email,
+      resetToken: intent.resetToken,
       newPassword: intent.newPassword,
+      confirmNewPassword: intent.confirmNewPassword,
     );
     result.fold(
       (failure) => safeEmit(AuthFailed(failure)),

@@ -7,6 +7,7 @@ extension AuthFailureMessage on Failure {
         InvalidVerificationCodeFailure() => AppStrings.invalidVerificationCode,
         NotFoundFailure() => AppStrings.emailNotFound,
         NetworkFailure() => AppStrings.noInternetConnection,
+        ConflictFailure() => AppStrings.emailAlreadyRegistered,
         AuthFailure() ||
         ServerFailure() ||
         ValidationFailure() ||

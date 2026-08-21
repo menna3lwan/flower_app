@@ -9,6 +9,7 @@ abstract interface class AuthLocalDataSource {
     required String lastName,
     required String email,
     required String password,
+    required String confirmPassword,
     required String phoneNumber,
     required Gender gender,
   });
@@ -17,12 +18,17 @@ abstract interface class AuthLocalDataSource {
 
   Future<void> sendPasswordResetEmail(String email);
 
-  Future<void> verifyCode({required String email, required String code});
+  /// Returns a `resetToken` the caller must pass to [resetPassword] —
+  /// see [AuthRepository.verifyCode] for why.
+  Future<String> verifyCode({required String email, required String code});
 
   Future<void> resetPassword({
-    required String email,
+    required String resetToken,
     required String newPassword,
+    required String confirmNewPassword,
   });
+
+  Future<void> refreshSession();
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
@@ -31,6 +37,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   static const _validEmail = 'test@flowery.com';
   static const _validPassword = 'Password123';
   static const _validVerificationCode = '1234';
+  static const _fakeResetToken = 'fake-local-reset-token';
 
   @override
   Future<UserEntity> login({
@@ -56,6 +63,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
     required String lastName,
     required String email,
     required String password,
+    required String confirmPassword,
     required String phoneNumber,
     required Gender gender,
   }) async {
@@ -88,7 +96,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   }
 
   @override
-  Future<void> verifyCode({
+  Future<String> verifyCode({
     required String email,
     required String code,
   }) async {
@@ -96,13 +104,20 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
     if (code != _validVerificationCode) {
       throw const InvalidVerificationCodeException();
     }
+    return _fakeResetToken;
   }
 
   @override
   Future<void> resetPassword({
-    required String email,
+    required String resetToken,
     required String newPassword,
+    required String confirmNewPassword,
   }) async {
+    await Future.delayed(_simulatedLatency);
+  }
+
+  @override
+  Future<void> refreshSession() async {
     await Future.delayed(_simulatedLatency);
   }
 }

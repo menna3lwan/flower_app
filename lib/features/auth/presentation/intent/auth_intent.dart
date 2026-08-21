@@ -21,6 +21,7 @@ final class SignUpRequested extends AuthIntent {
     required this.lastName,
     required this.email,
     required this.password,
+    required this.confirmPassword,
     required this.phoneNumber,
     required this.gender,
   });
@@ -29,6 +30,7 @@ final class SignUpRequested extends AuthIntent {
   final String lastName;
   final String email;
   final String password;
+  final String confirmPassword;
   final String phoneNumber;
   final Gender gender;
 }
@@ -48,10 +50,14 @@ final class VerifyCodeRequested extends AuthIntent {
 
 final class ResetPasswordRequested extends AuthIntent {
   const ResetPasswordRequested({
-    required this.email,
+    required this.resetToken,
     required this.newPassword,
+    required this.confirmNewPassword,
   });
 
-  final String email;
+  /// Issued by [VerifyCodeRequested]'s success response — see
+  /// [AuthRepository.verifyCode].
+  final String resetToken;
   final String newPassword;
+  final String confirmNewPassword;
 }

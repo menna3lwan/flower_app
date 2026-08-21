@@ -48,6 +48,7 @@ abstract final class AppStrings {
   static String get emailNotFound => 'emailNotFound'.tr();
   static String get noInternetConnection => 'noInternetConnection'.tr();
   static String get somethingWentWrong => 'somethingWentWrong'.tr();
+  static String get emailAlreadyRegistered => 'emailAlreadyRegistered'.tr();
 
   // Success feedback.
   static String get accountCreatedSuccess => 'accountCreatedSuccess'.tr();

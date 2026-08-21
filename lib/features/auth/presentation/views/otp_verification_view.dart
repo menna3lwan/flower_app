@@ -86,7 +86,10 @@ class _OtpVerificationViewState extends State<OtpVerificationView> {
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is AuthCodeVerified) {
-            Get.toNamed(CustomerRoutes.resetPassword, arguments: state.email);
+            Get.toNamed(
+              CustomerRoutes.resetPassword,
+              arguments: state.resetToken,
+            );
           } else if (state is AuthPasswordResetEmailSent) {
             context.showSuccessSnackBar(AppStrings.verificationCodeResent);
           } else if (state is AuthFailed) {

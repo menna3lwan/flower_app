@@ -30,6 +30,12 @@ final class NotFoundFailure extends Failure {
   const NotFoundFailure([super.message = 'The requested item was not found.']);
 }
 
+/// The request conflicts with existing state (HTTP 409) — e.g. Sign Up
+/// with an email that is already registered.
+final class ConflictFailure extends Failure {
+  const ConflictFailure([super.message = 'This already exists.']);
+}
+
 /// Authentication/authorization failed (bad credentials, expired session).
 final class AuthFailure extends Failure {
   const AuthFailure([super.message = 'Authentication failed.']);

@@ -1,0 +1,766 @@
+{
+  "info": {
+    "_postman_id": "1c5def9a-e021-47a3-af0b-6e598bc91f86",
+    "name": "Flowers E-Commerce",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "43345223"
+  },
+  "item": [
+    {
+      "name": "Auth Service",
+      "item": [
+        {
+          "name": "Driver",
+          "item": [
+            {
+              "name": "ApplyDriver",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept-Language",
+                    "value": "ar",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "Name",
+                      "value": "gsdgds",
+                      "type": "text",
+                      "uuid": "ab6654eb-7b23-4d7d-969e-bd7abfddd943"
+                    },
+                    {
+                      "key": "Email",
+                      "value": "manarsdfds@gmail.com",
+                      "type": "text",
+                      "uuid": "6cbd121a-455a-43ba-89f9-0d4db1b557c8"
+                    },
+                    {
+                      "key": "Password",
+                      "value": "manarA@123",
+                      "type": "text",
+                      "uuid": "2c5eba96-d540-4e11-9983-ff01ecc85a8f"
+                    },
+                    {
+                      "key": "ConfirmPassword",
+                      "value": "manarA@123",
+                      "type": "text",
+                      "uuid": "686523f1-0381-4d4f-b79e-e08aed1ee259"
+                    },
+                    {
+                      "key": "Phone",
+                      "value": "35353554",
+                      "type": "text",
+                      "uuid": "7b96639b-9a07-47a3-ab33-1fca3788db34"
+                    },
+                    {
+                      "key": "Gender",
+                      "value": "Female",
+                      "type": "text",
+                      "uuid": "190bc14f-83df-441d-a187-a865bd134d07"
+                    },
+                    {
+                      "key": "VehicleId",
+                      "value": "742440e1-de7c-4b32-8d53-e4d412b6fcde",
+                      "type": "text",
+                      "uuid": "9a89cc1c-36ce-402b-85b1-ff488dabf08e"
+                    },
+                    {
+                      "key": "VehicleNumber",
+                      "value": "dsgdsgg",
+                      "type": "text",
+                      "uuid": "70a9254e-6b1f-408e-98a1-e178020b1f18"
+                    },
+                    {
+                      "key": "LicenceNumber",
+                      "value": "dfsfsdfdsffd",
+                      "type": "text",
+                      "uuid": "5a394044-10c5-49b8-82f7-2096f6ebcad5"
+                    },
+                    {
+                      "key": "Nid",
+                      "value": "sgssdgsdg",
+                      "type": "text",
+                      "uuid": "2a2d55ab-24fd-4a5f-8f69-1c146d253cca"
+                    },
+                    {
+                      "key": "FcmToken",
+                      "value": "dsgsdgsdg",
+                      "type": "text",
+                      "uuid": "8ea02c6e-1828-49a3-946c-2e3eab6163e5"
+                    },
+                    {
+                      "key": "LicenceImage",
+                      "type": "file",
+                      "uuid": "75a61f5e-63e6-4a81-ad14-068a076b6348",
+                      "src": "/B:/Pics/OIP-2651783472.jpg"
+                    },
+                    {
+                      "key": "NidImage",
+                      "type": "file",
+                      "uuid": "4a614912-46ed-4bae-9f22-1ffc1a5c0913",
+                      "src": "/B:/Pics/OIP-2651783472.jpg"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/drivers/apply",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "drivers",
+                    "apply"
+                  ],
+                  "query": [
+                    {
+                      "key": "Accept-Language",
+                      "value": "ar",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "409 Conflict - Driver Already Exists Copy",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "Name",
+                          "value": "Ahmed Mostafa",
+                          "type": "text"
+                        },
+                        {
+                          "key": "Email",
+                          "value": "ahmed.mostafa@example.com",
+                          "type": "text"
+                        },
+                        {
+                          "key": "Password",
+                          "value": "P@ssw0rd1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "ConfirmPassword",
+                          "value": "P@ssw0rd1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "Phone",
+                          "value": "+201012345678",
+                          "type": "text"
+                        },
+                        {
+                          "key": "Gender",
+                          "value": "Male",
+                          "type": "text"
+                        },
+                        {
+                          "key": "VehicleId",
+                          "value": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                          "type": "text"
+                        },
+                        {
+                          "key": "VehicleNumber",
+                          "value": "ABC-1234",
+                          "type": "text"
+                        },
+                        {
+                          "key": "LicenceNumber",
+                          "value": "LIC-998877",
+                          "type": "text"
+                        },
+                        {
+                          "key": "LicenceImage",
+                          "type": "file",
+                          "src": []
+                        },
+                        {
+                          "key": "Nid",
+                          "value": "29901011234567",
+                          "type": "text"
+                        },
+                        {
+                          "key": "NidImage",
+                          "type": "file",
+                          "src": []
+                        },
+                        {
+                          "key": "FcmToken",
+                          "value": "",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/drivers/apply",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "drivers",
+                        "apply"
+                      ]
+                    }
+                  },
+                  "status": "Conflict",
+                  "code": 409,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"succeeded\": false,\n  \"message\": \"العميل موجود بالفعل\",\n  \"data\": null\n}"
+                },
+                {
+                  "name": "400 Bad Request - Vehicle Not Found Copy",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "VehicleId",
+                          "value": "00000000-0000-0000-0000-000000000000",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/drivers/apply",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "drivers",
+                        "apply"
+                      ]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"succeeded\": false,\n  \"message\": \"خطا في بيانات السياره\",\n  \"data\": null\n}"
+                },
+                {
+                  "name": "201 Created Copy",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "Name",
+                          "value": "Ahmed Mostafa",
+                          "type": "text"
+                        },
+                        {
+                          "key": "Email",
+                          "value": "ahmed.mostafa@example.com",
+                          "type": "text"
+                        },
+                        {
+                          "key": "Password",
+                          "value": "P@ssw0rd1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "ConfirmPassword",
+                          "value": "P@ssw0rd1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "Phone",
+                          "value": "+201012345678",
+                          "type": "text"
+                        },
+                        {
+                          "key": "Gender",
+                          "value": "Male",
+                          "type": "text"
+                        },
+                        {
+                          "key": "VehicleId",
+                          "value": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                          "type": "text"
+                        },
+                        {
+                          "key": "VehicleNumber",
+                          "value": "ABC-1234",
+                          "type": "text"
+                        },
+                        {
+                          "key": "LicenceNumber",
+                          "value": "LIC-998877",
+                          "type": "text"
+                        },
+                        {
+                          "key": "LicenceImage",
+                          "type": "file",
+                          "src": []
+                        },
+                        {
+                          "key": "Nid",
+                          "value": "29901011234567",
+                          "type": "text"
+                        },
+                        {
+                          "key": "NidImage",
+                          "type": "file",
+                          "src": []
+                        },
+                        {
+                          "key": "FcmToken",
+                          "value": "",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/drivers/apply",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "drivers",
+                        "apply"
+                      ]
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"succeeded\": true,\n  \"message\": null,\n  \"data\": {\n    \"applicationId\": \"8f14e45f-ceea-467e-9a5b-5c5c5d5e5f5a\",\n    \"status\": \"Pending\"\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "RegisterCustomer",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept-Language",
+                    "value": "ar",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"fullName\": \"manar\",\r\n  \"email\": \"manar123@gmail.com\",\r\n  \"phoneNumber\": \"01055849666\",\r\n  \"gender\": 2,\r\n  \"password\": \"Manar123$$\",\r\n  \"confirmPassword\": \"Manar123$$\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Vehicles",
+          "item": [
+            {
+              "name": "Create Vehicle",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept-Language",
+                    "value": "ar",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"vehicleNumber\": \"ABC-12354\",\n  \"vehicleType\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/vehicles",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "vehicles"
+                  ]
+                },
+                "description": "Creates a new vehicle. VehicleType is an integer matching the VehicleType enum on the backend (e.g. 0 = Motorcycle, 1 = Car — adjust to your actual enum values)."
+              },
+              "response": [
+                {
+                  "name": "201 Created",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"plateNumber\": \"ABC-1234\",\n  \"vehicleType\": 1\n}"
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/vehicles",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "vehicles"
+                      ]
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"succeeded\": true,\n  \"message\": \"Vehicle created successfully.\",\n  \"data\": {\n    \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\n  }\n}"
+                },
+                {
+                  "name": "409 Conflict - Vehicle Already Exists",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"plateNumber\": \"ABC-1234\",\n  \"vehicleType\": 1\n}"
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/vehicles",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "vehicles"
+                      ]
+                    }
+                  },
+                  "status": "Conflict",
+                  "code": 409,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"succeeded\": false,\n  \"message\": \"A vehicle with this number already exists.\",\n  \"data\": null\n}"
+                },
+                {
+                  "name": "400 Bad Request",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"plateNumber\": \"\",\n  \"vehicleType\": 1\n}"
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/vehicles",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "vehicles"
+                      ]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"succeeded\": false,\n  \"message\": \"Failed to create vehicle.\",\n  \"data\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "Get Vehicles",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/vehicles",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "vehicles"
+                  ]
+                },
+                "description": "Retrieves all vehicles."
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/vehicles",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "vehicles"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"succeeded\": true,\n  \"message\": null,\n  \"data\": [\n    {\n      \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n      \"vehicleNumber\": \"ABC-1234\",\n      \"type\": 1\n    },\n    {\n      \"id\": \"7c9e6679-7425-40de-944b-e07fc1f90ae7\",\n      \"vehicleNumber\": \"XYZ-9876\",\n      \"type\": 0\n    }\n  ]\n}"
+                }
+              ]
+            },
+            {
+              "name": "Get Vehicle By Id",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/vehicles/{{vehicleId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "vehicles",
+                    "{{vehicleId}}"
+                  ]
+                },
+                "description": "Retrieves a single vehicle by its Id."
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/vehicles/{{vehicleId}}",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "vehicles",
+                        "{{vehicleId}}"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"succeeded\": true,\n  \"message\": null,\n  \"data\": {\n    \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"vehicleNumber\": \"ABC-1234\",\n    \"type\": 1\n  }\n}"
+                },
+                {
+                  "name": "404 Not Found",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/vehicles/{{vehicleId}}",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "vehicles",
+                        "{{vehicleId}}"
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"succeeded\": false,\n  \"message\": \"Vehicle not found.\",\n  \"data\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "Check Vehicle Existence",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/vehicles/exists/{{vehicleNumber}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "vehicles",
+                    "exists",
+                    "{{vehicleNumber}}"
+                  ]
+                },
+                "description": "Checks whether a vehicle with the given vehicle/plate number exists."
+              },
+              "response": [
+                {
+                  "name": "200 OK - Exists",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/vehicles/exists/{{vehicleNumber}}",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "vehicles",
+                        "exists",
+                        "{{vehicleNumber}}"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"succeeded\": true,\n  \"message\": null,\n  \"data\": {\n    \"exists\": true\n  }\n}"
+                },
+                {
+                  "name": "200 OK - Does Not Exist",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/vehicles/exists/NOT-REAL",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "vehicles",
+                        "exists",
+                        "NOT-REAL"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"succeeded\": true,\n  \"message\": null,\n  \"data\": {\n    \"exists\": false\n  }\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    }
+  ]
+}

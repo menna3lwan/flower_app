@@ -117,6 +117,15 @@ class DioApiClient implements ApiClient {
 
   String? _extractServerMessage(dynamic data) {
     if (data is Map<String, dynamic>) {
+      // This backend's response envelope (see auth_api_envelope.dart)
+      // puts the actual human-readable reason in `errors[0]` and
+      // frequently leaves `message` blank (e.g. `{"message":""}` on a
+      // 401) — confirmed against the live Auth service. Prefer it.
+      final errors = data['errors'];
+      if (errors is List && errors.isNotEmpty) {
+        final firstError = errors.first;
+        if (firstError is String && firstError.isNotEmpty) return firstError;
+      }
       final candidate = data['message'] ?? data['error'] ?? data['title'];
       if (candidate is String && candidate.isNotEmpty) return candidate;
     }

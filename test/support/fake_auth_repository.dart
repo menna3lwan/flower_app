@@ -16,15 +16,17 @@ class FakeAuthRepository implements AuthRepository {
     this.sendPasswordResetEmailResult,
     this.verifyCodeResult,
     this.resetPasswordResult,
+    this.refreshSessionResult,
   });
 
   final Result<UserEntity>? loginResult;
   final Result<UserEntity>? signUpResult;
   final Result<void>? sendPasswordResetEmailResult;
-  final Result<void>? verifyCodeResult;
+  final Result<String>? verifyCodeResult;
   final Result<void>? resetPasswordResult;
+  final Result<void>? refreshSessionResult;
 
-  String? lastResetPasswordEmail;
+  String? lastResetToken;
   String? lastVerifiedEmail;
 
   static Future<T> _pending<T>() => Future<T>.delayed(const Duration(days: 1));
@@ -42,6 +44,7 @@ class FakeAuthRepository implements AuthRepository {
     required String lastName,
     required String email,
     required String password,
+    required String confirmPassword,
     required String phoneNumber,
     required Gender gender,
   }) async =>
@@ -63,7 +66,7 @@ class FakeAuthRepository implements AuthRepository {
       sendPasswordResetEmailResult ?? _pending();
 
   @override
-  Future<Result<void>> verifyCode({
+  Future<Result<String>> verifyCode({
     required String email,
     required String code,
   }) async {
@@ -73,10 +76,15 @@ class FakeAuthRepository implements AuthRepository {
 
   @override
   Future<Result<void>> resetPassword({
-    required String email,
+    required String resetToken,
     required String newPassword,
+    required String confirmNewPassword,
   }) async {
-    lastResetPasswordEmail = email;
+    lastResetToken = resetToken;
     return resetPasswordResult ?? _pending();
   }
+
+  @override
+  Future<Result<void>> refreshSession() async =>
+      refreshSessionResult ?? _pending();
 }

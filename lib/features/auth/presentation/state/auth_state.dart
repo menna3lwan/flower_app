@@ -41,12 +41,16 @@ final class AuthPasswordResetEmailSent extends AuthState {
 }
 
 final class AuthCodeVerified extends AuthState {
-  const AuthCodeVerified(this.email);
+  const AuthCodeVerified({required this.email, required this.resetToken});
 
   final String email;
 
+  /// Must be forwarded to [ResetPasswordRequested] — the backend
+  /// requires it in place of email/code on the Reset Password call.
+  final String resetToken;
+
   @override
-  List<Object?> get props => [email];
+  List<Object?> get props => [email, resetToken];
 }
 
 final class AuthPasswordResetSuccess extends AuthState {

@@ -38,3 +38,9 @@ class InvalidVerificationCodeException implements Exception {
 class EmailNotFoundException implements Exception {
   const EmailNotFoundException();
 }
+
+/// [AuthRepository.refreshSession] was called with no refresh token in
+/// secure storage (e.g. never logged in, or already logged out).
+class InvalidSessionException implements Exception {
+  const InvalidSessionException();
+}
