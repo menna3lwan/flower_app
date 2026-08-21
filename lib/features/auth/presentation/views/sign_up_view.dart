@@ -65,6 +65,27 @@ class _SignUpViewState extends State<SignUpView> {
     }
   }
 
+  String? _validateRequired(String? value) {
+    return Validators.required(value) == null ? null : AppStrings.fieldRequired;
+  }
+
+  String? _validateEmail(String? value) {
+    return Validators.email(value) == null ? null : AppStrings.invalidEmail;
+  }
+
+  String? _validatePassword(String? value) {
+    return Validators.password(value) == null ? null : AppStrings.invalidPassword;
+  }
+
+  String? _validateConfirmPassword(String? value) {
+    if (value == null || value.isEmpty) return AppStrings.confirmPasswordRequired;
+    return value == _passwordController.text ? null : AppStrings.passwordsDoNotMatch;
+  }
+
+  String? _validatePhone(String? value) {
+    return Validators.phone(value) == null ? null : AppStrings.invalidPhoneNumber;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -12,6 +12,7 @@
   "enterYourEmail": "أدخل بريدك الإلكتروني",
   "enterYourPassword": "أدخل كلمة مرورك",
   "invalidEmail": "البريد الإلكتروني غير صالح",
+  "invalidPassword": "كلمة المرور غير صحيحة",
   "fieldRequired": "هذا الحقل مطلوب",
   "invalidPhoneNumber": "أدخل رقم هاتف صحيح",
   "confirmPasswordRequired": "يرجى تأكيد كلمة المرور",

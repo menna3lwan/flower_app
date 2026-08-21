@@ -16,6 +16,8 @@ class AuthCubit extends BaseCubit<AuthState> {
         ForgotPasswordRequested() => _sendPasswordResetEmail(intent),
         VerifyCodeRequested() => _verifyCode(intent),
         ResetPasswordRequested() => _resetPassword(intent),
+        VerifyCodeRequested() => _verifyCode(intent),
+        ResetPasswordRequested() => _resetPassword(intent),
       };
 
   Future<void> _login(LoginRequested intent) async {

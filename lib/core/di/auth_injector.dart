@@ -11,8 +11,8 @@ import '../../features/auth/presentation/cubit/auth_cubit.dart';
 Future<void> setupAuthDependencies() async {
   sl
     ..registerLazySingleton<AuthRemoteDataSource>(
-      () => AuthRemoteDataSourceImpl(
-          sl<ApiClient>(), sl<SecureStorageService>()),
+      () =>
+          AuthRemoteDataSourceImpl(sl<ApiClient>(), sl<SecureStorageService>()),
     )
     ..registerLazySingleton<AuthLocalDataSource>(AuthLocalDataSourceImpl.new)
     // ACTIVATION SWITCH: the real backend (docker/docker-compose.yml,

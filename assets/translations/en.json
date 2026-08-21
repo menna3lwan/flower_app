@@ -12,6 +12,7 @@
   "enterYourEmail": "Enter your email",
   "enterYourPassword": "Enter your password",
   "invalidEmail": "This Email is not valid",
+  "invalidPassword": "Invalid password",
   "fieldRequired": "This field is required",
   "invalidPhoneNumber": "Enter a valid phone number",
   "confirmPasswordRequired": "Please confirm your password",
