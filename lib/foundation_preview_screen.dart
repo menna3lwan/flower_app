@@ -39,7 +39,9 @@ class FoundationPreviewScreen extends StatelessWidget {
               style: AppTextStyles.bodyMedium,
             ),
             const SizedBox(height: AppDimens.space24),
-            const AppSectionHeader(title: 'Typography & color', subtitle: 'core/theme, core/constants'),
+            const AppSectionHeader(
+                title: 'Typography & color',
+                subtitle: 'core/theme, core/constants'),
             const SizedBox(height: AppDimens.space12),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: AppDimens.space16),
@@ -48,16 +50,19 @@ class FoundationPreviewScreen extends StatelessWidget {
                 runSpacing: AppDimens.space8,
                 children: [
                   _ColorSwatch(label: 'primary', color: AppColors.primary),
-                  _ColorSwatch(label: 'primaryLight', color: AppColors.primaryLight),
+                  _ColorSwatch(
+                      label: 'primaryLight', color: AppColors.primaryLight),
                   _ColorSwatch(label: 'success', color: AppColors.success),
                   _ColorSwatch(label: 'error', color: AppColors.error),
                 ],
               ),
             ),
             const SizedBox(height: AppDimens.space24),
-            const AppSectionHeader(title: 'Buttons', subtitle: 'common/widgets/buttons'),
+            const AppSectionHeader(
+                title: 'Buttons', subtitle: 'common/widgets/buttons'),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppDimens.space16),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: AppDimens.space16),
               child: Column(
                 children: [
                   PrimaryButton(label: 'Primary button', onPressed: () {}),
@@ -67,7 +72,8 @@ class FoundationPreviewScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppDimens.space24),
-            const AppSectionHeader(title: 'Image placeholder', subtitle: 'common/widgets/media'),
+            const AppSectionHeader(
+                title: 'Image placeholder', subtitle: 'common/widgets/media'),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: AppDimens.space16),
               child: SizedBox(
@@ -76,12 +82,16 @@ class FoundationPreviewScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppDimens.space24),
-            const AppSectionHeader(title: 'Empty state', subtitle: 'common/widgets/states'),
-            const EmptyState(message: 'Nothing here yet — this is a shared, reusable state.'),
+            const AppSectionHeader(
+                title: 'Empty state', subtitle: 'common/widgets/states'),
+            const EmptyState(
+                message:
+                    'Nothing here yet — this is a shared, reusable state.'),
             const SizedBox(height: AppDimens.space24),
             const AppSectionHeader(title: 'Dialog', subtitle: 'common/dialogs'),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppDimens.space16),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: AppDimens.space16),
               child: OutlinedButton(
                 onPressed: () => showConfirmDialog(
                   context,

@@ -6,7 +6,9 @@ import 'package:customer_app/common/extensions/context_extensions.dart';
 import 'package:customer_app/common/formatters/capitalize_first_letter_formatter.dart';
 import 'package:customer_app/common/widgets/app_back_app_bar.dart';
 import 'package:customer_app/common/widgets/buttons/primary_button.dart';
-import 'package:customer_app/common/widgets/inputs/app_outlined_text_field.dart';
+import 'package:customer_app/common/widgets/inputs/app_text_field.dart';
+import 'package:customer_app/common/widgets/inputs/password_rules_checklist.dart';
+import 'package:customer_app/core/constants/app_colors.dart';
 import 'package:customer_app/core/constants/app_dimens.dart';
 import 'package:customer_app/core/localization/app_strings.dart';
 import '../../../../core/domain/entities/user_entity.dart';
@@ -15,9 +17,9 @@ import 'package:customer_app/core/theme/app_text_styles.dart';
 import 'package:customer_app/core/utils/validators.dart';
 import '../cubit/auth_cubit.dart';
 import '../intent/auth_intent.dart';
+import '../mappers/auth_failure_message.dart';
 import '../state/auth_state.dart';
 
-/// Sign up screen — matches the Figma "Sign up" frame.
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
 
@@ -55,6 +57,7 @@ class _SignUpViewState extends State<SignUpView> {
               lastName: _lastNameController.text.trim(),
               email: _emailController.text.trim(),
               password: _passwordController.text,
+              confirmPassword: _confirmPasswordController.text,
               phoneNumber: _phoneController.text.trim(),
               gender: _gender.value,
             ),
@@ -90,9 +93,14 @@ class _SignUpViewState extends State<SignUpView> {
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is AuthSignUpSuccess) {
-            Get.offAllNamed(CustomerRoutes.main);
+            // The account exists but no session was started — send the
+            // user to Login to sign in with the credentials they just
+            // chose, and clear Sign Up off the stack so Back can't
+            // return to a submitted form.
+            Get.offAllNamed(CustomerRoutes.login);
+            context.showSuccessSnackBar(AppStrings.accountCreatedSuccess);
           } else if (state is AuthFailed) {
-            context.showSnackBar(state.message);
+            context.showErrorSnackBar(state.failure.localizedMessage);
           }
         },
         builder: (context, state) {
@@ -106,100 +114,133 @@ class _SignUpViewState extends State<SignUpView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: AppOutlinedTextField(
+                          child: AppTextField(
                             label: AppStrings.firstName,
                             hint: AppStrings.signUpFirstNameHint,
                             controller: _firstNameController,
-                            validator: _validateRequired,
+                            enabled: !isSubmitting,
                             textCapitalization: TextCapitalization.sentences,
-                            inputFormatters: const [CapitalizeFirstLetterFormatter()],
+                            inputFormatters: const [
+                              CapitalizeFirstLetterFormatter()
+                            ],
+                            validator: (value) => Validators.required(
+                              value,
+                              message: AppStrings.firstNameRequired,
+                            ),
                           ),
                         ),
                         const SizedBox(width: AppDimens.space16),
                         Expanded(
-                          child: AppOutlinedTextField(
+                          child: AppTextField(
                             label: AppStrings.lastName,
                             hint: AppStrings.signUpLastNameHint,
                             controller: _lastNameController,
-                            validator: _validateRequired,
+                            enabled: !isSubmitting,
                             textCapitalization: TextCapitalization.sentences,
-                            inputFormatters: const [CapitalizeFirstLetterFormatter()],
+                            inputFormatters: const [
+                              CapitalizeFirstLetterFormatter()
+                            ],
+                            validator: (value) => Validators.required(
+                              value,
+                              message: AppStrings.lastNameRequired,
+                            ),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: AppDimens.space24),
-                    AppOutlinedTextField(
+                    AppTextField(
                       label: AppStrings.email,
                       hint: AppStrings.signUpEmailHint,
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      validator: _validateEmail,
+                      enabled: !isSubmitting,
+                      validator: Validators.email,
                     ),
                     const SizedBox(height: AppDimens.space24),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: AppOutlinedTextField(
+                          child: AppTextField(
                             label: AppStrings.password,
                             hint: AppStrings.signUpPasswordHint,
                             controller: _passwordController,
                             obscureText: true,
-                            validator: _validatePassword,
+                            enabled: !isSubmitting,
+                            validator: Validators.password,
                           ),
                         ),
                         const SizedBox(width: AppDimens.space16),
                         Expanded(
-                          child: AppOutlinedTextField(
+                          child: AppTextField(
                             label: AppStrings.confirmPassword,
                             hint: AppStrings.signUpConfirmPasswordHint,
                             controller: _confirmPasswordController,
                             obscureText: true,
-                            validator: _validateConfirmPassword,
+                            enabled: !isSubmitting,
+                            validator: (value) => Validators.confirmPassword(
+                              value,
+                              _passwordController.text,
+                            ),
                           ),
                         ),
                       ],
                     ),
+                    const SizedBox(height: AppDimens.space8),
+                    Text(
+                      AppStrings.passwordRequirementsTitle,
+                      style: AppTextStyles.bodySmall
+                          .copyWith(color: AppColors.textPrimary),
+                    ),
+                    const SizedBox(height: AppDimens.space4),
+                    PasswordRulesChecklist(controller: _passwordController),
                     const SizedBox(height: AppDimens.space24),
-                    AppOutlinedTextField(
+                    AppTextField(
                       label: AppStrings.phoneNumber,
                       hint: AppStrings.signUpPhoneNumberHint,
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
-                      validator: _validatePhone,
+                      enabled: !isSubmitting,
+                      validator: Validators.phone,
                     ),
                     const SizedBox(height: AppDimens.space20),
                     Text(AppStrings.gender, style: AppTextStyles.titleMedium),
                     ValueListenableBuilder<Gender>(
                       valueListenable: _gender,
                       builder: (context, gender, _) {
-                        return Row(
-                          children: [
-                            Radio<Gender>(
-                              value: Gender.female,
-                              groupValue: gender,
-                              onChanged: (value) => _gender.value = value!,
-                            ),
-                            Text(AppStrings.female),
-                            const SizedBox(width: AppDimens.space16),
-                            Radio<Gender>(
-                              value: Gender.male,
-                              groupValue: gender,
-                              onChanged: (value) => _gender.value = value!,
-                            ),
-                            Text(AppStrings.male),
-                          ],
+                        return RadioGroup<Gender>(
+                          groupValue: gender,
+                          onChanged: (value) {
+                            if (isSubmitting || value == null) return;
+                            _gender.value = value;
+                          },
+                          child: Row(
+                            children: [
+                              const Radio<Gender>(value: Gender.female),
+                              Text(AppStrings.female),
+                              const SizedBox(width: AppDimens.space16),
+                              const Radio<Gender>(value: Gender.male),
+                              Text(AppStrings.male),
+                            ],
+                          ),
                         );
                       },
                     ),
                     const SizedBox(height: AppDimens.space16),
                     Wrap(
                       children: [
-                        Text('${AppStrings.termsAgreement} ', style: AppTextStyles.bodySmall),
-                        Text(AppStrings.termsAndConditions, style: AppTextStyles.link),
+                        Text(
+                          '${AppStrings.termsAgreement} ',
+                          style: AppTextStyles.bodySmall,
+                        ),
+                        Text(
+                          AppStrings.termsAndConditions,
+                          style: AppTextStyles.link,
+                        ),
                       ],
                     ),
                     const SizedBox(height: AppDimens.space24),
@@ -208,14 +249,20 @@ class _SignUpViewState extends State<SignUpView> {
                       isLoading: isSubmitting,
                       onPressed: _submit,
                     ),
-                    const SizedBox(height: AppDimens.space24),
+                    const SizedBox(height: AppDimens.space16),
                     Center(
                       child: Wrap(
                         children: [
-                          Text('${AppStrings.alreadyHaveAccount} ', style: AppTextStyles.bodyMedium),
+                          Text(
+                            '${AppStrings.alreadyHaveAccount} ',
+                            style: AppTextStyles.bodyMedium,
+                          ),
                           GestureDetector(
-                            onTap: () => Get.back(),
-                            child: Text(AppStrings.login, style: AppTextStyles.link),
+                            onTap: isSubmitting ? null : Get.back,
+                            child: Text(
+                              AppStrings.login,
+                              style: AppTextStyles.link,
+                            ),
                           ),
                         ],
                       ),

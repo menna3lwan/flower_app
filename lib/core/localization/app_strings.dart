@@ -18,19 +18,41 @@ abstract final class AppStrings {
 
   static String get enterYourEmail => 'enterYourEmail'.tr();
   static String get enterYourPassword => 'enterYourPassword'.tr();
-  static String get invalidEmail => 'invalidEmail'.tr();
-  static String get invalidPassword => 'invalidPassword'.tr();
 
-  // Validation messages — shared across every Auth field's `validator:`
-  // callback (see e.g. LoginView._validateEmail for the wrapping
-  // pattern: `Validators.x` decides valid/invalid, these supply the
-  // localized copy actually shown).
+  /// Placeholder for a field the caller didn't give an explicit hint for.
+  static String enterField(String field) =>
+      'enterFieldTemplate'.tr(namedArgs: {'field': field});
+
+  // Field validation — one message per rule, so "missing" and "malformed"
+  // never collapse into the same text.
+  static String get emailRequired => 'emailRequired'.tr();
+  static String get invalidEmail => 'invalidEmail'.tr();
+  static String get passwordRequired => 'passwordRequired'.tr();
+  static String passwordTooShort(int minLength) =>
+      'passwordTooShort'.tr(namedArgs: {'count': '$minLength'});
+  static String get firstNameRequired => 'firstNameRequired'.tr();
+  static String get lastNameRequired => 'lastNameRequired'.tr();
+  static String get phoneRequired => 'phoneRequired'.tr();
+  static String get verificationCodeRequired => 'verificationCodeRequired'.tr();
+
   static String get fieldRequired => 'fieldRequired'.tr();
   static String get invalidPhoneNumber => 'invalidPhoneNumber'.tr();
   static String get confirmPasswordRequired => 'confirmPasswordRequired'.tr();
   static String get passwordsDoNotMatch => 'passwordsDoNotMatch'.tr();
-  static String get verificationCodeIncomplete => 'verificationCodeIncomplete'.tr();
+  static String get verificationCodeIncomplete =>
+      'verificationCodeIncomplete'.tr();
   static String get verificationCodeResent => 'verificationCodeResent'.tr();
+
+  static String get invalidCredentials => 'invalidCredentials'.tr();
+  static String get invalidVerificationCode => 'invalidVerificationCode'.tr();
+  static String get emailNotFound => 'emailNotFound'.tr();
+  static String get noInternetConnection => 'noInternetConnection'.tr();
+  static String get somethingWentWrong => 'somethingWentWrong'.tr();
+  static String get emailAlreadyRegistered => 'emailAlreadyRegistered'.tr();
+
+  // Success feedback.
+  static String get accountCreatedSuccess => 'accountCreatedSuccess'.tr();
+  static String get passwordResetSuccess => 'passwordResetSuccess'.tr();
 
   static String get alreadyHaveAccount => 'alreadyHaveAccount'.tr();
   static String get firstName => 'firstName'.tr();
@@ -47,24 +69,33 @@ abstract final class AppStrings {
   static String get passwordSectionTitle => 'passwordSectionTitle'.tr();
   static String get verificationCodeTitle => 'verificationCodeTitle'.tr();
   static String get verificationCodeSubtitle => 'verificationCodeSubtitle'.tr();
-  // Split into two spans so only "Resend" renders as the pink/underlined
-  // link (Figma: rest of the sentence stays default-colored) — see
-  // OtpVerificationView's `Text.rich` usage.
+
   static String get resendCodePrefix => 'resendCodePrefix'.tr();
   static String get resendCodeAction => 'resendCodeAction'.tr();
   static String get resetPasswordTitle => 'resetPasswordTitle'.tr();
+  static String get resetPasswordSubtitle => 'resetPasswordSubtitle'.tr();
   static String get currentPassword => 'currentPassword'.tr();
   static String get newPassword => 'newPassword'.tr();
 
-  // Sign up field placeholders — Figma Dev Mode values verified against
-  // the Sign Up frame; kept distinct from `enterYourEmail`/
-  // `enterYourPassword` (used on Login) since the two screens' Figma
-  // copy differs word-for-word and this scopes the fix to Sign Up only.
+  // Password visibility toggle + live requirements checklist — shared by
+  // every password field via AppTextField/PasswordRulesChecklist, never
+  // hardcoded per screen.
+  static String get showPassword => 'showPassword'.tr();
+  static String get hidePassword => 'hidePassword'.tr();
+  static String get passwordRequirementsTitle =>
+      'passwordRequirementsTitle'.tr();
+  static String get passwordRuleMinLength => 'passwordRuleMinLength'.tr();
+  static String get passwordRuleUppercase => 'passwordRuleUppercase'.tr();
+  static String get passwordRuleNumber => 'passwordRuleNumber'.tr();
+  static String get passwordRequirementsNotMet =>
+      'passwordRequirementsNotMet'.tr();
+
   static String get signUpFirstNameHint => 'signUpFirstNameHint'.tr();
   static String get signUpLastNameHint => 'signUpLastNameHint'.tr();
   static String get signUpEmailHint => 'signUpEmailHint'.tr();
   static String get signUpPasswordHint => 'signUpPasswordHint'.tr();
-  static String get signUpConfirmPasswordHint => 'signUpConfirmPasswordHint'.tr();
+  static String get signUpConfirmPasswordHint =>
+      'signUpConfirmPasswordHint'.tr();
   static String get signUpPhoneNumberHint => 'signUpPhoneNumberHint'.tr();
 
   // Home.
@@ -118,4 +149,6 @@ abstract final class AppStrings {
   static String get cancel => 'cancel'.tr();
   static String get update => 'update'.tr();
   static String get save => 'save'.tr();
+
+  static String? get invalidPassword => null;
 }

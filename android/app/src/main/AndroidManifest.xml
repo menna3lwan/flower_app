@@ -1,8 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Required for the app to reach the backend API Gateway at all —
+         debug/profile builds already get this from
+         android/app/src/{debug,profile}/AndroidManifest.xml, but a real
+         (release) build needs it declared here explicitly. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="Flower App"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:networkSecurityConfig="@xml/network_security_config">
         <activity
             android:name=".MainActivity"
             android:exported="true"

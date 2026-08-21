@@ -1,12 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../constants/app_colors.dart';
 
 abstract final class AppTextStyles {
   const AppTextStyles._();
 
-  static TextStyle get _base => GoogleFonts.inter(color: AppColors.textPrimary);
+  /// The design system's typeface, resolved from the copy bundled in
+  /// `assets/fonts/inter.ttf` and declared in `pubspec.yaml`.
+  ///
+  /// This used to call `GoogleFonts.inter()`, which ignored the bundled
+  /// file and fetched Inter from fonts.gstatic.com on first paint — so a
+  /// cold, offline launch rendered every screen in a system fallback face
+  /// while still shipping the font in the bundle.
+  static const String fontFamily = 'Inter';
+
+  static TextStyle get _base => const TextStyle(
+        fontFamily: fontFamily,
+        color: AppColors.textPrimary,
+      );
 
   static TextStyle get displayLarge => _base.copyWith(
         fontSize: 28,
@@ -27,11 +38,6 @@ abstract final class AppTextStyles {
         fontWeight: FontWeight.w500,
       );
 
-  // Figma Dev Mode: the Login screen's AppBar title measures 20px/w500 —
-  // distinct from the shared AppBar default (`titleLarge`, 18px/w600
-  // used by Sign Up/Forgot Password/Verification/Reset Password), so it
-  // gets its own named token rather than an inline `.copyWith(fontSize:
-  // 20, ...)` literal in the View.
   static TextStyle get appBarTitleEmphasis => _base.copyWith(
         fontSize: 20,
         fontWeight: FontWeight.w500,

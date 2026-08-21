@@ -18,7 +18,7 @@ abstract final class AppTheme {
         error: AppColors.error,
         surface: AppColors.surface,
       ),
-      fontFamily: AppTextStyles.bodyMedium.fontFamily,
+      fontFamily: AppTextStyles.fontFamily,
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.background,
         surfaceTintColor: Colors.transparent,

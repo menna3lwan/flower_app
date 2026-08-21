@@ -6,20 +6,18 @@ import 'package:customer_app/common/extensions/context_extensions.dart';
 import 'package:customer_app/common/widgets/app_back_app_bar.dart';
 import 'package:customer_app/common/widgets/buttons/primary_button.dart';
 import 'package:customer_app/common/widgets/inputs/app_text_field.dart';
+import 'package:customer_app/common/widgets/inputs/password_rules_checklist.dart';
+import 'package:customer_app/core/constants/app_colors.dart';
 import 'package:customer_app/core/constants/app_dimens.dart';
 import 'package:customer_app/core/localization/app_strings.dart';
 import '../../../../core/routing/customer_routes.dart';
+import 'package:customer_app/core/theme/app_text_styles.dart';
 import 'package:customer_app/core/utils/validators.dart';
 import '../cubit/auth_cubit.dart';
 import '../intent/auth_intent.dart';
+import '../mappers/auth_failure_message.dart';
 import '../state/auth_state.dart';
 
-/// "Reset password" screen — Current/New/Confirm password fields.
-///
-/// Reached from Profile (change password while signed in), not from the
-/// Forgot Password/Verification chain — see [OtpVerificationView]'s doc
-/// comment for why: this screen asks for the user's *current* password,
-/// which a forgot-password user wouldn't have.
 class ResetPasswordView extends StatefulWidget {
   const ResetPasswordView({super.key});
 
@@ -29,37 +27,53 @@ class ResetPasswordView extends StatefulWidget {
 
 class _ResetPasswordViewState extends State<ResetPasswordView> {
   final _formKey = GlobalKey<FormState>();
-  final _currentPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  late final String _resetToken;
+
+  @override
+  void initState() {
+    super.initState();
+    final arguments = Get.arguments;
+    _resetToken = arguments is String ? arguments : '';
+  }
+
   @override
   void dispose() {
-    _currentPasswordController.dispose();
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  String? _validatePassword(String? value) {
-    return Validators.password(value) == null ? null : AppStrings.invalidPassword;
-  }
-
-  String? _validateConfirmPassword(String? value) {
-    if (value == null || value.isEmpty) return AppStrings.confirmPasswordRequired;
-    return value == _newPasswordController.text ? null : AppStrings.passwordsDoNotMatch;
+  void _submit() {
+    if (_formKey.currentState?.validate() ?? false) {
+      context.read<AuthCubit>().onIntent(
+            ResetPasswordRequested(
+              resetToken: _resetToken,
+              newPassword: _newPasswordController.text,
+              confirmNewPassword: _confirmPasswordController.text,
+            ),
+          );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBackAppBar(title: AppStrings.resetPasswordTitle),
+      // Figma: the Reset Password screen's AppBar reads "Password", the
+      // same generic label used across the whole password-recovery flow
+      // (Forgot Password, OTP) — not the "Reset password" body heading.
+      appBar: AppBackAppBar(title: AppStrings.passwordSectionTitle),
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is AuthPasswordResetSuccess) {
+            // Clear the whole reset chain (Forgot Password → OTP → here)
+            // off the stack so Back cannot walk into a spent OTP screen.
             Get.offAllNamed(CustomerRoutes.login);
+            context.showSuccessSnackBar(AppStrings.passwordResetSuccess);
           } else if (state is AuthFailed) {
-            context.showSnackBar(state.message);
+            context.showErrorSnackBar(state.failure.localizedMessage);
           }
         },
         builder: (context, state) {
@@ -72,44 +86,48 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AppTextField(
-                      label: AppStrings.currentPassword,
-                      controller: _currentPasswordController,
-                      obscureText: true,
-                      validator: _validatePassword,
+                    SizedBox(
+                      width: double.infinity,
+                      child: Text(
+                        AppStrings.resetPasswordSubtitle,
+                        style: AppTextStyles.bodyMedium,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    // Figma Dev Mode (Reset password frame, node 76:7947):
-                    // 24px between stacked fields, not 16px.
-                    const SizedBox(height: AppDimens.space24),
+                    const SizedBox(height: AppDimens.space32),
                     AppTextField(
                       label: AppStrings.newPassword,
                       controller: _newPasswordController,
                       obscureText: true,
-                      validator: _validatePassword,
+                      enabled: !isSubmitting,
+                      validator: Validators.password,
+                    ),
+                    const SizedBox(height: AppDimens.space8),
+                    Text(
+                      AppStrings.passwordRequirementsTitle,
+                      style: AppTextStyles.bodySmall
+                          .copyWith(color: AppColors.textPrimary),
+                    ),
+                    const SizedBox(height: AppDimens.space4),
+                    PasswordRulesChecklist(
+                      controller: _newPasswordController,
                     ),
                     const SizedBox(height: AppDimens.space24),
                     AppTextField(
                       label: AppStrings.confirmPassword,
                       controller: _confirmPasswordController,
                       obscureText: true,
-                      validator: _validateConfirmPassword,
+                      enabled: !isSubmitting,
+                      validator: (value) => Validators.confirmPassword(
+                        value,
+                        _newPasswordController.text,
+                      ),
                     ),
-                    // Figma measures ~48px before the primary button here
-                    // too — same pre-button gap as Login/Forgot Password.
                     const SizedBox(height: AppDimens.space48),
                     PrimaryButton(
                       label: AppStrings.update,
                       isLoading: isSubmitting,
-                      onPressed: () {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          context.read<AuthCubit>().onIntent(
-                                ResetPasswordRequested(
-                                  currentPassword: _currentPasswordController.text,
-                                  newPassword: _newPasswordController.text,
-                                ),
-                              );
-                        }
-                      },
+                      onPressed: _submit,
                     ),
                   ],
                 ),

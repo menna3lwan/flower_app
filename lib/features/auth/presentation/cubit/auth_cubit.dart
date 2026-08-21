@@ -4,21 +4,6 @@ import '../../domain/repositories/auth_repository.dart';
 import '../intent/auth_intent.dart';
 import '../state/auth_state.dart';
 
-/// Single Cubit for the whole Auth flow (Login, Sign Up, Forgot
-/// Password, Verification, Reset Password) — orchestration only. It
-/// calls [AuthRepository] and maps the `Result` it gets back onto an
-/// [AuthState]; no validation or business rule lives here (field-level
-/// validation stays in `Validators` + `TextFormField`,
-/// credential/account rules stay in the repository/data source).
-///
-/// One Cubit instead of five (`LoginCubit`/`SignUpCubit`/
-/// `ForgotPasswordCubit`/`VerificationCubit`/`ResetPasswordCubit`)
-/// because all five screens are steps of the same Auth journey against
-/// the same repository — splitting them bought no isolation, just five
-/// near-identical emit-loading/call-repository/fold-result blocks.
-/// [onIntent] is the single entry point a View calls; which private
-/// handler runs is decided by pattern-matching the sealed [AuthIntent]
-/// passed in.
 class AuthCubit extends BaseCubit<AuthState> {
   AuthCubit(this._authRepository) : super(const AuthInitial());
 
@@ -31,13 +16,18 @@ class AuthCubit extends BaseCubit<AuthState> {
         ForgotPasswordRequested() => _sendPasswordResetEmail(intent),
         VerifyCodeRequested() => _verifyCode(intent),
         ResetPasswordRequested() => _resetPassword(intent),
+        VerifyCodeRequested() => _verifyCode(intent),
+        ResetPasswordRequested() => _resetPassword(intent),
       };
 
   Future<void> _login(LoginRequested intent) async {
     safeEmit(const AuthLoading());
-    final result = await _authRepository.login(email: intent.email, password: intent.password);
+    final result = await _authRepository.login(
+      email: intent.email,
+      password: intent.password,
+    );
     result.fold(
-      (failure) => safeEmit(AuthFailed(failure.message)),
+      (failure) => safeEmit(AuthFailed(failure)),
       (user) => safeEmit(AuthLoginSuccess(user)),
     );
   }
@@ -46,7 +36,7 @@ class AuthCubit extends BaseCubit<AuthState> {
     safeEmit(const AuthLoading());
     final result = await _authRepository.continueAsGuest();
     result.fold(
-      (failure) => safeEmit(AuthFailed(failure.message)),
+      (failure) => safeEmit(AuthFailed(failure)),
       (user) => safeEmit(AuthLoginSuccess(user)),
     );
   }
@@ -58,12 +48,13 @@ class AuthCubit extends BaseCubit<AuthState> {
       lastName: intent.lastName,
       email: intent.email,
       password: intent.password,
+      confirmPassword: intent.confirmPassword,
       phoneNumber: intent.phoneNumber,
       gender: intent.gender,
     );
     result.fold(
-      (failure) => safeEmit(AuthFailed(failure.message)),
-      (user) => safeEmit(AuthSignUpSuccess(user)),
+      (failure) => safeEmit(AuthFailed(failure)),
+      (_) => safeEmit(const AuthSignUpSuccess()),
     );
   }
 
@@ -71,28 +62,34 @@ class AuthCubit extends BaseCubit<AuthState> {
     safeEmit(const AuthLoading());
     final result = await _authRepository.sendPasswordResetEmail(intent.email);
     result.fold(
-      (failure) => safeEmit(AuthFailed(failure.message)),
+      (failure) => safeEmit(AuthFailed(failure)),
       (_) => safeEmit(AuthPasswordResetEmailSent(intent.email)),
     );
   }
 
   Future<void> _verifyCode(VerifyCodeRequested intent) async {
     safeEmit(const AuthLoading());
-    final result = await _authRepository.verifyCode(email: intent.email, code: intent.code);
+    final result = await _authRepository.verifyCode(
+      email: intent.email,
+      code: intent.code,
+    );
     result.fold(
-      (failure) => safeEmit(AuthFailed(failure.message)),
-      (_) => safeEmit(const AuthCodeVerified()),
+      (failure) => safeEmit(AuthFailed(failure)),
+      (resetToken) => safeEmit(
+        AuthCodeVerified(email: intent.email, resetToken: resetToken),
+      ),
     );
   }
 
   Future<void> _resetPassword(ResetPasswordRequested intent) async {
     safeEmit(const AuthLoading());
     final result = await _authRepository.resetPassword(
-      currentPassword: intent.currentPassword,
+      resetToken: intent.resetToken,
       newPassword: intent.newPassword,
+      confirmNewPassword: intent.confirmNewPassword,
     );
     result.fold(
-      (failure) => safeEmit(AuthFailed(failure.message)),
+      (failure) => safeEmit(AuthFailed(failure)),
       (_) => safeEmit(const AuthPasswordResetSuccess()),
     );
   }

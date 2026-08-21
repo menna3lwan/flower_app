@@ -12,6 +12,12 @@ abstract final class AppDimens {
   static const double space40 = 40;
 
   static const double space48 = 48;
+  static const double labelToFieldGap = 6;
+
+  /// Verification-screen OTP box. Four of these sit in a centered row.
+  static const double otpBoxWidth = 74;
+  static const double otpBoxHeight = 68;
+
   static const double radiusExtraSmall = 4;
   static const double radiusSmall = 8;
   static const double radiusMedium = 12;
@@ -21,6 +27,8 @@ abstract final class AppDimens {
   static const double buttonHeight = 48;
   static const double inputHeight = 56;
   static const double iconSize = 24;
+  /// Small inline icon — e.g. the ✓/✕ markers in [PasswordRulesChecklist].
+  static const double iconSizeSmall = 16;
   static const double avatarSize = 88;
   static const double bottomNavHeight = 64;
   static const double categoryIconSize = 56;

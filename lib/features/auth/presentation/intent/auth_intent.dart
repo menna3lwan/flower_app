@@ -1,12 +1,5 @@
 import '../../../../core/domain/entities/user_entity.dart';
 
-/// Every action the Auth screens (Login, Sign Up, Forgot Password,
-/// Verification, Reset Password) can dispatch to `AuthCubit`. A View
-/// never calls a named Cubit method directly — it builds one of these
-/// and hands it to `AuthCubit.onIntent()`, which is what makes this MVI
-/// rather than plain Cubit-per-screen: the five screens are different
-/// Views over one Intent → Cubit → State pipeline instead of five
-/// independent ones.
 sealed class AuthIntent {
   const AuthIntent();
 }
@@ -28,6 +21,7 @@ final class SignUpRequested extends AuthIntent {
     required this.lastName,
     required this.email,
     required this.password,
+    required this.confirmPassword,
     required this.phoneNumber,
     required this.gender,
   });
@@ -36,6 +30,7 @@ final class SignUpRequested extends AuthIntent {
   final String lastName;
   final String email;
   final String password;
+  final String confirmPassword;
   final String phoneNumber;
   final Gender gender;
 }
@@ -55,10 +50,14 @@ final class VerifyCodeRequested extends AuthIntent {
 
 final class ResetPasswordRequested extends AuthIntent {
   const ResetPasswordRequested({
-    required this.currentPassword,
+    required this.resetToken,
     required this.newPassword,
+    required this.confirmNewPassword,
   });
 
-  final String currentPassword;
+  /// Issued by [VerifyCodeRequested]'s success response — see
+  /// [AuthRepository.verifyCode].
+  final String resetToken;
   final String newPassword;
+  final String confirmNewPassword;
 }

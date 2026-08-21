@@ -15,6 +15,7 @@ import 'package:customer_app/core/theme/app_text_styles.dart';
 import 'package:customer_app/core/utils/validators.dart';
 import '../cubit/auth_cubit.dart';
 import '../intent/auth_intent.dart';
+import '../mappers/auth_failure_message.dart';
 import '../state/auth_state.dart';
 
 class LoginView extends StatefulWidget {
@@ -49,27 +50,16 @@ class _LoginViewState extends State<LoginView> {
     }
   }
 
-  String? _validateEmail(String? value) {
-    return Validators.email(value) == null ? null : AppStrings.invalidEmail;
-  }
-
-  String? _validatePassword(String? value) {
-    return Validators.password(value) == null ? null : AppStrings.invalidPassword;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBackAppBar(
-        title: AppStrings.login,
-        titleStyle: AppTextStyles.appBarTitleEmphasis,
-      ),
+      appBar: AppBackAppBar(title: AppStrings.login),
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is AuthLoginSuccess) {
             Get.offAllNamed(CustomerRoutes.main);
           } else if (state is AuthFailed) {
-            context.showSnackBar(state.message);
+            context.showErrorSnackBar(state.failure.localizedMessage);
           }
         },
         builder: (context, state) {
@@ -88,7 +78,7 @@ class _LoginViewState extends State<LoginView> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       enabled: !isSubmitting,
-                      validator: _validateEmail,
+                      validator: Validators.email,
                     ),
                     const SizedBox(height: AppDimens.space24),
                     AppTextField(
@@ -97,8 +87,14 @@ class _LoginViewState extends State<LoginView> {
                       controller: _passwordController,
                       obscureText: true,
                       enabled: !isSubmitting,
-                      validator: _validatePassword,
+                      validator: Validators.password,
                     ),
+                    // Figma Dev Mode (Login frame, "Email&Pass. field" group):
+                    // uniform 24px gap between Email→Password AND
+                    // Password→Remember-me row — this SizedBox was missing,
+                    // so the checkbox row sat flush against the Password
+                    // field instead of matching that rhythm.
+                    const SizedBox(height: AppDimens.space24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -113,17 +109,23 @@ class _LoginViewState extends State<LoginView> {
                                   height: 48,
                                   child: Checkbox(
                                     value: remember,
-                                    onChanged:
-                                        isSubmitting ? null : (value) => _rememberMe.value = value ?? false,
+                                    onChanged: isSubmitting
+                                        ? null
+                                        : (value) =>
+                                            _rememberMe.value = value ?? false,
                                   ),
                                 ),
-                                Text(AppStrings.rememberMe, style: AppTextStyles.bodyExtraSmall),
+                                Text(AppStrings.rememberMe,
+                                    style: AppTextStyles.bodyExtraSmall),
                               ],
                             );
                           },
                         ),
                         GestureDetector(
-                          onTap: isSubmitting ? null : () => Get.toNamed(CustomerRoutes.forgotPassword),
+                          onTap: isSubmitting
+                              ? null
+                              : () =>
+                                  Get.toNamed(CustomerRoutes.forgotPassword),
                           child: Text(
                             AppStrings.forgetPassword,
                             style: AppTextStyles.bodySmall.copyWith(
@@ -143,17 +145,24 @@ class _LoginViewState extends State<LoginView> {
                     const SizedBox(height: AppDimens.space16),
                     SecondaryButton(
                       label: AppStrings.continueAsGuest,
-                      onPressed:
-                          isSubmitting ? null : () => context.read<AuthCubit>().onIntent(const GuestLoginRequested()),
+                      onPressed: isSubmitting
+                          ? null
+                          : () => context
+                              .read<AuthCubit>()
+                              .onIntent(const GuestLoginRequested()),
                     ),
                     const SizedBox(height: AppDimens.space16),
                     Center(
                       child: Wrap(
                         children: [
-                          Text('${AppStrings.dontHaveAccount} ', style: AppTextStyles.bodyMedium),
+                          Text('${AppStrings.dontHaveAccount} ',
+                              style: AppTextStyles.bodyMedium),
                           GestureDetector(
-                            onTap: isSubmitting ? null : () => Get.toNamed(CustomerRoutes.signUp),
-                            child: Text(AppStrings.signUp, style: AppTextStyles.link),
+                            onTap: isSubmitting
+                                ? null
+                                : () => Get.toNamed(CustomerRoutes.signUp),
+                            child: Text(AppStrings.signUp,
+                                style: AppTextStyles.link),
                           ),
                         ],
                       ),

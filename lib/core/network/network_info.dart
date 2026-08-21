@@ -1,11 +1,8 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
+
 /// Connectivity check contract, consulted by repositories before hitting
 /// a remote data source (`if (!await networkInfo.isConnected) return
 /// Result.failure(NetworkFailure())`).
-///
-/// The default implementation always reports "connected" — there is no
-/// remote call in the app yet for connectivity to gate. Swap in a real
-/// implementation backed by `connectivity_plus` when [ApiClient] gets a
-/// concrete implementation.
 abstract interface class NetworkInfo {
   Future<bool> get isConnected;
 }
@@ -15,4 +12,17 @@ class AlwaysOnlineNetworkInfo implements NetworkInfo {
 
   @override
   Future<bool> get isConnected async => true;
+}
+
+class ConnectivityNetworkInfo implements NetworkInfo {
+  ConnectivityNetworkInfo([Connectivity? connectivity])
+      : _connectivity = connectivity ?? Connectivity();
+
+  final Connectivity _connectivity;
+
+  @override
+  Future<bool> get isConnected async {
+    final results = await _connectivity.checkConnectivity();
+    return results.isNotEmpty && !results.contains(ConnectivityResult.none);
+  }
 }

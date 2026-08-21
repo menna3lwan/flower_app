@@ -1,6 +1,5 @@
 {
   "appName": "Flowery",
-
   "login": "تسجيل الدخول",
   "signUp": "إنشاء حساب",
   "email": "البريد الإلكتروني",
@@ -33,8 +32,8 @@
   "forgotPasswordSubtitle": "يرجى إدخال البريد الإلكتروني المرتبط بحسابك",
   "confirm": "تأكيد",
   "passwordSectionTitle": "كلمة المرور",
-  "verificationCodeTitle": "رمز التحقق",
-  "verificationCodeSubtitle": "أدخل الرمز المكوّن من 4 أرقام المُرسل إلى بريدك الإلكتروني",
+  "verificationCodeTitle": "تحقق من البريد الإلكتروني",
+  "verificationCodeSubtitle": "يرجى إدخال الرمز الذي تم إرساله إلى بريدك الإلكتروني",
   "resendCodePrefix": "لم تستلم الرمز؟",
   "resendCodeAction": "إعادة الإرسال",
   "resetPasswordTitle": "إعادة تعيين كلمة المرور",
@@ -47,7 +46,6 @@
   "signUpPasswordHint": "أدخل كلمة المرور",
   "signUpConfirmPasswordHint": "تأكيد كلمة المرور",
   "signUpPhoneNumberHint": "أدخل رقم الهاتف",
-
   "deliverTo": "التوصيل إلى",
   "categories": "الفئات",
   "bestSeller": "الأكثر مبيعًا",
@@ -55,12 +53,10 @@
   "viewAll": "عرض الكل",
   "search": "بحث",
   "searchEmptyState": "ابحث عن أي منتج تريده",
-
   "description": "الوصف",
   "bouquetIncludes": "تحتوي الباقة على",
   "addToCart": "أضف إلى السلة",
   "inStock": "متوفر",
-
   "cart": "السلة",
   "subTotal": "المجموع الفرعي",
   "deliveryFee": "رسوم التوصيل",
@@ -79,7 +75,6 @@
   "orderPlacedSuccess": "تم تقديم طلبك بنجاح!",
   "estimatedArrival": "موعد الوصول المتوقع",
   "showMap": "عرض الخريطة",
-
   "myOrders": "طلباتي",
   "active": "نشط",
   "completed": "مكتمل",
@@ -94,7 +89,6 @@
   "update": "تحديث",
   "save": "حفظ",
   "retry": "إعادة المحاولة",
-
   "foundationPreviewTitle": "معاينة الأساسيات",
   "foundationPreviewHeading": "النواة + المشترك + الأصول",
   "foundationPreviewBody": "هذه الشاشة تعرض فقط الأساس المشترك — لا يوجد أي منطق خاص بميزة معينة هنا.",
@@ -109,5 +103,28 @@
   "foundationShowDialogButton": "إظهار نافذة التأكيد",
   "foundationDialogTitle": "تأكيد",
   "foundationDialogMessage": "نافذة الحوار هذه هي مكون مشترك من common/.",
-  "foundationLanguageSection": "اللغة"
+  "foundationLanguageSection": "اللغة",
+  "emailRequired": "البريد الإلكتروني مطلوب",
+  "passwordRequired": "كلمة المرور مطلوبة",
+  "passwordTooShort": "يجب أن تتكون كلمة المرور من {count} أحرف على الأقل",
+  "phoneRequired": "رقم الهاتف مطلوب",
+  "firstNameRequired": "الاسم الأول مطلوب",
+  "lastNameRequired": "اسم العائلة مطلوب",
+  "verificationCodeRequired": "رمز التحقق مطلوب",
+  "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+  "invalidVerificationCode": "رمز التحقق غير صحيح أو منتهي الصلاحية",
+  "emailNotFound": "لا يوجد حساب مرتبط بهذا البريد الإلكتروني",
+  "noInternetConnection": "لا يوجد اتصال بالإنترنت",
+  "somethingWentWrong": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+  "emailAlreadyRegistered": "يوجد حساب مسجل بالفعل بهذا البريد الإلكتروني.",
+  "accountCreatedSuccess": "تم إنشاء الحساب بنجاح. يرجى تسجيل الدخول.",
+  "passwordResetSuccess": "تمت إعادة تعيين كلمة المرور. يرجى تسجيل الدخول.",
+  "resetPasswordSubtitle": "يجب ألا تكون كلمة المرور فارغة، ويجب أن تحتوي على 6 أحرف على الأقل مع حرف كبير ورقم واحد على الأقل",
+  "showPassword": "إظهار كلمة المرور",
+  "hidePassword": "إخفاء كلمة المرور",
+  "passwordRequirementsTitle": "متطلبات كلمة المرور",
+  "passwordRuleMinLength": "6 أحرف على الأقل",
+  "passwordRuleUppercase": "حرف كبير واحد على الأقل",
+  "passwordRuleNumber": "رقم واحد على الأقل",
+  "passwordRequirementsNotMet": "كلمة المرور لا تحقق المتطلبات الموضحة أدناه."
 }

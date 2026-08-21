@@ -34,11 +34,13 @@ class _SplashViewState extends State<SplashView> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.local_florist_rounded, color: AppColors.white, size: 72),
+            const Icon(Icons.local_florist_rounded,
+                color: AppColors.white, size: 72),
             const SizedBox(height: 12),
             Text(
               AppStrings.appName,
-              style: AppTextStyles.headlineMedium.copyWith(color: AppColors.white),
+              style:
+                  AppTextStyles.headlineMedium.copyWith(color: AppColors.white),
             ),
           ],
         ),

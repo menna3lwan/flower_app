@@ -35,21 +35,26 @@ class ProductCard extends StatelessWidget {
               children: [
                 AspectRatio(
                   aspectRatio: 1,
-                  child: AppImagePlaceholder(borderRadius: BorderRadius.circular(AppDimens.radiusMedium)),
+                  child: AppImagePlaceholder(
+                      borderRadius:
+                          BorderRadius.circular(AppDimens.radiusMedium)),
                 ),
                 if (product.discountPercentage != null)
                   Positioned(
                     top: AppDimens.space8,
                     left: AppDimens.space8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: AppColors.error,
-                        borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+                        borderRadius:
+                            BorderRadius.circular(AppDimens.radiusSmall),
                       ),
                       child: Text(
                         '${product.discountPercentage}%',
-                        style: AppTextStyles.caption.copyWith(color: AppColors.white, fontSize: 11),
+                        style: AppTextStyles.caption
+                            .copyWith(color: AppColors.white, fontSize: 11),
                       ),
                     ),
                   ),
@@ -87,7 +92,8 @@ class ProductCard extends StatelessWidget {
                   label: Text(AppStrings.addToCart),
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(40),
-                    textStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.onPrimary),
+                    textStyle: AppTextStyles.bodyMedium
+                        .copyWith(color: AppColors.onPrimary),
                   ),
                 ),
               ),

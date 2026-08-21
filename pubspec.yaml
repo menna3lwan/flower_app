@@ -30,6 +30,21 @@ dependencies:
 
   cupertino_icons: ^1.0.8
 
+  # HTTP client backing core/network/api_client.dart's DioApiClient — added
+  # once the Team2DockerProdution backend (API Gateway + Auth service) gave
+  # us a real base URL to call. See docs/BACKEND_INTEGRATION_TODO.md.
+  dio: ^5.7.0
+
+  # Secure, encrypted persistence for the JWT access token (core/storage/
+  # secure_storage_service.dart) — deliberately separate from
+  # LocalStorageService, which is not encrypted and was never meant to
+  # hold real credentials.
+  flutter_secure_storage: ^9.2.2
+
+  # Real connectivity check for core/network/network_info.dart, replacing
+  # the always-online placeholder now that there is a remote call to gate.
+  connectivity_plus: ^6.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
