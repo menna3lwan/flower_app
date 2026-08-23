@@ -1,10 +1,10 @@
-import 'package:customer_app/core/error/exceptions.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../../core/domain/entities/user_entity.dart';
-import '../../../../core/network/api_client.dart';
-import '../../../../core/network/api_endpoints.dart';
+import '../../../../core/error/exceptions.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../../../core/utils/jwt_payload_decoder.dart';
+import '../../api/auth_api_service.dart';
 import '../models/auth_api_envelope.dart';
 import 'auth_local_data_source.dart';
 
@@ -17,20 +17,29 @@ import 'auth_local_data_source.dart';
 abstract interface class AuthRemoteDataSource
     implements AuthLocalDataSource {}
 
-/// Talks to the real FlowersApp.Auth backend through the API Gateway.
+/// Talks to the real FlowersApp.Auth backend through `AuthApiService`
+/// (Retrofit) instead of the previous hand-rolled `ApiClient` calls.
 ///
 /// Every path/request/response shape here is taken from the live
-/// backend's own Swagger document (read directly off the running
-/// `flowersapp-auth` container with `ASPNETCORE_ENVIRONMENT=Development`,
-/// saved at `docker/auth-swagger.json`) and cross-checked with real curl
-/// calls through the Gateway — nothing here is guessed. See
-/// `core/network/api_endpoints.dart` for the confirmed path list and
-/// `docs/BACKEND_INTEGRATION_TODO.md` for the one open ambiguity (the
-/// Gender 1/2 wire mapping).
+/// backend's own Swagger document (`docker/auth-swagger.json` /
+/// `swagger1.json`) and cross-checked with real curl calls through the
+/// Gateway — nothing here is guessed. See `core/network/api_endpoints.dart`
+/// for the confirmed path list and `docs/BACKEND_INTEGRATION_TODO.md` for
+/// the one open ambiguity (the Gender 1/2 wire mapping).
+///
+/// This class only ever *throws* on failure — a `DioException` from
+/// Retrofit/Dio, or one of the Auth-specific exceptions below — it never
+/// returns a `Result` itself. Converting those exceptions into a
+/// `Result<Failure>` is `AuthRepositoryImpl`'s job, via `safeCall`
+/// (`core/base/safe_call.dart`) and `ErrorParser`
+/// (`core/network/error_parser.dart`), so this class stays a pure "talk
+/// to the network and hand back a domain-shaped value or throw" data
+/// source.
+@LazySingleton(as: AuthLocalDataSource)
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  AuthRemoteDataSourceImpl(this._apiClient, this._secureStorage);
+  AuthRemoteDataSourceImpl(this._apiService, this._secureStorage);
 
-  final ApiClient _apiClient;
+  final AuthApiService _apiService;
   final SecureStorageService _secureStorage;
 
   @override
@@ -38,10 +47,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String email,
     required String password,
   }) async {
-    final json = await _apiClient.post(
-      ApiEndpoints.userLogin,
-      body: {'email': email, 'password': password},
-    );
+    final json = await _apiService.login({'email': email, 'password': password});
     final envelope = AuthApiEnvelope.fromJson(json);
     return _persistSessionAndBuildUser(envelope.dataAsMap, fallbackEmail: email);
   }
@@ -56,17 +62,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String phoneNumber,
     required Gender gender,
   }) async {
-    final json = await _apiClient.post(
-      ApiEndpoints.register,
-      body: {
-        'fullName': '$firstName $lastName'.trim(),
-        'email': email,
-        'phoneNumber': phoneNumber,
-        'gender': gender.apiValue,
-        'password': password,
-        'confirmPassword': confirmPassword,
-      },
-    );
+    final json = await _apiService.signUp({
+      'fullName': '$firstName $lastName'.trim(),
+      'email': email,
+      'phoneNumber': phoneNumber,
+      'gender': gender.apiValue,
+      'password': password,
+      'confirmPassword': confirmPassword,
+    });
     final envelope = AuthApiEnvelope.fromJson(json);
 
     // Register only returns the new user's id (`GuidApiResponse`) — no
@@ -96,7 +99,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<void> sendPasswordResetEmail(String email) async {
-    await _apiClient.post(ApiEndpoints.forgotPassword, body: {'email': email});
+    await _apiService.forgotPassword({'email': email});
   }
 
   @override
@@ -104,10 +107,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String email,
     required String code,
   }) async {
-    final json = await _apiClient.post(
-      ApiEndpoints.verifyOtp,
-      body: {'email': email, 'otp': code},
-    );
+    final json = await _apiService.verifyOtp({'email': email, 'otp': code});
     final envelope = AuthApiEnvelope.fromJson(json);
     return envelope.dataAsMap['resetToken'] as String? ?? '';
   }
@@ -118,14 +118,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String newPassword,
     required String confirmNewPassword,
   }) async {
-    await _apiClient.post(
-      ApiEndpoints.resetPassword,
-      body: {
-        'resetToken': resetToken,
-        'newPassword': newPassword,
-        'confirmNewPassword': confirmNewPassword,
-      },
-    );
+    await _apiService.resetPassword({
+      'resetToken': resetToken,
+      'newPassword': newPassword,
+      'confirmNewPassword': confirmNewPassword,
+    });
   }
 
   @override
@@ -133,15 +130,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     final storedRefreshToken = await _secureStorage.readRefreshToken();
     if (storedRefreshToken == null || storedRefreshToken.isEmpty) {
       // Nothing to refresh with — surfaced to the caller as a normal
-      // failed operation rather than a special case; the repository's
-      // exception mapping already turns this into an AuthFailure.
+      // failed operation rather than a special case; ErrorParser already
+      // turns this into an AuthFailure.
       throw const InvalidSessionException();
     }
 
-    final json = await _apiClient.post(
-      ApiEndpoints.refreshToken,
-      body: {'refreshToken': storedRefreshToken},
-    );
+    final json =
+        await _apiService.refreshToken({'refreshToken': storedRefreshToken});
     final envelope = AuthApiEnvelope.fromJson(json);
     await _persistSession(envelope.dataAsMap);
   }

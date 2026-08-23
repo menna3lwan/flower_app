@@ -54,16 +54,21 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
     return Scaffold(
       appBar: AppBackAppBar(title: AppStrings.passwordSectionTitle),
       body: BlocConsumer<AuthCubit, AuthState>(
+        listenWhen: (previous, current) =>
+            previous.forgotPasswordState != current.forgotPasswordState,
         listener: (context, state) {
-          if (state is AuthPasswordResetEmailSent) {
+          final forgotPasswordState = state.forgotPasswordState;
+          if (forgotPasswordState.isSuccess) {
             Get.toNamed(CustomerRoutes.otpVerification,
                 arguments: _emailController.text.trim());
-          } else if (state is AuthFailed) {
-            context.showErrorSnackBar(state.failure.forgotPasswordMessage);
+          } else if (forgotPasswordState.isFailure) {
+            context.showErrorSnackBar(
+              forgotPasswordState.failure!.forgotPasswordMessage,
+            );
           }
         },
         builder: (context, state) {
-          final isSubmitting = state is AuthLoading;
+          final isSubmitting = state.forgotPasswordState.isLoading;
           return SafeArea(
             // Matches Login/Sign Up/Reset Password: scrollable instead of
             // a plain Padding, so the form doesn't overflow when the

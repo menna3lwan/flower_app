@@ -113,23 +113,51 @@ class _OtpVerificationViewState extends State<OtpVerificationView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBackAppBar(title: AppStrings.passwordSectionTitle),
-      body: BlocConsumer<AuthCubit, AuthState>(
-        listener: (context, state) {
-          if (state is AuthCodeVerified) {
-            Get.toNamed(
-              CustomerRoutes.resetPassword,
-              arguments: state.resetToken,
-            );
-          } else if (state is AuthPasswordResetEmailSent) {
-            context.showInfoSnackBar(AppStrings.verificationCodeResent);
-            _startResendCooldown();
-          } else if (state is AuthFailed) {
-            _codeError.value = state.failure.verifyOtpMessage;
-          }
-        },
-        builder: (context, state) {
-          final isSubmitting = state is AuthLoading;
-          return SafeArea(
+      body: MultiBlocListener(
+        listeners: [
+          // Submitting the code itself: success carries the resetToken
+          // forward to Reset Password; failure reports "wrong/expired
+          // code" specifically.
+          BlocListener<AuthCubit, AuthState>(
+            listenWhen: (previous, current) =>
+                previous.verifyOtpState != current.verifyOtpState,
+            listener: (context, state) {
+              final verifyOtpState = state.verifyOtpState;
+              if (verifyOtpState.isSuccess) {
+                Get.toNamed(
+                  CustomerRoutes.resetPassword,
+                  arguments: verifyOtpState.data,
+                );
+              } else if (verifyOtpState.isFailure) {
+                _codeError.value = verifyOtpState.failure!.verifyOtpMessage;
+              }
+            },
+          ),
+          // The "Resend" action reuses ForgotPasswordRequested on this
+          // same Cubit instance — tracked as its own field
+          // (forgotPasswordState) rather than being folded into
+          // verifyOtpState, so a resend failure is reported with its own
+          // "couldn't send the code" wording instead of "wrong code".
+          BlocListener<AuthCubit, AuthState>(
+            listenWhen: (previous, current) =>
+                previous.forgotPasswordState != current.forgotPasswordState,
+            listener: (context, state) {
+              final forgotPasswordState = state.forgotPasswordState;
+              if (forgotPasswordState.isSuccess) {
+                context.showInfoSnackBar(AppStrings.verificationCodeResent);
+                _startResendCooldown();
+              } else if (forgotPasswordState.isFailure) {
+                _codeError.value =
+                    forgotPasswordState.failure!.forgotPasswordMessage;
+              }
+            },
+          ),
+        ],
+        child: BlocBuilder<AuthCubit, AuthState>(
+          builder: (context, state) {
+            final isSubmitting = state.verifyOtpState.isLoading ||
+                state.forgotPasswordState.isLoading;
+            return SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(AppDimens.space16),
               child: ValueListenableBuilder<String?>(
@@ -232,7 +260,8 @@ class _OtpVerificationViewState extends State<OtpVerificationView> {
               ),
             ),
           );
-        },
+          },
+        ),
       ),
     );
   }

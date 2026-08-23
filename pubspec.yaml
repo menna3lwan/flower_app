@@ -18,6 +18,12 @@ dependencies:
   # Dependency injection (core/di/injector.dart is the single GetIt instance).
   get_it: ^7.7.0
 
+  # Generates the GetIt registrations for the auth module from
+  # @injectable/@LazySingleton/@module annotations (core/di/injectable_injector.dart)
+  # instead of the hand-written registerX() calls core/di/auth_injector.dart
+  # used to contain.
+  injectable: ^2.5.0
+
   # Navigation / utilities only — never state management (see core/routing/).
   get: ^4.6.6
 
@@ -34,6 +40,12 @@ dependencies:
   # once the Team2DockerProdution backend (API Gateway + Auth service) gave
   # us a real base URL to call. See docs/BACKEND_INTEGRATION_TODO.md.
   dio: ^5.7.0
+
+  # Typed HTTP client generation for the Auth module's API surface
+  # (features/auth/api/auth_api_service.dart) — Retrofit sits on top of
+  # the same Dio instance core/network/dio_client_factory.dart builds, so
+  # interceptors (auth header, Accept-Language, logging) still apply.
+  retrofit: ^4.4.1
 
   # Secure, encrypted persistence for the JWT access token (core/storage/
   # secure_storage_service.dart) — deliberately separate from
@@ -55,6 +67,23 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+
+  # Code generation for injectable (DI registrations) and retrofit (API
+  # client bodies). Run `dart run build_runner build
+  # --delete-conflicting-outputs` after any change to an @injectable,
+  # @module, or @RestApi-annotated file — see the header comment on
+  # core/di/injectable_injector.config.dart and
+  # features/auth/api/auth_api_service.g.dart for why those two files are
+  # checked in as hand-written stand-ins rather than build_runner output.
+  build_runner: ^2.4.13
+  injectable_generator: ^2.6.2
+  retrofit_generator: ^9.1.5
+
+  # Unit-test mocking for AuthApiService/AuthRepository/AuthLocalDataSource
+  # (test/support/mocks.dart) — manual `extends Mock implements X` mocks,
+  # deliberately not the `@GenerateMocks`-annotated codegen flavor, so the
+  # test suite doesn't also depend on a build_runner run to exist.
+  mockito: ^5.4.4
 
 flutter:
   uses-material-design: true

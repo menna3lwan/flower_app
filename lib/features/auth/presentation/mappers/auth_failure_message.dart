@@ -12,10 +12,7 @@ import 'package:customer_app/core/localization/app_strings.dart';
 /// `docker/auth-swagger.json`) means "this reset link expired" — showing
 /// the Forgot-Password wording there would be actively confusing. Each
 /// getter below is a deliberate, screen-specific reading of what a given
-/// failure means in that one context; none of them fall back to a shared
-/// generic getter, so a new failure type must be reasoned about for every
-/// screen it can occur on rather than silently inheriting one meaning
-/// everywhere.
+/// failure means in that one context.
 ///
 /// [ValidationFailure] is the one case that *does* pass the backend's own
 /// message straight through: it carries the API's own field-validation
@@ -25,6 +22,18 @@ import 'package:customer_app/core/localization/app_strings.dart';
 /// (`ServerFailure`, `UnexpectedFailure`, a bare `AuthFailure`) collapses
 /// to a single safe, friendly fallback so raw exception text can never
 /// reach the user.
+///
+/// [InvalidCredentialsFailure] is only ever produced by Login (see
+/// `AuthRepositoryImpl`/`ErrorParser` — nothing on Sign Up, Forgot
+/// Password, Verify OTP, or Reset Password can raise it), but `Failure`
+/// is one shared sealed hierarchy, so every switch over it must stay
+/// exhaustive regardless of which cases are actually reachable on a given
+/// screen. It is intentionally folded into each of those four screens'
+/// generic fallback rather than left unhandled — an IDE "quick fix" once
+/// filled the gap with `throw UnimplementedError()`, which would have
+/// crashed the app the first time the sealed-class checker's edge case
+/// was hit; a safe fallback message is the correct unreachable-in-practice
+/// default, never a throw.
 extension AuthFailureMessage on Failure {
   /// Login screen: email/password submit.
   String get loginMessage => switch (this) {
@@ -55,7 +64,8 @@ extension AuthFailureMessage on Failure {
         ValidationFailure() ||
         UnexpectedFailure() ||
         NotFoundFailure() ||
-        InvalidVerificationCodeFailure() =>
+        InvalidVerificationCodeFailure() ||
+        InvalidCredentialsFailure() =>
           AppStrings.somethingWentWrong,
       };
 
@@ -71,13 +81,16 @@ extension AuthFailureMessage on Failure {
         ValidationFailure() ||
         UnexpectedFailure() ||
         ConflictFailure() ||
-        InvalidVerificationCodeFailure() =>
+        InvalidVerificationCodeFailure() ||
+        InvalidCredentialsFailure() =>
           AppStrings.somethingWentWrong,
       };
 
-  /// OTP / Verification screen: submitting the code (and its "resend"
-  /// action, which reuses the same [AuthCubit] and therefore the same
-  /// failure surface — see the note on `AuthFailed` in `auth_state.dart`).
+  /// OTP / Verification screen: submitting the code. (Its "resend"
+  /// action reuses the same [AuthCubit] instance but is tracked as its
+  /// own `forgotPasswordState` field on `AuthState`, with its own
+  /// `forgotPasswordMessage` getter below — so a resend failure is never
+  /// read through this getter.)
   String get verifyOtpMessage => switch (this) {
         InvalidVerificationCodeFailure() => AppStrings.invalidVerificationCode,
         // The backend's own 404 for verify-otp means the code/session
@@ -92,7 +105,8 @@ extension AuthFailureMessage on Failure {
         ServerFailure() ||
         ValidationFailure() ||
         UnexpectedFailure() ||
-        ConflictFailure() =>
+        ConflictFailure() ||
+        InvalidCredentialsFailure() =>
           AppStrings.somethingWentWrong,
       };
 
@@ -112,7 +126,8 @@ extension AuthFailureMessage on Failure {
         ValidationFailure() ||
         UnexpectedFailure() ||
         ConflictFailure() ||
-        InvalidVerificationCodeFailure() =>
+        InvalidVerificationCodeFailure() ||
+        InvalidCredentialsFailure() =>
           AppStrings.somethingWentWrong,
       };
 }

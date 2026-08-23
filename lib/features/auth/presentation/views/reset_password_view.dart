@@ -89,18 +89,23 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
       // (Forgot Password, OTP) — not the "Reset password" body heading.
       appBar: AppBackAppBar(title: AppStrings.passwordSectionTitle),
       body: BlocConsumer<AuthCubit, AuthState>(
+        listenWhen: (previous, current) =>
+            previous.resetPasswordState != current.resetPasswordState,
         listener: (context, state) {
-          if (state is AuthPasswordResetSuccess) {
+          final resetPasswordState = state.resetPasswordState;
+          if (resetPasswordState.isSuccess) {
             // Clear the whole reset chain (Forgot Password → OTP → here)
             // off the stack so Back cannot walk into a spent OTP screen.
             Get.offAllNamed(CustomerRoutes.login);
             context.showSuccessSnackBar(AppStrings.passwordResetSuccess);
-          } else if (state is AuthFailed) {
-            context.showErrorSnackBar(state.failure.resetPasswordMessage);
+          } else if (resetPasswordState.isFailure) {
+            context.showErrorSnackBar(
+              resetPasswordState.failure!.resetPasswordMessage,
+            );
           }
         },
         builder: (context, state) {
-          final isSubmitting = state is AuthLoading;
+          final isSubmitting = state.resetPasswordState.isLoading;
           return SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(AppDimens.space16),

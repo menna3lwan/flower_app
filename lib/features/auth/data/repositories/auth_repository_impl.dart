@@ -1,60 +1,30 @@
+import 'package:injectable/injectable.dart';
+
+import '../../../../core/base/safe_call.dart';
 import '../../../../core/domain/entities/user_entity.dart';
-import 'package:customer_app/core/error/exceptions.dart';
-import 'package:customer_app/core/error/failures.dart';
-import 'package:customer_app/core/result/result.dart';
+import '../../../../core/result/result.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_local_data_source.dart';
 
+/// Every method here is a one-line `safeCall(...)` wrapper around the
+/// data source — no `try`/`catch`, no manual exception-to-[Failure]
+/// switch. That mapping used to live in this class's own private
+/// `_guard`/`_mapException` pair; it now lives once, centrally, in
+/// `core/base/safe_call.dart` + `core/network/error_parser.dart`, so
+/// every future repository in the app gets the exact same error handling
+/// for free instead of re-implementing it.
+@LazySingleton(as: AuthRepository)
 class AuthRepositoryImpl implements AuthRepository {
   const AuthRepositoryImpl(this._dataSource);
 
   final AuthLocalDataSource _dataSource;
-
-  static Failure _mapException(Object error) => switch (error) {
-        InvalidCredentialsException() => const InvalidCredentialsFailure(),
-        InvalidVerificationCodeException() =>
-          const InvalidVerificationCodeFailure(),
-        InvalidSessionException() => const AuthFailure(),
-        EmailNotFoundException() => const NotFoundFailure(),
-        NetworkException() => const NetworkFailure(),
-        ApiException(:final statusCode, :final message)
-            when statusCode == 400 || statusCode == 422 =>
-          ValidationFailure(message),
-        ApiException(:final statusCode, :final message)
-            when statusCode == 401 || statusCode == 403 =>
-          AuthFailure(message),
-        ApiException(:final statusCode, :final message)
-            when statusCode == 404 =>
-          NotFoundFailure(message),
-        ApiException(:final statusCode, :final message)
-            when statusCode == 409 =>
-          ConflictFailure(message),
-        ApiException(:final statusCode, :final message)
-            when statusCode == 429 =>
-          RateLimitedFailure(message),
-        ApiException(:final statusCode, :final message)
-            when statusCode >= 500 =>
-          ServerFailure(message),
-        ApiException(:final message) => ServerFailure(message),
-        ServerException() => const ServerFailure(),
-        CacheException() => const ServerFailure(),
-        _ => const UnexpectedFailure(),
-      };
-
-  Future<Result<T>> _guard<T>(Future<T> Function() operation) async {
-    try {
-      return Result.success(await operation());
-    } catch (error) {
-      return Result.failure(_mapException(error));
-    }
-  }
 
   @override
   Future<Result<UserEntity>> login({
     required String email,
     required String password,
   }) {
-    return _guard(() => _dataSource.login(email: email, password: password));
+    return safeCall(() => _dataSource.login(email: email, password: password));
   }
 
   @override
@@ -67,7 +37,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String phoneNumber,
     required Gender gender,
   }) {
-    return _guard(
+    return safeCall(
       () => _dataSource.signUp(
         firstName: firstName,
         lastName: lastName,
@@ -82,12 +52,12 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Result<UserEntity>> continueAsGuest() {
-    return _guard(() => _dataSource.continueAsGuest());
+    return safeCall(() => _dataSource.continueAsGuest());
   }
 
   @override
   Future<Result<void>> sendPasswordResetEmail(String email) {
-    return _guard(() => _dataSource.sendPasswordResetEmail(email));
+    return safeCall(() => _dataSource.sendPasswordResetEmail(email));
   }
 
   @override
@@ -95,7 +65,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String code,
   }) {
-    return _guard(() => _dataSource.verifyCode(email: email, code: code));
+    return safeCall(() => _dataSource.verifyCode(email: email, code: code));
   }
 
   @override
@@ -104,7 +74,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String newPassword,
     required String confirmNewPassword,
   }) {
-    return _guard(
+    return safeCall(
       () => _dataSource.resetPassword(
         resetToken: resetToken,
         newPassword: newPassword,
@@ -115,6 +85,6 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Result<void>> refreshSession() {
-    return _guard(() => _dataSource.refreshSession());
+    return safeCall(() => _dataSource.refreshSession());
   }
 }

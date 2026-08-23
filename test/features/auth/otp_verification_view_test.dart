@@ -7,9 +7,9 @@ import 'package:customer_app/core/error/failures.dart';
 import 'package:customer_app/core/localization/app_strings.dart';
 import 'package:customer_app/core/result/result.dart';
 import 'package:customer_app/features/auth/domain/repositories/auth_repository.dart';
-import 'package:customer_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:customer_app/features/auth/presentation/views/otp_verification_view.dart';
 
+import '../../support/auth_cubit_harness.dart';
 import '../../support/fake_auth_repository.dart';
 import '../../support/localization_harness.dart';
 
@@ -17,7 +17,7 @@ Widget _harness(AuthRepository repository, {Locale? locale}) {
   return localizedApp(
     locale: locale,
     home: BlocProvider(
-      create: (_) => AuthCubit(repository),
+      create: (_) => buildAuthCubit(repository),
       child: const OtpVerificationView(),
     ),
   );

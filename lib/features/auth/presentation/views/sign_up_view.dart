@@ -89,20 +89,23 @@ class _SignUpViewState extends State<SignUpView> {
     return Scaffold(
       appBar: AppBackAppBar(title: AppStrings.signUp),
       body: BlocConsumer<AuthCubit, AuthState>(
+        listenWhen: (previous, current) =>
+            previous.signUpState != current.signUpState,
         listener: (context, state) {
-          if (state is AuthSignUpSuccess) {
+          final signUpState = state.signUpState;
+          if (signUpState.isSuccess) {
             // The account exists but no session was started — send the
             // user to Login to sign in with the credentials they just
             // chose, and clear Sign Up off the stack so Back can't
             // return to a submitted form.
             Get.offAllNamed(CustomerRoutes.login);
             context.showSuccessSnackBar(AppStrings.accountCreatedSuccess);
-          } else if (state is AuthFailed) {
-            context.showErrorSnackBar(state.failure.signUpMessage);
+          } else if (signUpState.isFailure) {
+            context.showErrorSnackBar(signUpState.failure!.signUpMessage);
           }
         },
         builder: (context, state) {
-          final isSubmitting = state is AuthLoading;
+          final isSubmitting = state.signUpState.isLoading;
           return SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(AppDimens.space16),

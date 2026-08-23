@@ -64,15 +64,18 @@ class _LoginViewState extends State<LoginView> {
     return Scaffold(
       appBar: AppBackAppBar(title: AppStrings.login),
       body: BlocConsumer<AuthCubit, AuthState>(
+        listenWhen: (previous, current) =>
+            previous.loginState != current.loginState,
         listener: (context, state) {
-          if (state is AuthLoginSuccess) {
+          final loginState = state.loginState;
+          if (loginState.isSuccess) {
             Get.offAllNamed(CustomerRoutes.main);
-          } else if (state is AuthFailed) {
-            context.showErrorSnackBar(state.failure.loginMessage);
+          } else if (loginState.isFailure) {
+            context.showErrorSnackBar(loginState.failure!.loginMessage);
           }
         },
         builder: (context, state) {
-          final isSubmitting = state is AuthLoading;
+          final isSubmitting = state.loginState.isLoading;
           return SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(AppDimens.space16),

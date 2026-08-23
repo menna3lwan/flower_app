@@ -47,9 +47,9 @@ abstract final class CustomerPages {
         child: const OtpVerificationView(),
       ),
     ),
-    // Reached from OtpVerificationView on AuthCodeVerified, carrying the
-    // one-time resetToken forward as the route argument (Forgot Password
-    // → OTP → Reset Password → Login).
+    // Reached from OtpVerificationView once state.verifyOtpState succeeds,
+    // carrying the one-time resetToken forward as the route argument
+    // (Forgot Password → OTP → Reset Password → Login).
     GetPage(
       name: CustomerRoutes.resetPassword,
       page: () => BlocProvider(
