@@ -132,6 +132,33 @@ void main() {
     expect(find.text(AppStrings.loginInvalidCredentials), findsOneWidget);
   });
 
+  testWidgets(
+      'a real backend 401 (AuthFailure) shows the same wrong-credentials '
+      'message, not a generic error', (tester) async {
+    // Regression test: the live Auth service returns HTTP 401 for a wrong
+    // email/password (`docker/auth-swagger.json`, `/Auth/api/v1/user/login`),
+    // which `ErrorParser` maps to `AuthFailure` — not `InvalidCredentialsFailure`,
+    // since `AuthRemoteDataSourceImpl` never throws the local-only
+    // `InvalidCredentialsException`. Before this was fixed, `loginMessage`
+    // folded `AuthFailure` into the generic fallback and showed
+    // "Something went wrong" for a plain wrong-password attempt.
+    await pumpLocalized(
+      tester,
+      _harness(
+        FakeAuthRepository(loginResult: const Result.failure(AuthFailure())),
+      ),
+    );
+
+    await tester.enterText(
+        find.byType(TextFormField).at(0), 'test@flowery.com');
+    await tester.enterText(find.byType(TextFormField).at(1), 'wrongpass');
+    await tester.tap(find.widgetWithText(ElevatedButton, AppStrings.login));
+    await tester.pumpAndSettle();
+
+    expect(find.text(AppStrings.loginInvalidCredentials), findsOneWidget);
+    expect(find.text(AppStrings.somethingWentWrong), findsNothing);
+  });
+
   testWidgets('renders in Arabic under RTL', (tester) async {
     await pumpLocalized(
         tester, _harness(FakeAuthRepository(), locale: const Locale('ar')));

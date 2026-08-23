@@ -26,7 +26,14 @@ void main() {
 
   group('login', () {
     test('wraps a successful data-source call as Result.success', () async {
-      when(dataSource.login(email: anyNamed('email'), password: anyNamed('password')))
+      // Stubbed against the exact literal values each test sends below,
+      // not `anyNamed`/`any` — the real, installed Mockito types those
+      // matchers as `Null`, which the analyzer rejects for a required
+      // non-nullable parameter ("The argument type 'Null' can't be
+      // assigned to the parameter type 'String'"), confirmed live via
+      // the Dart analyzer. Manual `extends Mock implements X` mocks (no
+      // `@GenerateMocks` codegen) have no other built-in way around this.
+      when(dataSource.login(email: 'a@b.com', password: 'Password123'))
           .thenAnswer((_) async => _user);
 
       final result =
@@ -41,7 +48,7 @@ void main() {
 
     test('turns a thrown exception into the matching Failure via safeCall',
         () async {
-      when(dataSource.login(email: anyNamed('email'), password: anyNamed('password')))
+      when(dataSource.login(email: 'a@b.com', password: 'wrong'))
           .thenThrow(const InvalidCredentialsException());
 
       final result =
@@ -59,13 +66,13 @@ void main() {
     test('propagates a Conflict (existing email) as ConflictFailure',
         () async {
       when(dataSource.signUp(
-        firstName: anyNamed('firstName'),
-        lastName: anyNamed('lastName'),
-        email: anyNamed('email'),
-        password: anyNamed('password'),
-        confirmPassword: anyNamed('confirmPassword'),
-        phoneNumber: anyNamed('phoneNumber'),
-        gender: anyNamed('gender'),
+        firstName: 'A',
+        lastName: 'B',
+        email: 'a@b.com',
+        password: 'Password123',
+        confirmPassword: 'Password123',
+        phoneNumber: '01000000000',
+        gender: Gender.female,
       )).thenThrow(
         const ApiException(statusCode: 409, message: 'Email already exists.'),
       );
@@ -91,8 +98,8 @@ void main() {
   group('verifyCode', () {
     test('success returns the resetToken', () async {
       when(dataSource.verifyCode(
-        email: anyNamed('email'),
-        code: anyNamed('code'),
+        email: 'a@b.com',
+        code: '1234',
       )).thenAnswer((_) async => 'reset-token');
 
       final result =
@@ -106,8 +113,8 @@ void main() {
 
     test('a wrong code becomes InvalidVerificationCodeFailure', () async {
       when(dataSource.verifyCode(
-        email: anyNamed('email'),
-        code: anyNamed('code'),
+        email: 'a@b.com',
+        code: '0000',
       )).thenThrow(const InvalidVerificationCodeException());
 
       final result =
@@ -123,9 +130,9 @@ void main() {
   group('resetPassword', () {
     test('an expired/invalid token surfaces as NotFoundFailure', () async {
       when(dataSource.resetPassword(
-        resetToken: anyNamed('resetToken'),
-        newPassword: anyNamed('newPassword'),
-        confirmNewPassword: anyNamed('confirmNewPassword'),
+        resetToken: 'expired',
+        newPassword: 'NewPassword123',
+        confirmNewPassword: 'NewPassword123',
       )).thenThrow(
         const ApiException(statusCode: 404, message: 'Token not found.'),
       );
@@ -144,9 +151,9 @@ void main() {
 
     test('success returns Result<void> with no failure', () async {
       when(dataSource.resetPassword(
-        resetToken: anyNamed('resetToken'),
-        newPassword: anyNamed('newPassword'),
-        confirmNewPassword: anyNamed('confirmNewPassword'),
+        resetToken: 'valid',
+        newPassword: 'NewPassword123',
+        confirmNewPassword: 'NewPassword123',
       )).thenAnswer((_) async {});
 
       final result = await repository.resetPassword(
@@ -161,7 +168,7 @@ void main() {
 
   group('sendPasswordResetEmail', () {
     test('an unknown email surfaces as NotFoundFailure', () async {
-      when(dataSource.sendPasswordResetEmail(any))
+      when(dataSource.sendPasswordResetEmail('nobody@x.com'))
           .thenThrow(const EmailNotFoundException());
 
       final result = await repository.sendPasswordResetEmail('nobody@x.com');
