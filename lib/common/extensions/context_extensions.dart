@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:customer_app/core/constants/app_colors.dart';
+import 'package:customer_app/common/widgets/feedback/auth_message_banner.dart';
+import 'package:customer_app/core/constants/app_dimens.dart';
 
 /// Small ergonomics layer over [BuildContext] so widgets read
 /// `context.textTheme` / `context.screenWidth` instead of the more
@@ -22,29 +23,41 @@ extension ContextExtensions on BuildContext {
 
   EdgeInsets get viewPadding => MediaQuery.viewPaddingOf(this);
 
-  void showSnackBar(String message) => _showSnackBar(message);
-
-  /// Failure feedback — API errors and rejected submissions.
-  void showErrorSnackBar(String message) =>
-      _showSnackBar(message, background: AppColors.error);
-
-  /// Confirmation feedback — e.g. account created, password reset.
-  void showSuccessSnackBar(String message) =>
-      _showSnackBar(message, background: AppColors.success);
-
-  void _showSnackBar(String message, {Color? background}) {
+  /// Shows the shared [AuthMessageBanner] as floating, borderless
+  /// SnackBar content — the one feedback surface every Auth screen (and
+  /// anything else that wants it) should use instead of a plain default
+  /// SnackBar.
+  void showAuthMessage(AuthMessageType type, String message) {
     ScaffoldMessenger.of(this)
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          content: Text(
-            message,
-            style: background == null
-                ? null
-                : const TextStyle(color: AppColors.onPrimary),
+          content: AuthMessageBanner(type: type, message: message),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          behavior: SnackBarBehavior.floating,
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppDimens.space16,
           ),
-          backgroundColor: background,
+          duration: const Duration(seconds: 4),
         ),
       );
   }
+
+  /// Failure feedback — API errors and rejected submissions.
+  void showErrorSnackBar(String message) =>
+      showAuthMessage(AuthMessageType.error, message);
+
+  /// Confirmation feedback — e.g. account created, password reset.
+  void showSuccessSnackBar(String message) =>
+      showAuthMessage(AuthMessageType.success, message);
+
+  /// Non-blocking heads-up that isn't a failure — e.g. rate-limited,
+  /// please wait.
+  void showWarningSnackBar(String message) =>
+      showAuthMessage(AuthMessageType.warning, message);
+
+  /// Neutral confirmation of a background action — e.g. "code resent".
+  void showInfoSnackBar(String message) =>
+      showAuthMessage(AuthMessageType.info, message);
 }

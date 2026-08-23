@@ -44,11 +44,14 @@ abstract final class AppStrings {
   static String get verificationCodeResent => 'verificationCodeResent'.tr();
 
   static String get invalidCredentials => 'invalidCredentials'.tr();
+  static String get loginInvalidCredentials => 'loginInvalidCredentials'.tr();
   static String get invalidVerificationCode => 'invalidVerificationCode'.tr();
   static String get emailNotFound => 'emailNotFound'.tr();
   static String get noInternetConnection => 'noInternetConnection'.tr();
   static String get somethingWentWrong => 'somethingWentWrong'.tr();
   static String get emailAlreadyRegistered => 'emailAlreadyRegistered'.tr();
+  static String get resetLinkExpired => 'resetLinkExpired'.tr();
+  static String get tooManyAttempts => 'tooManyAttempts'.tr();
 
   // Success feedback.
   static String get accountCreatedSuccess => 'accountCreatedSuccess'.tr();
@@ -72,6 +75,8 @@ abstract final class AppStrings {
 
   static String get resendCodePrefix => 'resendCodePrefix'.tr();
   static String get resendCodeAction => 'resendCodeAction'.tr();
+  static String resendCodeCountdown(int seconds) =>
+      'resendCodeCountdown'.tr(namedArgs: {'seconds': '$seconds'});
   static String get resetPasswordTitle => 'resetPasswordTitle'.tr();
   static String get resetPasswordSubtitle => 'resetPasswordSubtitle'.tr();
   static String get currentPassword => 'currentPassword'.tr();
@@ -149,6 +154,4 @@ abstract final class AppStrings {
   static String get cancel => 'cancel'.tr();
   static String get update => 'update'.tr();
   static String get save => 'save'.tr();
-
-  static String? get invalidPassword => null;
 }

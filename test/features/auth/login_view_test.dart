@@ -128,7 +128,7 @@ void main() {
     await tester.tap(find.widgetWithText(ElevatedButton, AppStrings.login));
     await tester.pumpAndSettle();
 
-    expect(find.text(AppStrings.invalidCredentials), findsOneWidget);
+    expect(find.text(AppStrings.loginInvalidCredentials), findsOneWidget);
   });
 
   testWidgets('renders in Arabic under RTL', (tester) async {
@@ -160,7 +160,12 @@ void main() {
     await tester.pumpAndSettle();
 
     // Would fail if the message were baked in English at the data layer.
-    expect(find.text(AppStrings.invalidCredentials), findsOneWidget);
-    expect(find.text('Invalid email or password'), findsNothing);
+    expect(find.text(AppStrings.loginInvalidCredentials), findsOneWidget);
+    expect(
+      find.text(
+        'The email or password is incorrect. Please check your details and try again.',
+      ),
+      findsNothing,
+    );
   });
 }

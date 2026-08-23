@@ -14,7 +14,9 @@ abstract final class AppDimens {
   static const double space48 = 48;
   static const double labelToFieldGap = 6;
 
-  /// Verification-screen OTP box. Four of these sit in a centered row.
+  /// Verification-screen OTP box size — used as the Pinput field's
+  /// per-digit box theme (see `otp_verification_view.dart`'s
+  /// `_OtpPinInput`).
   static const double otpBoxWidth = 74;
   static const double otpBoxHeight = 68;
 

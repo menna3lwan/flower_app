@@ -16,6 +16,15 @@ import 'package:customer_app/core/theme/app_text_styles.dart';
 /// position survive a tap untouched. This is implemented once, here, so no
 /// screen (Login, Sign Up, Reset Password, ...) needs its own copy of the
 /// same toggle logic.
+///
+/// Live validation: a field stays quiet (no error shown) until the user
+/// leaves it once (focus lost) — matching "don't show errors before the
+/// user has interacted with the field." After that first blur, or once
+/// [forceLiveValidation] is set (a screen sets this after a failed Submit
+/// press, so every field — touched or not — starts reporting live from
+/// then on), the field validates on every keystroke and its error clears
+/// the instant the input becomes valid again. This lives here, once,
+/// rather than being re-implemented per screen.
 class AppTextField extends StatefulWidget {
   const AppTextField({
     required this.label,
@@ -28,10 +37,13 @@ class AppTextField extends StatefulWidget {
     this.prefixIcon,
     this.readOnly = false,
     this.onTap,
+    this.onChanged,
     this.maxLines = 1,
     this.enabled = true,
     this.inputFormatters,
     this.textCapitalization = TextCapitalization.none,
+    this.fieldKey,
+    this.forceLiveValidation = false,
     super.key,
   });
 
@@ -45,10 +57,21 @@ class AppTextField extends StatefulWidget {
   final Widget? prefixIcon;
   final bool readOnly;
   final VoidCallback? onTap;
+  final ValueChanged<String>? onChanged;
   final int maxLines;
   final bool enabled;
   final List<TextInputFormatter>? inputFormatters;
   final TextCapitalization textCapitalization;
+
+  /// Lets a parent imperatively re-run just this field's validator (e.g.
+  /// Sign Up re-checking Confirm Password the moment Password changes) —
+  /// see `sign_up_view.dart`/`reset_password_view.dart`.
+  final GlobalKey<FormFieldState<String>>? fieldKey;
+
+  /// Set by the parent Form after a failed Submit press so every field —
+  /// including ones the user never touched — starts live-validating
+  /// immediately, instead of only ones they've already visited.
+  final bool forceLiveValidation;
 
   @override
   State<AppTextField> createState() => _AppTextFieldState();
@@ -61,6 +84,28 @@ class _AppTextFieldState extends State<AppTextField> {
   // hidden on the very next frame.
   late bool _obscured = widget.obscureText;
 
+  late final FocusNode _focusNode = FocusNode();
+  bool _touched = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_handleFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_handleFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _handleFocusChange() {
+    if (!_focusNode.hasFocus && !_touched) {
+      setState(() => _touched = true);
+    }
+  }
+
   void _toggleObscured() => setState(() => _obscured = !_obscured);
 
   @override
@@ -68,6 +113,7 @@ class _AppTextFieldState extends State<AppTextField> {
     final isPasswordField = widget.obscureText;
     final effectiveSuffixIcon =
         widget.suffixIcon ?? _buildVisibilityToggle(isPasswordField);
+    final liveValidate = _touched || widget.forceLiveValidation;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,10 +124,18 @@ class _AppTextFieldState extends State<AppTextField> {
         ),
         const SizedBox(height: AppDimens.labelToFieldGap),
         TextFormField(
+          key: widget.fieldKey,
           controller: widget.controller,
+          focusNode: _focusNode,
           obscureText: isPasswordField ? _obscured : false,
           keyboardType: widget.keyboardType,
           validator: widget.validator,
+          autovalidateMode: widget.validator == null
+              ? null
+              : (liveValidate
+                  ? AutovalidateMode.onUserInteraction
+                  : AutovalidateMode.disabled),
+          onChanged: widget.onChanged,
           readOnly: widget.readOnly,
           onTap: widget.onTap,
           maxLines: widget.maxLines,

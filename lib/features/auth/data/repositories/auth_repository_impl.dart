@@ -30,6 +30,9 @@ class AuthRepositoryImpl implements AuthRepository {
             when statusCode == 409 =>
           ConflictFailure(message),
         ApiException(:final statusCode, :final message)
+            when statusCode == 429 =>
+          RateLimitedFailure(message),
+        ApiException(:final statusCode, :final message)
             when statusCode >= 500 =>
           ServerFailure(message),
         ApiException(:final message) => ServerFailure(message),
@@ -91,15 +94,8 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Result<String>> verifyCode({
     required String email,
     required String code,
-  }) async {
-    try {
-      final result = await _dataSource.verifyCode(email: email, code: code);
-      return Result.success(result);
-    } on ServerException catch (e) {
-      return Result.failure(AuthFailure(e.message));
-    } catch (_) {
-      return Result.failure(UnexpectedFailure());
-    }
+  }) {
+    return _guard(() => _dataSource.verifyCode(email: email, code: code));
   }
 
   @override

@@ -47,11 +47,9 @@ abstract final class CustomerPages {
         child: const OtpVerificationView(),
       ),
     ),
-    // Reset Password isn't reached from the Forgot Password/Verification
-    // chain (see OtpVerificationView's doc comment) — Figma only shows it
-    // as a Profile > change-password screen. It's still registered here
-    // (and still driven by AuthCubit, per the single-Cubit rule) so the
-    // route exists once Profile links to it.
+    // Reached from OtpVerificationView on AuthCodeVerified, carrying the
+    // one-time resetToken forward as the route argument (Forgot Password
+    // → OTP → Reset Password → Login).
     GetPage(
       name: CustomerRoutes.resetPassword,
       page: () => BlocProvider(

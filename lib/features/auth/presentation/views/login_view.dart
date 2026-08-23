@@ -31,6 +31,12 @@ class _LoginViewState extends State<LoginView> {
   final _passwordController = TextEditingController();
   final ValueNotifier<bool> _rememberMe = ValueNotifier(false);
 
+  // Set once a Submit press fails validation, so every field — including
+  // ones the user hasn't visited yet — starts validating live from then
+  // on instead of only reporting errors after the next blur. See
+  // AppTextField's `forceLiveValidation` doc for why this lives per-screen.
+  bool _forceLiveValidation = false;
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -40,14 +46,17 @@ class _LoginViewState extends State<LoginView> {
   }
 
   void _submit() {
-    if (_formKey.currentState?.validate() ?? false) {
-      context.read<AuthCubit>().onIntent(
-            LoginRequested(
-              email: _emailController.text.trim(),
-              password: _passwordController.text,
-            ),
-          );
+    final isValid = _formKey.currentState?.validate() ?? false;
+    if (!isValid) {
+      setState(() => _forceLiveValidation = true);
+      return;
     }
+    context.read<AuthCubit>().onIntent(
+          LoginRequested(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+          ),
+        );
   }
 
   @override
@@ -59,7 +68,7 @@ class _LoginViewState extends State<LoginView> {
           if (state is AuthLoginSuccess) {
             Get.offAllNamed(CustomerRoutes.main);
           } else if (state is AuthFailed) {
-            context.showErrorSnackBar(state.failure.localizedMessage);
+            context.showErrorSnackBar(state.failure.loginMessage);
           }
         },
         builder: (context, state) {
@@ -79,6 +88,7 @@ class _LoginViewState extends State<LoginView> {
                       keyboardType: TextInputType.emailAddress,
                       enabled: !isSubmitting,
                       validator: Validators.email,
+                      forceLiveValidation: _forceLiveValidation,
                     ),
                     const SizedBox(height: AppDimens.space24),
                     AppTextField(
@@ -88,6 +98,7 @@ class _LoginViewState extends State<LoginView> {
                       obscureText: true,
                       enabled: !isSubmitting,
                       validator: Validators.password,
+                      forceLiveValidation: _forceLiveValidation,
                     ),
                     // Figma Dev Mode (Login frame, "Email&Pass. field" group):
                     // uniform 24px gap between Email→Password AND

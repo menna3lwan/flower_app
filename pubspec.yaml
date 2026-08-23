@@ -45,6 +45,12 @@ dependencies:
   # the always-online placeholder now that there is a remote call to gate.
   connectivity_plus: ^6.1.0
 
+  # OTP/verification-code input (see otp_verification_view.dart) — a
+  # focused, actively maintained widget for exactly this one input
+  # pattern (per-digit boxes, auto-focus, filled/error/disabled states),
+  # instead of hand-rolling and re-testing that state machine ourselves.
+  pinput: ^5.0.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

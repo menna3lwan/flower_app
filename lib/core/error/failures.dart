@@ -56,3 +56,10 @@ final class InvalidVerificationCodeFailure extends Failure {
 final class UnexpectedFailure extends Failure {
   const UnexpectedFailure([super.message = 'An unexpected error occurred.']);
 }
+
+/// The backend rejected the request for being too frequent (HTTP 429) —
+/// confirmed on Login, Driver Login, and Forgot Password in the live
+/// Auth service's Swagger document.
+final class RateLimitedFailure extends Failure {
+  const RateLimitedFailure([super.message = 'Too many attempts.']);
+}
