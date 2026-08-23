@@ -30,6 +30,16 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  // Lets `_onNewPasswordChanged` imperatively re-run just the Confirm
+  // Password validator the moment New Password changes, so a stale
+  // "passwords don't match" error clears the instant it becomes true
+  // again — without waiting for the user to touch Confirm Password too.
+  final _confirmPasswordFieldKey = GlobalKey<FormFieldState<String>>();
+
+  // See AppTextField's `forceLiveValidation` doc — flipped on once a
+  // Submit press fails validation.
+  bool _forceLiveValidation = false;
+
   late final String _resetToken;
 
   @override
@@ -46,16 +56,29 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
     super.dispose();
   }
 
-  void _submit() {
-    if (_formKey.currentState?.validate() ?? false) {
-      context.read<AuthCubit>().onIntent(
-            ResetPasswordRequested(
-              resetToken: _resetToken,
-              newPassword: _newPasswordController.text,
-              confirmNewPassword: _confirmPasswordController.text,
-            ),
-          );
+  void _onNewPasswordChanged(String _) {
+    // Only re-validate Confirm Password if the user has already put
+    // something in it — otherwise this would show "required"/"doesn't
+    // match" on a field they haven't reached yet, which is exactly the
+    // aggressive-validation behavior AppTextField is built to avoid.
+    if (_confirmPasswordController.text.isNotEmpty) {
+      _confirmPasswordFieldKey.currentState?.validate();
     }
+  }
+
+  void _submit() {
+    final isValid = _formKey.currentState?.validate() ?? false;
+    if (!isValid) {
+      setState(() => _forceLiveValidation = true);
+      return;
+    }
+    context.read<AuthCubit>().onIntent(
+          ResetPasswordRequested(
+            resetToken: _resetToken,
+            newPassword: _newPasswordController.text,
+            confirmNewPassword: _confirmPasswordController.text,
+          ),
+        );
   }
 
   @override
@@ -66,18 +89,23 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
       // (Forgot Password, OTP) — not the "Reset password" body heading.
       appBar: AppBackAppBar(title: AppStrings.passwordSectionTitle),
       body: BlocConsumer<AuthCubit, AuthState>(
+        listenWhen: (previous, current) =>
+            previous.resetPasswordState != current.resetPasswordState,
         listener: (context, state) {
-          if (state is AuthPasswordResetSuccess) {
+          final resetPasswordState = state.resetPasswordState;
+          if (resetPasswordState.isSuccess) {
             // Clear the whole reset chain (Forgot Password → OTP → here)
             // off the stack so Back cannot walk into a spent OTP screen.
             Get.offAllNamed(CustomerRoutes.login);
             context.showSuccessSnackBar(AppStrings.passwordResetSuccess);
-          } else if (state is AuthFailed) {
-            context.showErrorSnackBar(state.failure.localizedMessage);
+          } else if (resetPasswordState.isFailure) {
+            context.showErrorSnackBar(
+              resetPasswordState.failure!.resetPasswordMessage,
+            );
           }
         },
         builder: (context, state) {
-          final isSubmitting = state is AuthLoading;
+          final isSubmitting = state.resetPasswordState.isLoading;
           return SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(AppDimens.space16),
@@ -101,6 +129,8 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                       obscureText: true,
                       enabled: !isSubmitting,
                       validator: Validators.password,
+                      onChanged: _onNewPasswordChanged,
+                      forceLiveValidation: _forceLiveValidation,
                     ),
                     const SizedBox(height: AppDimens.space8),
                     Text(
@@ -122,6 +152,8 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                         value,
                         _newPasswordController.text,
                       ),
+                      fieldKey: _confirmPasswordFieldKey,
+                      forceLiveValidation: _forceLiveValidation,
                     ),
                     const SizedBox(height: AppDimens.space48),
                     PrimaryButton(

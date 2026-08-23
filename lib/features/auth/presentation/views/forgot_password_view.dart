@@ -27,6 +27,11 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
 
+  // See AppTextField's `forceLiveValidation` doc — flipped on once a
+  // Submit press fails validation, so the Email field starts validating
+  // live even if the user never blurred it.
+  bool _forceLiveValidation = false;
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -34,11 +39,14 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   }
 
   void _submit() {
-    if (_formKey.currentState?.validate() ?? false) {
-      context
-          .read<AuthCubit>()
-          .onIntent(ForgotPasswordRequested(_emailController.text.trim()));
+    final isValid = _formKey.currentState?.validate() ?? false;
+    if (!isValid) {
+      setState(() => _forceLiveValidation = true);
+      return;
     }
+    context
+        .read<AuthCubit>()
+        .onIntent(ForgotPasswordRequested(_emailController.text.trim()));
   }
 
   @override
@@ -46,16 +54,21 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
     return Scaffold(
       appBar: AppBackAppBar(title: AppStrings.passwordSectionTitle),
       body: BlocConsumer<AuthCubit, AuthState>(
+        listenWhen: (previous, current) =>
+            previous.forgotPasswordState != current.forgotPasswordState,
         listener: (context, state) {
-          if (state is AuthPasswordResetEmailSent) {
+          final forgotPasswordState = state.forgotPasswordState;
+          if (forgotPasswordState.isSuccess) {
             Get.toNamed(CustomerRoutes.otpVerification,
                 arguments: _emailController.text.trim());
-          } else if (state is AuthFailed) {
-            context.showErrorSnackBar(state.failure.localizedMessage);
+          } else if (forgotPasswordState.isFailure) {
+            context.showErrorSnackBar(
+              forgotPasswordState.failure!.forgotPasswordMessage,
+            );
           }
         },
         builder: (context, state) {
-          final isSubmitting = state is AuthLoading;
+          final isSubmitting = state.forgotPasswordState.isLoading;
           return SafeArea(
             // Matches Login/Sign Up/Reset Password: scrollable instead of
             // a plain Padding, so the form doesn't overflow when the
@@ -94,6 +107,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                       hint: AppStrings.enterYourEmail,
                       enabled: !isSubmitting,
                       validator: Validators.email,
+                      forceLiveValidation: _forceLiveValidation,
                     ),
                     const SizedBox(height: AppDimens.space48),
                     PrimaryButton(

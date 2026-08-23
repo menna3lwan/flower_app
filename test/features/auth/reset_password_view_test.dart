@@ -5,9 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:customer_app/common/widgets/inputs/app_text_field.dart';
 import 'package:customer_app/core/localization/app_strings.dart';
 import 'package:customer_app/features/auth/domain/repositories/auth_repository.dart';
-import 'package:customer_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:customer_app/features/auth/presentation/views/reset_password_view.dart';
 
+import '../../support/auth_cubit_harness.dart';
 import '../../support/fake_auth_repository.dart';
 import '../../support/localization_harness.dart';
 
@@ -15,7 +15,7 @@ Widget _harness(AuthRepository repository, {Locale? locale}) {
   return localizedApp(
     locale: locale,
     home: BlocProvider(
-      create: (_) => AuthCubit(repository),
+      create: (_) => buildAuthCubit(repository),
       child: const ResetPasswordView(),
     ),
   );

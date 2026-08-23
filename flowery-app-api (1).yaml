@@ -1,0 +1,971 @@
+openapi: 3.0.3
+info:
+  title: Flowery App API
+  description: >
+    API documentation for the Flowery flower-shop mobile app, covering the
+    Home, Best Seller, Product Details, Occasion, Categories, Categories
+    Filter and Search screens, plus the admin endpoints used to configure
+    the dynamic Home screen.
+
+
+    All endpoints listed under the "Public" tags require no authentication
+    token. Endpoints under the "Admin" tag require a bearer token belonging
+    to an admin user.
+
+
+    Every request MUST send an `Accept-Language` header set to either `ar`
+    or `en`. All localized text in responses (`messageLocalized`, category
+    names, product names, ...) is returned in the requested language, while
+    `message` always stays in the fixed technical/English form.
+
+
+    Every response — success or failure — is wrapped in the same envelope,
+    matching the backend's `OperationResult` / `OperationResult<T>` type:
+
+
+    ```json
+    { "data": null, "isSuccess": false, "message": "NotFound", "messageLocalized": "The requested resource was not found.", "statusCode": "NotFound" }
+    ```
+
+    ```json
+    { "data": { "id": 1, "name": "Example" }, "isSuccess": true, "message": "Success", "messageLocalized": "Success", "statusCode": "Success" }
+    ```
+  version: "1.0.0"
+servers:
+  - url: https://api.flowery-app.com/v1
+    description: Production
+  - url: https://staging-api.flowery-app.com/v1
+    description: Staging
+
+tags:
+  - name: Home
+    description: Dynamic Home screen configuration.
+  - name: Categories
+    description: Product categories.
+  - name: Occasions
+    description: Product occasions (Wedding, Birthday, Graduation, ...).
+  - name: Products
+    description: Best sellers, product listing/filter/search and product details.
+  - name: Admin - Home
+    description: Admin-only endpoints to manage Home screen sections. Requires bearer token.
+
+security:
+  - {}
+
+paths:
+  /home/sections:
+    get:
+      tags: [Home]
+      summary: Get Home screen sections
+      description: >
+        Returns the ordered list of **active** sections configured by the
+        admin for the Home screen. Each section tells the mobile app what
+        block to render (categories row, occasions row, best-seller
+        carousel, or a generic products carousel) and, for a products
+        carousel, which occasion or category it should be filtered by. The
+        app uses `type` (and `occasionId` / `categoryId` when present) to
+        decide which additional API(s) below to call in order to fill each
+        section with data.
+      operationId: getHomeSections
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/AcceptLanguageHeader'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HomeSectionsResponse'
+              example:
+                data:
+                  - id: 1
+                    type: Categories
+                    index: 0
+                    isActive: true
+                    title: Categories
+                    occasionId: null
+                    categoryId: null
+                  - id: 2
+                    type: BestSeller
+                    index: 1
+                    isActive: true
+                    title: Best seller
+                    occasionId: null
+                    categoryId: null
+                  - id: 3
+                    type: Occasions
+                    index: 2
+                    isActive: true
+                    title: Occasion
+                    occasionId: null
+                    categoryId: null
+                  - id: 4
+                    type: ProductsCarousel
+                    index: 3
+                    isActive: true
+                    title: Wedding picks
+                    occasionId: 1
+                    categoryId: null
+                isSuccess: true
+                message: Success
+                messageLocalized: Success
+                statusCode: Success
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /categories:
+    get:
+      tags: [Categories]
+      summary: Get all categories
+      description: >
+        Returns all active product categories, used on the Home screen
+        categories row, the Categories screen, and as the filter tabs on
+        the Categories Filter screen.
+      operationId: getCategories
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/AcceptLanguageHeader'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoriesResponse'
+              example:
+                data:
+                  - id: 1
+                    name: Flowers
+                    iconUrl: https://cdn.flowery-app.com/categories/flowers.png
+                  - id: 2
+                    name: Gift
+                    iconUrl: https://cdn.flowery-app.com/categories/gift.png
+                  - id: 3
+                    name: Card
+                    iconUrl: https://cdn.flowery-app.com/categories/card.png
+                  - id: 4
+                    name: Jewellery
+                    iconUrl: https://cdn.flowery-app.com/categories/jewellery.png
+                isSuccess: true
+                message: Success
+                messageLocalized: Success
+                statusCode: Success
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /occasions:
+    get:
+      tags: [Occasions]
+      summary: Get all occasions
+      description: >
+        Returns all active occasions, used on the Home screen occasions row
+        and the Occasion screen tabs (Wedding, Graduation, Birthday, ...).
+      operationId: getOccasions
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/AcceptLanguageHeader'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OccasionsResponse'
+              example:
+                data:
+                  - id: 1
+                    name: Wedding
+                    imageUrl: https://cdn.flowery-app.com/occasions/wedding.jpg
+                  - id: 2
+                    name: Graduation
+                    imageUrl: https://cdn.flowery-app.com/occasions/graduation.jpg
+                  - id: 3
+                    name: Birthday
+                    imageUrl: https://cdn.flowery-app.com/occasions/birthday.jpg
+                isSuccess: true
+                message: Success
+                messageLocalized: Success
+                statusCode: Success
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /products/best-sellers:
+    get:
+      tags: [Products]
+      summary: Get best seller products (paginated)
+      description: >
+        Returns the paginated list of best-selling products, used on the
+        Home screen best-seller carousel and the full Best Seller screen.
+      operationId: getBestSellerProducts
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/AcceptLanguageHeader'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSizeParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
+              example:
+                data:
+                  items:
+                    - id: 101
+                      name: Red roses
+                      imageUrl: https://cdn.flowery-app.com/products/101.jpg
+                      currency: EGP
+                      price: 600
+                      originalPrice: 800
+                      discountPercentage: 20
+                      status: InStock
+                    - id: 102
+                      name: Sunny
+                      imageUrl: https://cdn.flowery-app.com/products/102.jpg
+                      currency: EGP
+                      price: 600
+                      originalPrice: null
+                      discountPercentage: null
+                      status: InStock
+                  pagination:
+                    page: 1
+                    pageSize: 10
+                    totalCount: 42
+                    totalPages: 5
+                    hasNextPage: true
+                    hasPreviousPage: false
+                isSuccess: true
+                message: Success
+                messageLocalized: Success
+                statusCode: Success
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /products:
+    get:
+      tags: [Products]
+      summary: Get products (paginated, filterable, searchable)
+      description: >
+        Returns a paginated list of products. Used by the Categories Filter
+        screen (filter by `categoryId` and/or `sortBy`), the Occasion
+        screen (filter by `occasionId`), and the Search screen (filter by
+        `keyword`). All filters are optional and combinable.
+      operationId: getProducts
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/AcceptLanguageHeader'
+        - name: occasionId
+          in: query
+          required: false
+          description: Filter products belonging to this occasion.
+          schema:
+            type: integer
+            example: 1
+        - name: categoryId
+          in: query
+          required: false
+          description: Filter products belonging to this category.
+          schema:
+            type: integer
+            example: 1
+        - name: keyword
+          in: query
+          required: false
+          description: Free-text search on product name/description, used by the Search screen.
+          schema:
+            type: string
+            example: red
+        - name: sortBy
+          in: query
+          required: false
+          description: Sort order, as offered on the Categories Filter screen "Sort by" sheet.
+          schema:
+            $ref: '#/components/schemas/SortBy'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSizeParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
+              example:
+                data:
+                  items:
+                    - id: 101
+                      name: Red roses
+                      imageUrl: https://cdn.flowery-app.com/products/101.jpg
+                      currency: EGP
+                      price: 600
+                      originalPrice: 800
+                      discountPercentage: 20
+                      status: InStock
+                  pagination:
+                    page: 1
+                    pageSize: 10
+                    totalCount: 6
+                    totalPages: 1
+                    hasNextPage: false
+                    hasPreviousPage: false
+                isSuccess: true
+                message: Success
+                messageLocalized: Success
+                statusCode: Success
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /products/{productId}:
+    get:
+      tags: [Products]
+      summary: Get product details
+      description: Returns full details of a single product, used by the Product Details screen.
+      operationId: getProductById
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/AcceptLanguageHeader'
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 101
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDetailsResponse'
+              example:
+                data:
+                  id: 101
+                  name: 15 Pink Rose Bouquet
+                  imageUrl: https://cdn.flowery-app.com/products/101.jpg
+                  currency: EGP
+                  price: 1500
+                  originalPrice: null
+                  discountPercentage: null
+                  status: InStock
+                  images:
+                    - https://cdn.flowery-app.com/products/101_1.jpg
+                    - https://cdn.flowery-app.com/products/101_2.jpg
+                    - https://cdn.flowery-app.com/products/101_3.jpg
+                    - https://cdn.flowery-app.com/products/101_4.jpg
+                  description: Lorem ipsum dolor sit amet consectetur. Id sit morbi ornare morbi duis rhoncus orci massa.
+                  includes:
+                    - name: Pink roses
+                      quantity: 15
+                    - name: White wrap
+                      quantity: null
+                  categoryId: 1
+                  occasionIds: [1]
+                isSuccess: true
+                message: Success
+                messageLocalized: Success
+                statusCode: Success
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /admin/home/sections:
+    get:
+      tags: [Admin - Home]
+      summary: Get all Home sections (admin)
+      description: >
+        Returns every Home section (active and inactive), ordered by
+        `index`, for the admin section-management UI. Requires an admin
+        bearer token.
+      operationId: adminGetHomeSections
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AcceptLanguageHeader'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HomeSectionsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    post:
+      tags: [Admin - Home]
+      summary: Add a Home section (admin)
+      description: >
+        Creates a new Home screen section. `occasionId` should only be set
+        when `type` is `ProductsCarousel` and the carousel should be
+        filtered by occasion; `categoryId` should only be set when `type`
+        is `ProductsCarousel` and the carousel should be filtered by
+        category. Requires an admin bearer token.
+      operationId: adminCreateHomeSection
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AcceptLanguageHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HomeSectionCreateRequest'
+            example:
+              type: ProductsCarousel
+              index: 4
+              isActive: true
+              title: Wedding picks
+              occasionId: 1
+              categoryId: null
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HomeSectionResponse'
+              example:
+                data:
+                  id: 5
+                  type: ProductsCarousel
+                  index: 4
+                  isActive: true
+                  title: Wedding picks
+                  occasionId: 1
+                  categoryId: null
+                isSuccess: true
+                message: Created
+                messageLocalized: Created
+                statusCode: Created
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /admin/home/sections/reorder:
+    put:
+      tags: [Admin - Home]
+      summary: Sort / reorder Home sections (admin)
+      description: >
+        Updates the `index` (display order) and/or `isActive` state of
+        Home sections in bulk, as configured by the admin. Requires an
+        admin bearer token.
+      operationId: adminReorderHomeSections
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AcceptLanguageHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HomeSectionReorderRequest'
+            example:
+              sections:
+                - id: 3
+                  index: 0
+                  isActive: true
+                - id: 1
+                  index: 1
+                  isActive: true
+                - id: 2
+                  index: 2
+                  isActive: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HomeSectionsResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Admin JWT access token, required only for Admin - Home endpoints.
+
+  parameters:
+    AcceptLanguageHeader:
+      name: Accept-Language
+      in: header
+      required: true
+      description: Response localization language, controls the `messageLocalized` field and all localized content.
+      schema:
+        type: string
+        enum: [ar, en]
+        example: en
+    PageParam:
+      name: page
+      in: query
+      required: false
+      description: 1-based page number.
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+        example: 1
+    PageSizeParam:
+      name: pageSize
+      in: query
+      required: false
+      description: Number of items per page.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 10
+        example: 10
+
+  responses:
+    BadRequest:
+      description: Bad Request (e.g. invalid query parameters).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseResponse'
+          example:
+            data: null
+            isSuccess: false
+            message: BadRequest
+            messageLocalized: The request could not be processed.
+            statusCode: BadRequest
+    ValidationError:
+      description: Request body failed validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse'
+          example:
+            data:
+              - field: type
+                error: type is required.
+              - field: index
+                error: index must be a non-negative integer.
+            isSuccess: false
+            message: ValidationError
+            messageLocalized: One or more validation errors occurred.
+            statusCode: ValidationError
+    Unauthorized:
+      description: Missing or invalid admin token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseResponse'
+          example:
+            data: null
+            isSuccess: false
+            message: Unauthorized
+            messageLocalized: You are not authorized to access this resource.
+            statusCode: Unauthorized
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseResponse'
+          example:
+            data: null
+            isSuccess: false
+            message: NotFound
+            messageLocalized: The requested resource was not found.
+            statusCode: NotFound
+    ServerError:
+      description: Unexpected server error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseResponse'
+          example:
+            data: null
+            isSuccess: false
+            message: InternalServerError
+            messageLocalized: An unexpected error occurred. Please try again later.
+            statusCode: InternalServerError
+
+  schemas:
+    StatusCode:
+      type: string
+      description: Mirrors the backend `StatusCode` enum used by `OperationResult`.
+      enum:
+        - Success
+        - Created
+        - NoContent
+        - BadRequest
+        - ValidationError
+        - NotFound
+        - Unauthorized
+        - InternalServerError
+
+    BaseResponse:
+      type: object
+      description: >
+        Base response envelope shared by every endpoint, matching the
+        backend's `OperationResult` / `OperationResult<T>` type.
+      properties:
+        data:
+          nullable: true
+        isSuccess:
+          type: boolean
+        message:
+          type: string
+          description: Fixed technical message, not affected by `Accept-Language`.
+        messageLocalized:
+          type: string
+          description: Human-readable message, translated according to `Accept-Language`.
+        statusCode:
+          $ref: '#/components/schemas/StatusCode'
+      required: [data, isSuccess, message, messageLocalized, statusCode]
+
+    ValidationErrorItem:
+      type: object
+      properties:
+        field:
+          type: string
+          example: type
+        error:
+          type: string
+          example: type is required.
+      required: [field, error]
+
+    ValidationErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/ValidationErrorItem'
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 10
+        totalCount:
+          type: integer
+          example: 42
+        totalPages:
+          type: integer
+          example: 5
+        hasNextPage:
+          type: boolean
+        hasPreviousPage:
+          type: boolean
+      required: [page, pageSize, totalCount, totalPages, hasNextPage, hasPreviousPage]
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Flowers
+        iconUrl:
+          type: string
+          format: uri
+          example: https://cdn.flowery-app.com/categories/flowers.png
+      required: [id, name, iconUrl]
+
+    Occasion:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Wedding
+        imageUrl:
+          type: string
+          format: uri
+          example: https://cdn.flowery-app.com/occasions/wedding.jpg
+      required: [id, name, imageUrl]
+
+    ProductStatus:
+      type: string
+      enum: [InStock, OutOfStock]
+
+    SortBy:
+      type: string
+      description: >
+        PriceLowToHigh = "Lowest Price", PriceHighToLow = "Highest Price",
+        Newest = "New", Oldest = "Old", Discount = "Discount" on the
+        Categories Filter "Sort by" sheet.
+      enum:
+        - PriceLowToHigh
+        - PriceHighToLow
+        - Newest
+        - Oldest
+        - Discount
+
+    ProductSummary:
+      type: object
+      description: Lightweight product shape used in carousels, listings and search results.
+      properties:
+        id:
+          type: integer
+          example: 101
+        name:
+          type: string
+          example: Red roses
+        imageUrl:
+          type: string
+          format: uri
+          example: https://cdn.flowery-app.com/products/101.jpg
+        currency:
+          type: string
+          example: EGP
+        price:
+          type: number
+          format: float
+          example: 600
+        originalPrice:
+          type: number
+          format: float
+          nullable: true
+          example: 800
+        discountPercentage:
+          type: number
+          format: float
+          nullable: true
+          example: 20
+        status:
+          $ref: '#/components/schemas/ProductStatus'
+      required: [id, name, imageUrl, currency, price, status]
+
+    ProductIncludeItem:
+      type: object
+      description: One line of the product's "Bouquet include" list.
+      properties:
+        name:
+          type: string
+          example: Pink roses
+        quantity:
+          type: integer
+          nullable: true
+          example: 15
+      required: [name]
+
+    ProductDetails:
+      description: Full product shape used by the Product Details screen.
+      allOf:
+        - $ref: '#/components/schemas/ProductSummary'
+        - type: object
+          properties:
+            images:
+              type: array
+              items:
+                type: string
+                format: uri
+            description:
+              type: string
+              example: Lorem ipsum dolor sit amet consectetur.
+            includes:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductIncludeItem'
+            categoryId:
+              type: integer
+              nullable: true
+              example: 1
+            occasionIds:
+              type: array
+              items:
+                type: integer
+              example: [1]
+          required: [images, description, includes]
+
+    ProductListData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductSummary'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      required: [items, pagination]
+
+    HomeSectionType:
+      type: string
+      description: >
+        Categories = categories row, Occasions = occasions row,
+        BestSeller = best-seller products carousel, ProductsCarousel =
+        generic products carousel filtered by `occasionId` and/or
+        `categoryId`.
+      enum:
+        - Categories
+        - Occasions
+        - BestSeller
+        - ProductsCarousel
+
+    HomeSection:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 4
+        type:
+          $ref: '#/components/schemas/HomeSectionType'
+        index:
+          type: integer
+          description: Display order on the Home screen, ascending.
+          example: 3
+        isActive:
+          type: boolean
+          example: true
+        title:
+          type: string
+          nullable: true
+          example: Wedding picks
+        occasionId:
+          type: integer
+          nullable: true
+          description: Set only when `type` is `ProductsCarousel` and it should be filtered by occasion.
+          example: 1
+        categoryId:
+          type: integer
+          nullable: true
+          description: Set only when `type` is `ProductsCarousel` and it should be filtered by category.
+          example: null
+      required: [id, type, index, isActive]
+
+    HomeSectionCreateRequest:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/HomeSectionType'
+        index:
+          type: integer
+          example: 4
+        isActive:
+          type: boolean
+          default: true
+        title:
+          type: string
+          nullable: true
+          example: Wedding picks
+        occasionId:
+          type: integer
+          nullable: true
+          example: 1
+        categoryId:
+          type: integer
+          nullable: true
+          example: null
+      required: [type, index, isActive]
+
+    HomeSectionReorderRequest:
+      type: object
+      properties:
+        sections:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 3
+              index:
+                type: integer
+                example: 0
+              isActive:
+                type: boolean
+                example: true
+            required: [id, index, isActive]
+      required: [sections]
+
+    # ---- Response envelopes (BaseResponse + typed data) ----
+
+    CategoriesResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Category'
+
+    OccasionsResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Occasion'
+
+    ProductListResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/ProductListData'
+
+    ProductDetailsResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/ProductDetails'
+
+    HomeSectionsResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/HomeSection'
+
+    HomeSectionResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/HomeSection'

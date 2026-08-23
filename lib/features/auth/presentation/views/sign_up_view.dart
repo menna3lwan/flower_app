@@ -37,6 +37,16 @@ class _SignUpViewState extends State<SignUpView> {
   final _phoneController = TextEditingController();
   final ValueNotifier<Gender> _gender = ValueNotifier(Gender.female);
 
+  // Lets `_onPasswordChanged` imperatively re-run just the Confirm
+  // Password validator the moment Password changes — see the identical
+  // pattern (and its rationale) in `reset_password_view.dart`.
+  final _confirmPasswordFieldKey = GlobalKey<FormFieldState<String>>();
+
+  // See AppTextField's `forceLiveValidation` doc — flipped on once a
+  // Submit press fails validation, so every field (including ones the
+  // user never visited) starts validating live from then on.
+  bool _forceLiveValidation = false;
+
   @override
   void dispose() {
     _firstNameController.dispose();
@@ -49,41 +59,29 @@ class _SignUpViewState extends State<SignUpView> {
     super.dispose();
   }
 
-  void _submit() {
-    if (_formKey.currentState?.validate() ?? false) {
-      context.read<AuthCubit>().onIntent(
-            SignUpRequested(
-              firstName: _firstNameController.text.trim(),
-              lastName: _lastNameController.text.trim(),
-              email: _emailController.text.trim(),
-              password: _passwordController.text,
-              confirmPassword: _confirmPasswordController.text,
-              phoneNumber: _phoneController.text.trim(),
-              gender: _gender.value,
-            ),
-          );
+  void _onPasswordChanged(String _) {
+    if (_confirmPasswordController.text.isNotEmpty) {
+      _confirmPasswordFieldKey.currentState?.validate();
     }
   }
 
-  String? _validateRequired(String? value) {
-    return Validators.required(value) == null ? null : AppStrings.fieldRequired;
-  }
-
-  String? _validateEmail(String? value) {
-    return Validators.email(value) == null ? null : AppStrings.invalidEmail;
-  }
-
-  String? _validatePassword(String? value) {
-    return Validators.password(value) == null ? null : AppStrings.invalidPassword;
-  }
-
-  String? _validateConfirmPassword(String? value) {
-    if (value == null || value.isEmpty) return AppStrings.confirmPasswordRequired;
-    return value == _passwordController.text ? null : AppStrings.passwordsDoNotMatch;
-  }
-
-  String? _validatePhone(String? value) {
-    return Validators.phone(value) == null ? null : AppStrings.invalidPhoneNumber;
+  void _submit() {
+    final isValid = _formKey.currentState?.validate() ?? false;
+    if (!isValid) {
+      setState(() => _forceLiveValidation = true);
+      return;
+    }
+    context.read<AuthCubit>().onIntent(
+          SignUpRequested(
+            firstName: _firstNameController.text.trim(),
+            lastName: _lastNameController.text.trim(),
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+            confirmPassword: _confirmPasswordController.text,
+            phoneNumber: _phoneController.text.trim(),
+            gender: _gender.value,
+          ),
+        );
   }
 
   @override
@@ -91,20 +89,23 @@ class _SignUpViewState extends State<SignUpView> {
     return Scaffold(
       appBar: AppBackAppBar(title: AppStrings.signUp),
       body: BlocConsumer<AuthCubit, AuthState>(
+        listenWhen: (previous, current) =>
+            previous.signUpState != current.signUpState,
         listener: (context, state) {
-          if (state is AuthSignUpSuccess) {
+          final signUpState = state.signUpState;
+          if (signUpState.isSuccess) {
             // The account exists but no session was started — send the
             // user to Login to sign in with the credentials they just
             // chose, and clear Sign Up off the stack so Back can't
             // return to a submitted form.
             Get.offAllNamed(CustomerRoutes.login);
             context.showSuccessSnackBar(AppStrings.accountCreatedSuccess);
-          } else if (state is AuthFailed) {
-            context.showErrorSnackBar(state.failure.localizedMessage);
+          } else if (signUpState.isFailure) {
+            context.showErrorSnackBar(signUpState.failure!.signUpMessage);
           }
         },
         builder: (context, state) {
-          final isSubmitting = state is AuthLoading;
+          final isSubmitting = state.signUpState.isLoading;
           return SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(AppDimens.space16),
@@ -130,6 +131,7 @@ class _SignUpViewState extends State<SignUpView> {
                               value,
                               message: AppStrings.firstNameRequired,
                             ),
+                            forceLiveValidation: _forceLiveValidation,
                           ),
                         ),
                         const SizedBox(width: AppDimens.space16),
@@ -147,6 +149,7 @@ class _SignUpViewState extends State<SignUpView> {
                               value,
                               message: AppStrings.lastNameRequired,
                             ),
+                            forceLiveValidation: _forceLiveValidation,
                           ),
                         ),
                       ],
@@ -159,6 +162,7 @@ class _SignUpViewState extends State<SignUpView> {
                       keyboardType: TextInputType.emailAddress,
                       enabled: !isSubmitting,
                       validator: Validators.email,
+                      forceLiveValidation: _forceLiveValidation,
                     ),
                     const SizedBox(height: AppDimens.space24),
                     Row(
@@ -172,6 +176,8 @@ class _SignUpViewState extends State<SignUpView> {
                             obscureText: true,
                             enabled: !isSubmitting,
                             validator: Validators.password,
+                            onChanged: _onPasswordChanged,
+                            forceLiveValidation: _forceLiveValidation,
                           ),
                         ),
                         const SizedBox(width: AppDimens.space16),
@@ -186,6 +192,8 @@ class _SignUpViewState extends State<SignUpView> {
                               value,
                               _passwordController.text,
                             ),
+                            fieldKey: _confirmPasswordFieldKey,
+                            forceLiveValidation: _forceLiveValidation,
                           ),
                         ),
                       ],
@@ -206,6 +214,7 @@ class _SignUpViewState extends State<SignUpView> {
                       keyboardType: TextInputType.phone,
                       enabled: !isSubmitting,
                       validator: Validators.phone,
+                      forceLiveValidation: _forceLiveValidation,
                     ),
                     const SizedBox(height: AppDimens.space20),
                     Text(AppStrings.gender, style: AppTextStyles.titleMedium),
