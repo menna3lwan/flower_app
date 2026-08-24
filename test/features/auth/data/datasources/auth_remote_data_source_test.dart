@@ -10,10 +10,7 @@ import 'package:customer_app/features/auth/data/datasources/auth_remote_data_sou
 import '../../../../support/fake_secure_storage_service.dart';
 import '../../../../support/mocks.dart';
 
-/// Builds a syntactically valid (unsigned) JWT carrying [claims] in its
-/// payload segment — enough for [JwtPayloadDecoder] to read, which is
-/// all `AuthRemoteDataSourceImpl` needs; the header/signature segments
-/// are never inspected.
+/// Builds a syntactically valid unsigned JWT carrying [claims] — enough for [JwtPayloadDecoder], which never inspects the header/signature.
 String _fakeJwt(Map<String, dynamic> claims) {
   String segment(Object value) =>
       base64Url.encode(utf8.encode(jsonEncode(value))).replaceAll('=', '');
@@ -41,17 +38,7 @@ void main() {
         'nameid': 'user-1',
         'email': 'test@flowery.com',
       });
-      // Stubbed against the exact JSON body `AuthRemoteDataSourceImpl`
-      // actually sends (see its `login`/`signUp`/etc. methods), instead of
-      // `any`/`captureAny` — the real, installed Mockito types those
-      // matchers as `Null`, which the analyzer rejects for
-      // `AuthApiService`'s required non-nullable `Map<String, dynamic>
-      // body` parameter (confirmed live via the Dart analyzer). Where the
-      // test genuinely needs to accept/capture whatever was sent (the
-      // `captureAny`/`verifyNever` calls below), the matcher is cast to
-      // `dynamic` instead — that only affects the call site's *static*
-      // type, not runtime behavior, since Mockito's matcher substitution
-      // never inspects it.
+      // Stubbed against the exact JSON body sent, not any/captureAny — Mockito types those as Null, rejected by the analyzer for a required non-nullable body param.
       when(apiService.login({'email': 'test@flowery.com', 'password': 'Password123'}))
           .thenAnswer((_) async => {
             'status': true,
@@ -187,14 +174,7 @@ void main() {
   group('resetPassword', () {
     test('posts the resetToken/newPassword/confirmNewPassword as-is',
         () async {
-      // A bare `{}` used to be accepted here, but that isn't what a real
-      // success envelope looks like (see `AuthApiEnvelope`/
-      // `_throwIfEnvelopeFailed`) — confirmed live: a real backend 200 with
-      // an empty/absent `status` is actually a *failure* envelope
-      // (`status` defaults to `false`), e.g. the Forgot Password endpoint
-      // returning `{"status":false,...,"errors":["SENDGRID_API_KEY is not
-      // set."]}` with HTTP 200 while the Docker environment's SendGrid key
-      // is unset. A stub claiming success must say so explicitly.
+      // A bare {} isn't a real success envelope — confirmed live that an empty/absent `status` actually defaults to a *failure* envelope.
       when(apiService.resetPassword({
         'resetToken': 'token-1',
         'newPassword': 'NewPassword123',

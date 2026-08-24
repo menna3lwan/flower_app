@@ -1,3 +1,5 @@
+import 'package:injectable/injectable.dart';
+
 import '../../../../../core/domain/entities/category_entity.dart';
 import '../../../../../core/domain/entities/occasion_entity.dart';
 import '../../../../../core/domain/entities/product_entity.dart';
@@ -12,6 +14,8 @@ abstract interface class CatalogLocalDataSource {
   Future<List<String>> occasionProductIds(String occasionId);
 }
 
+/// Offline/dev-fallback data source — the only one registered today; a future remote data source swaps in without touching use cases or the Cubit.
+@LazySingleton(as: CatalogLocalDataSource)
 class CatalogLocalDataSourceImpl implements CatalogLocalDataSource {
   static const _simulatedLatency = Duration(milliseconds: 500);
 

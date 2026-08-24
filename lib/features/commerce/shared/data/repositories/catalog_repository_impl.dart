@@ -1,3 +1,6 @@
+import 'package:injectable/injectable.dart';
+
+import '../../../../../core/base/safe_call.dart';
 import '../../../../../core/domain/entities/category_entity.dart';
 import '../../../../../core/domain/entities/occasion_entity.dart';
 import '../../../../../core/domain/entities/product_entity.dart';
@@ -7,74 +10,56 @@ import 'package:customer_app/core/result/result.dart';
 import '../../domain/repositories/catalog_repository.dart';
 import '../datasources/catalog_local_data_source.dart';
 
+/// Depends on the [CatalogLocalDataSource] interface, never a concrete implementation — the seam a Server-Driven Commerce needs to swap in a remote source later.
+@LazySingleton(as: CatalogRepository)
 class CatalogRepositoryImpl implements CatalogRepository {
   const CatalogRepositoryImpl(this._dataSource);
 
   final CatalogLocalDataSource _dataSource;
 
   @override
-  Future<Result<List<CategoryEntity>>> getCategories() async {
-    try {
-      return Result.success(await _dataSource.getCategories());
-    } catch (_) {
-      return const Result.failure(UnexpectedFailure());
-    }
+  Future<Result<List<CategoryEntity>>> getCategories() {
+    return safeCall(() => _dataSource.getCategories());
   }
 
   @override
-  Future<Result<List<OccasionEntity>>> getOccasions() async {
-    try {
-      return Result.success(await _dataSource.getOccasions());
-    } catch (_) {
-      return const Result.failure(UnexpectedFailure());
-    }
+  Future<Result<List<OccasionEntity>>> getOccasions() {
+    return safeCall(() => _dataSource.getOccasions());
   }
 
   @override
-  Future<Result<List<ProductEntity>>> getBestSellers() async {
-    try {
+  Future<Result<List<ProductEntity>>> getBestSellers() {
+    return safeCall(() async {
       final products = await _dataSource.getAllProducts();
-      final sorted = [...products]
-        ..sort((a, b) => b.rating.compareTo(a.rating));
-      return Result.success(sorted);
-    } catch (_) {
-      return const Result.failure(UnexpectedFailure());
-    }
+      return [...products]..sort((a, b) => b.rating.compareTo(a.rating));
+    });
   }
 
   @override
-  Future<Result<List<ProductEntity>>> getAllProducts() async {
-    try {
-      return Result.success(await _dataSource.getAllProducts());
-    } catch (_) {
-      return const Result.failure(UnexpectedFailure());
-    }
+  Future<Result<List<ProductEntity>>> getAllProducts() {
+    return safeCall(() => _dataSource.getAllProducts());
   }
 
   @override
   Future<Result<List<ProductEntity>>> getProductsByCategory(
-      String categoryId) async {
-    try {
+      String categoryId) {
+    return safeCall(() async {
       final products = await _dataSource.getAllProducts();
-      return Result.success(
-          products.where((p) => p.categoryId == categoryId).toList());
-    } catch (_) {
-      return const Result.failure(UnexpectedFailure());
-    }
+      return products.where((p) => p.categoryId == categoryId).toList();
+    });
   }
 
   @override
   Future<Result<List<ProductEntity>>> getProductsByOccasion(
-      String occasionId) async {
-    try {
+      String occasionId) {
+    return safeCall(() async {
       final ids = await _dataSource.occasionProductIds(occasionId);
       final products = await _dataSource.getAllProducts();
-      return Result.success(products.where((p) => ids.contains(p.id)).toList());
-    } catch (_) {
-      return const Result.failure(UnexpectedFailure());
-    }
+      return products.where((p) => ids.contains(p.id)).toList();
+    });
   }
 
+  // Kept as its own try/catch rather than safeCall: the one Catalog method with a genuine special case (missing product -> NotFoundFailure).
   @override
   Future<Result<ProductEntity>> getProductById(String id) async {
     try {
@@ -87,18 +72,14 @@ class CatalogRepositoryImpl implements CatalogRepository {
   }
 
   @override
-  Future<Result<List<ProductEntity>>> searchProducts(String query) async {
-    try {
-      final products = await _dataSource.getAllProducts();
+  Future<Result<List<ProductEntity>>> searchProducts(String query) {
+    return safeCall(() async {
       final normalized = query.trim().toLowerCase();
-      if (normalized.isEmpty) return const Result.success([]);
-      return Result.success(
-        products
-            .where((p) => p.name.toLowerCase().contains(normalized))
-            .toList(),
-      );
-    } catch (_) {
-      return const Result.failure(UnexpectedFailure());
-    }
+      if (normalized.isEmpty) return const <ProductEntity>[];
+      final products = await _dataSource.getAllProducts();
+      return products
+          .where((p) => p.name.toLowerCase().contains(normalized))
+          .toList();
+    });
   }
 }

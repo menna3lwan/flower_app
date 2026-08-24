@@ -1,8 +1,4 @@
-/// Centralized registry of every real asset path used by the app —
-/// product/UI images, icons, translations, and the Flowery brand mark.
-/// A widget never hardcodes a raw asset path string; it reads a constant
-/// from here instead, so a renamed or moved file only needs a single
-/// update.
+/// Centralized real asset paths; widgets read constants here instead of hardcoding raw paths.
 abstract final class AppAssets {
   const AppAssets._();
 

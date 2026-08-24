@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/constants/app_dimens.dart';
 import '../../core/theme/app_text_styles.dart';
 
 class AppBackAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -22,9 +23,9 @@ class AppBackAppBar extends StatelessWidget implements PreferredSizeWidget {
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     return AppBar(
       leadingWidth: 36,
-      titleSpacing: 8,
+      titleSpacing: AppDimens.space8,
       leading: Padding(
-        padding: const EdgeInsets.only(left: 16),
+        padding: const EdgeInsets.only(left: AppDimens.space16),
         child: IconButton(
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(),

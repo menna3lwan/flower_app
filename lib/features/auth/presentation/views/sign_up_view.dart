@@ -37,14 +37,10 @@ class _SignUpViewState extends State<SignUpView> {
   final _phoneController = TextEditingController();
   final ValueNotifier<Gender> _gender = ValueNotifier(Gender.female);
 
-  // Lets `_onPasswordChanged` imperatively re-run just the Confirm
-  // Password validator the moment Password changes — see the identical
-  // pattern (and its rationale) in `reset_password_view.dart`.
+  // Lets `_onPasswordChanged` re-run the Confirm Password validator live — same pattern as `reset_password_view.dart`.
   final _confirmPasswordFieldKey = GlobalKey<FormFieldState<String>>();
 
-  // See AppTextField's `forceLiveValidation` doc — flipped on once a
-  // Submit press fails validation, so every field (including ones the
-  // user never visited) starts validating live from then on.
+  // Flipped on once a failed Submit press, so every field starts validating live from then on.
   bool _forceLiveValidation = false;
 
   @override
@@ -94,10 +90,7 @@ class _SignUpViewState extends State<SignUpView> {
         listener: (context, state) {
           final signUpState = state.signUpState;
           if (signUpState.isSuccess) {
-            // The account exists but no session was started — send the
-            // user to Login to sign in with the credentials they just
-            // chose, and clear Sign Up off the stack so Back can't
-            // return to a submitted form.
+            // No session started on Sign Up success — the flow sends the user to Login instead, clearing Sign Up off the stack.
             Get.offAllNamed(CustomerRoutes.login);
             context.showSuccessSnackBar(AppStrings.accountCreatedSuccess);
           } else if (signUpState.isFailure) {

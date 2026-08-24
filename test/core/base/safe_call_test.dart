@@ -30,9 +30,7 @@ void main() {
     });
 
     test('never lets the exception escape safeCall itself', () async {
-      // If ErrorParser ever regresses to rethrowing instead of mapping,
-      // this call would throw and fail the test on its own — no
-      // try/catch needed around it here.
+      // If ErrorParser ever regresses to rethrowing, this call fails the test on its own — no try/catch needed here.
       final result = await safeCall<int>(() async => throw StateError('x'));
       expect(result.isFailure, isTrue);
     });

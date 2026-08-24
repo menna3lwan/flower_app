@@ -3,26 +3,7 @@ import 'package:dio/dio.dart';
 import '../error/exceptions.dart';
 import '../error/failures.dart';
 
-/// The single place any thrown error — Retrofit/Dio, the legacy
-/// [ApiClient]/[DioApiClient] exception types, or anything unexpected —
-/// becomes a typed [Failure].
-///
-/// Two error shapes reach this parser today:
-///
-/// * A raw [DioException] — what Retrofit-generated API services throw
-///   directly (see `features/auth/api/auth_api_service.dart`), since
-///   Retrofit calls straight into Dio without going through
-///   [DioApiClient]'s own try/catch.
-/// * The project's existing typed exceptions ([ApiException],
-///   [NetworkException], [ServerException], [CacheException], and the
-///   Auth-specific ones) — what [DioApiClient] (still used by any
-///   feature not yet on Retrofit) and [AuthLocalDataSourceImpl]'s fake
-///   throw.
-///
-/// Centralizing both here — instead of each repository re-implementing
-/// its own `catch (e)` switch, as `AuthRepositoryImpl._mapException` used
-/// to — is what [safeCall] (`core/base/safe_call.dart`) relies on to stay
-/// a two-line function.
+/// Central place any thrown error (DioException or this project's typed exceptions) becomes a typed [Failure], so no repository re-implements its own catch switch.
 abstract final class ErrorParser {
   const ErrorParser._();
 
@@ -38,9 +19,7 @@ abstract final class ErrorParser {
       ApiException apiError => _fromApiException(apiError),
       ServerException() => const ServerFailure(),
       CacheException() => const ServerFailure(),
-      // Something upstream already produced a Failure (e.g. a repository
-      // composing another repository's Result) — pass it through instead
-      // of double-wrapping it into UnexpectedFailure.
+      // Pass through a Failure produced upstream (e.g. a composed repository call) instead of double-wrapping it.
       Failure failure => failure,
       _ => const UnexpectedFailure(),
     };
@@ -55,14 +34,12 @@ abstract final class ErrorParser {
       404 => NotFoundFailure(message),
       409 => ConflictFailure(message),
       429 => RateLimitedFailure(message),
-      _ when statusCode >= 500 => ServerFailure(message),
+      // Covers both 5xx and any other unmapped status with a plain ServerFailure.
       _ => ServerFailure(message),
     };
   }
 
-  /// Mirrors [DioApiClient]'s own timeout/status-code handling so a
-  /// Retrofit call and a plain [ApiClient] call that hit the exact same
-  /// backend condition end up as the exact same [Failure] type.
+  /// Timeout/status-code handling for whatever a Retrofit call throws.
   static Failure _fromDioException(DioException error) {
     switch (error.type) {
       case DioExceptionType.connectionTimeout:
@@ -81,7 +58,6 @@ abstract final class ErrorParser {
           404 => NotFoundFailure(message),
           409 => ConflictFailure(message),
           429 => RateLimitedFailure(message),
-          _ when statusCode >= 500 => ServerFailure(message),
           _ => ServerFailure(message),
         };
       case DioExceptionType.cancel:
@@ -92,13 +68,7 @@ abstract final class ErrorParser {
     }
   }
 
-  /// Reads this backend's response envelope (`{status, data, errors,
-  /// code, message}` — see `AuthApiEnvelope`): the human-readable reason
-  /// lives in `errors[0]` far more often than in `message` (confirmed
-  /// against the live Auth service — a 401 routinely arrives as
-  /// `{"message":""}` with the real text in `errors`), so `errors` is
-  /// checked first. Falls back to `message`/`error`/`title` for any
-  /// other endpoint that doesn't follow this exact envelope shape.
+  /// Prefers `errors[0]` over `message` — confirmed live that this backend's envelope often leaves `message` blank on failure.
   static String? _extractServerMessage(dynamic data) {
     if (data is Map<String, dynamic>) {
       final errors = data['errors'];

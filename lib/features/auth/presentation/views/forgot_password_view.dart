@@ -27,9 +27,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
 
-  // See AppTextField's `forceLiveValidation` doc — flipped on once a
-  // Submit press fails validation, so the Email field starts validating
-  // live even if the user never blurred it.
+  // Flipped on once a failed Submit press so the Email field starts validating live even if never blurred.
   bool _forceLiveValidation = false;
 
   @override
@@ -70,9 +68,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
         builder: (context, state) {
           final isSubmitting = state.forgotPasswordState.isLoading;
           return SafeArea(
-            // Matches Login/Sign Up/Reset Password: scrollable instead of
-            // a plain Padding, so the form doesn't overflow when the
-            // keyboard opens on shorter screens.
+            // Scrollable instead of plain Padding so the form doesn't overflow when the keyboard opens on shorter screens.
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(AppDimens.space16),
               child: Form(

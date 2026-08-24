@@ -24,11 +24,7 @@ void main() {
 
   setUp(() {
     repository = MockAuthRepository();
-    // Wires the mock repository through the real use cases into a real
-    // AuthCubit — the exact object graph Injectable assembles in the
-    // app, minus DI itself. Exercises the real UseCase pass-through as
-    // part of "Cubit state transitions" instead of hiding it behind six
-    // separate use-case mocks.
+    // Wires the mock repository through the real use cases into a real AuthCubit — the same object graph Injectable assembles in the app.
     cubit = buildAuthCubit(repository);
   });
 
@@ -46,18 +42,7 @@ void main() {
   group('login', () {
     test('goes idle -> loading -> success, leaving every other field idle',
         () async {
-      // Stubbed against the exact literal values `LoginRequested` sends
-      // below, instead of `anyNamed`/`any` — the real, installed Mockito
-      // (`package:mockito/mockito.dart`, confirmed against the live
-      // analyzer) types `any`/`anyNamed` as `Null`, which the sound-null-
-      // safety analyzer rejects for `AuthRepository.login`'s *required*
-      // non-nullable `email`/`password` parameters ("The argument type
-      // 'Null' can't be assigned to the parameter type 'String'"). Manual
-      // `extends Mock implements X` mocks (no `@GenerateMocks` codegen —
-      // deliberate, see `test/support/mocks.dart`) have no other built-in
-      // way around this for required params, so every matcher below that
-      // stubbed a required parameter is pinned to the literal value the
-      // test actually sends.
+      // Stubbed against exact literal values, not any/anyNamed — Mockito types those as Null, which the sound-null-safety analyzer rejects for required non-nullable params.
       when(repository.login(
         email: 'test@flowery.com',
         password: 'Password123',
@@ -140,8 +125,7 @@ void main() {
         ),
       );
 
-      // Sign Up routes to Login, so no session/user is carried forward —
-      // the created UserEntity is intentionally discarded.
+      // Sign Up routes to Login, so no session/user is carried forward — the created UserEntity is intentionally discarded.
       expect(cubit.state.signUpState.isSuccess, isTrue);
       expect(cubit.state.signUpState.data, isNull);
       expect(cubit.state.loginState.isIdle, isTrue);
@@ -231,9 +215,7 @@ void main() {
         cubit.state.verifyOtpState.failure,
         isA<InvalidVerificationCodeFailure>(),
       );
-      // Resend (forgotPasswordState) and verify (verifyOtpState) are
-      // tracked independently — a verify failure must not touch the
-      // resend slot.
+      // Resend and verify are tracked independently — a verify failure must not touch the resend slot.
       expect(cubit.state.forgotPasswordState.isIdle, isTrue);
     });
   });

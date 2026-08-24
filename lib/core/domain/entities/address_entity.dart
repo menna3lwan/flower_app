@@ -2,15 +2,7 @@ import 'package:equatable/equatable.dart';
 
 enum AddressLabel { home, office, other }
 
-/// A saved delivery/pickup address. Not consumed by any feature yet
-/// (Checkout and Profile — the two features that will need it — aren't
-/// built), kept here ahead of them the same way [CartItemEntity] and
-/// [OrderEntity] were, rather than invented from scratch once those
-/// features start.
-///
-/// Previously lived in a separate `shared` package (shared with the
-/// Rider app, which also reads/display addresses). With the Rider app
-/// removed, this package had a single dependent, so it moved in-app.
+/// Saved address entity, prepared ahead of Checkout/Profile (not built yet) — previously lived in a shared package now merged in-app.
 class AddressEntity extends Equatable {
   const AddressEntity({
     required this.id,

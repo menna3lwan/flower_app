@@ -1,8 +1,4 @@
-/// Lottie-style animation asset paths, synced from `development`
-/// (`assets/animations/`).
-///
-/// Not yet wired to a Lottie-rendering widget/dependency — see the final
-/// asset-sync report for what's still required before these render.
+/// Lottie animation asset paths (`assets/animations/`) — not yet wired to a rendering widget/dependency.
 abstract final class AppAnimations {
   const AppAnimations._();
 

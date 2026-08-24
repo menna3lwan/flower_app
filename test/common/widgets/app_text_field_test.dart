@@ -6,9 +6,7 @@ import 'package:customer_app/core/localization/app_strings.dart';
 
 import '../../support/localization_harness.dart';
 
-/// The label/box/error contract every auth form depends on. Asserting it
-/// here — on the one shared widget — is what stops an individual screen
-/// from quietly rearranging the three.
+/// The label/box/error contract every auth form depends on — asserted once here instead of per screen.
 void main() {
   setUpAll(initializeTestLocalization);
 

@@ -18,8 +18,7 @@ abstract interface class AuthLocalDataSource {
 
   Future<void> sendPasswordResetEmail(String email);
 
-  /// Returns a `resetToken` the caller must pass to [resetPassword] —
-  /// see [AuthRepository.verifyCode] for why.
+  /// Returns a `resetToken` the caller must pass to [resetPassword] — see [AuthRepository.verifyCode].
   Future<String> verifyCode({required String email, required String code});
 
   Future<void> resetPassword({

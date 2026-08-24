@@ -5,13 +5,7 @@ import '../constants/app_colors.dart';
 abstract final class AppTextStyles {
   const AppTextStyles._();
 
-  /// The design system's typeface, resolved from the copy bundled in
-  /// `assets/fonts/inter.ttf` and declared in `pubspec.yaml`.
-  ///
-  /// This used to call `GoogleFonts.inter()`, which ignored the bundled
-  /// file and fetched Inter from fonts.gstatic.com on first paint — so a
-  /// cold, offline launch rendered every screen in a system fallback face
-  /// while still shipping the font in the bundle.
+  /// The design system's typeface, bundled locally — `GoogleFonts.inter()` used to fetch it from the network on first paint even offline.
   static const String fontFamily = 'Inter';
 
   static TextStyle get _base => const TextStyle(

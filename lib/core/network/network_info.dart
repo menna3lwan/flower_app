@@ -1,8 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 
-/// Connectivity check contract, consulted by repositories before hitting
-/// a remote data source (`if (!await networkInfo.isConnected) return
-/// Result.failure(NetworkFailure())`).
+/// Connectivity check contract, consulted by repositories before hitting a remote data source.
 abstract interface class NetworkInfo {
   Future<bool> get isConnected;
 }

@@ -6,25 +6,7 @@ import 'package:customer_app/core/constants/app_dimens.dart';
 import 'package:customer_app/core/localization/app_strings.dart';
 import 'package:customer_app/core/theme/app_text_styles.dart';
 
-/// Shared text field used across every form in the app.
-///
-/// Password fields get a show/hide visibility toggle for free: pass
-/// `obscureText: true` and, as long as no explicit [suffixIcon] is
-/// supplied, a trailing eye icon is injected automatically. The toggle
-/// only flips how the existing text renders — it never touches
-/// [controller]'s value or selection, so the typed password and cursor
-/// position survive a tap untouched. This is implemented once, here, so no
-/// screen (Login, Sign Up, Reset Password, ...) needs its own copy of the
-/// same toggle logic.
-///
-/// Live validation: a field stays quiet (no error shown) until the user
-/// leaves it once (focus lost) — matching "don't show errors before the
-/// user has interacted with the field." After that first blur, or once
-/// [forceLiveValidation] is set (a screen sets this after a failed Submit
-/// press, so every field — touched or not — starts reporting live from
-/// then on), the field validates on every keystroke and its error clears
-/// the instant the input becomes valid again. This lives here, once,
-/// rather than being re-implemented per screen.
+/// Shared text field: obscureText fields get an automatic show/hide toggle, and validation stays quiet until first blur or forceLiveValidation.
 class AppTextField extends StatefulWidget {
   const AppTextField({
     required this.label,
@@ -63,14 +45,10 @@ class AppTextField extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
   final TextCapitalization textCapitalization;
 
-  /// Lets a parent imperatively re-run just this field's validator (e.g.
-  /// Sign Up re-checking Confirm Password the moment Password changes) —
-  /// see `sign_up_view.dart`/`reset_password_view.dart`.
+  /// Lets a parent imperatively re-run this field's validator (e.g. Confirm Password when Password changes).
   final GlobalKey<FormFieldState<String>>? fieldKey;
 
-  /// Set by the parent Form after a failed Submit press so every field —
-  /// including ones the user never touched — starts live-validating
-  /// immediately, instead of only ones they've already visited.
+  /// Set after a failed Submit so every field, touched or not, starts validating live immediately.
   final bool forceLiveValidation;
 
   @override
@@ -78,10 +56,7 @@ class AppTextField extends StatefulWidget {
 }
 
 class _AppTextFieldState extends State<AppTextField> {
-  // Seeded once from widget.obscureText and never re-derived from it again
-  // — otherwise a parent rebuild (e.g. on every keystroke, which is exactly
-  // what typing does) would reset text the user chose to reveal back to
-  // hidden on the very next frame.
+  // Seeded once from widget.obscureText; never re-derived, or a rebuild would hide text the user chose to reveal.
   late bool _obscured = widget.obscureText;
 
   late final FocusNode _focusNode = FocusNode();
@@ -162,9 +137,7 @@ class _AppTextFieldState extends State<AppTextField> {
         color: AppColors.textSecondary,
       ),
       tooltip: _obscured ? AppStrings.showPassword : AppStrings.hidePassword,
-      // A password field is always single-line, so this toggle is the only
-      // interactive control sharing the field's 56px height — no extra
-      // padding/sizing needed beyond IconButton's own default tap target.
+      // Password fields are single-line, so this toggle needs no extra sizing beyond IconButton's default tap target.
       onPressed: widget.enabled ? _toggleObscured : null,
     );
   }

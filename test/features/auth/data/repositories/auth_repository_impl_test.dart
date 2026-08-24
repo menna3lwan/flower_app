@@ -26,13 +26,7 @@ void main() {
 
   group('login', () {
     test('wraps a successful data-source call as Result.success', () async {
-      // Stubbed against the exact literal values each test sends below,
-      // not `anyNamed`/`any` — the real, installed Mockito types those
-      // matchers as `Null`, which the analyzer rejects for a required
-      // non-nullable parameter ("The argument type 'Null' can't be
-      // assigned to the parameter type 'String'"), confirmed live via
-      // the Dart analyzer. Manual `extends Mock implements X` mocks (no
-      // `@GenerateMocks` codegen) have no other built-in way around this.
+      // Stubbed against exact literal values, not any/anyNamed — Mockito types those as Null, rejected by the analyzer for required non-nullable params.
       when(dataSource.login(email: 'a@b.com', password: 'Password123'))
           .thenAnswer((_) async => _user);
 

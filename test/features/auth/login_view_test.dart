@@ -103,9 +103,7 @@ void main() {
     await tester.enterText(find.byType(TextFormField).at(1), 'Password123');
 
     await tester.tap(find.widgetWithText(ElevatedButton, AppStrings.login));
-    // One frame only: the fake repository's Future never resolves within
-    // the test, so this captures loginState still at
-    // OperationStatus.loading.
+    // One frame only: the fake repository's Future never resolves within the test, capturing loginState still loading.
     await tester.pump();
 
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -135,13 +133,7 @@ void main() {
   testWidgets(
       'a real backend 401 (AuthFailure) shows the same wrong-credentials '
       'message, not a generic error', (tester) async {
-    // Regression test: the live Auth service returns HTTP 401 for a wrong
-    // email/password (`docker/auth-swagger.json`, `/Auth/api/v1/user/login`),
-    // which `ErrorParser` maps to `AuthFailure` — not `InvalidCredentialsFailure`,
-    // since `AuthRemoteDataSourceImpl` never throws the local-only
-    // `InvalidCredentialsException`. Before this was fixed, `loginMessage`
-    // folded `AuthFailure` into the generic fallback and showed
-    // "Something went wrong" for a plain wrong-password attempt.
+    // Regression test: the live backend returns 401 for wrong credentials, which ErrorParser maps to AuthFailure, not InvalidCredentialsFailure.
     await pumpLocalized(
       tester,
       _harness(

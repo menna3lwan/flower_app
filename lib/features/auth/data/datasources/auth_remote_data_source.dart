@@ -8,33 +8,11 @@ import '../../api/auth_api_service.dart';
 import '../models/auth_api_envelope.dart';
 import 'auth_local_data_source.dart';
 
-/// Marker interface distinguishing "the real backend" from
-/// [AuthLocalDataSource]'s simulated implementation at the DI/type level,
-/// while remaining structurally interchangeable with it (same methods —
-/// see the NOTE on [AuthLocalDataSource]). `AuthRepositoryImpl` keeps
-/// depending on [AuthLocalDataSource]; DI decides which concrete class —
-/// [AuthLocalDataSourceImpl] or [AuthRemoteDataSourceImpl] — it receives.
+/// Marker interface distinguishing the real backend from [AuthLocalDataSource]'s simulated implementation at the DI/type level only.
 abstract interface class AuthRemoteDataSource
     implements AuthLocalDataSource {}
 
-/// Talks to the real FlowersApp.Auth backend through `AuthApiService`
-/// (Retrofit) instead of the previous hand-rolled `ApiClient` calls.
-///
-/// Every path/request/response shape here is taken from the live
-/// backend's own Swagger document (`docker/auth-swagger.json` /
-/// `swagger1.json`) and cross-checked with real curl calls through the
-/// Gateway — nothing here is guessed. See `core/network/api_endpoints.dart`
-/// for the confirmed path list and `docs/BACKEND_INTEGRATION_TODO.md` for
-/// the one open ambiguity (the Gender 1/2 wire mapping).
-///
-/// This class only ever *throws* on failure — a `DioException` from
-/// Retrofit/Dio, or one of the Auth-specific exceptions below — it never
-/// returns a `Result` itself. Converting those exceptions into a
-/// `Result<Failure>` is `AuthRepositoryImpl`'s job, via `safeCall`
-/// (`core/base/safe_call.dart`) and `ErrorParser`
-/// (`core/network/error_parser.dart`), so this class stays a pure "talk
-/// to the network and hand back a domain-shaped value or throw" data
-/// source.
+/// Talks to the real Auth backend via Retrofit; every path/shape is confirmed against the live Swagger + curl, and this class only ever throws — never returns a Result itself.
 @LazySingleton(as: AuthLocalDataSource)
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   AuthRemoteDataSourceImpl(this._apiService, this._secureStorage);
@@ -74,9 +52,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     final envelope = AuthApiEnvelope.fromJson(json);
     _throwIfEnvelopeFailed(envelope);
 
-    // Register only returns the new user's id (`GuidApiResponse`) — no
-    // token, no echoed profile — so the rest of the entity is built from
-    // what the caller already submitted, not invented.
+    // Register only returns the new user's id, no token/profile — the rest of the entity is built from what the caller submitted.
     return UserEntity(
       id: envelope.dataAsString,
       firstName: firstName,
@@ -134,9 +110,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<void> refreshSession() async {
     final storedRefreshToken = await _secureStorage.readRefreshToken();
     if (storedRefreshToken == null || storedRefreshToken.isEmpty) {
-      // Nothing to refresh with — surfaced to the caller as a normal
-      // failed operation rather than a special case; ErrorParser already
-      // turns this into an AuthFailure.
+      // Nothing to refresh with — surfaced as a normal failed operation; ErrorParser already turns this into an AuthFailure.
       throw const InvalidSessionException();
     }
 
@@ -147,22 +121,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     await _persistSession(envelope.dataAsMap);
   }
 
-  /// The backend can respond with HTTP 200 while the envelope itself
-  /// reports a business-logic failure — confirmed live against the
-  /// running Auth service: a Sign Up rejected for an Identity
-  /// password-policy violation came back as HTTP 200 with
-  /// `{"status":false,"code":500,"errors":["...PasswordRequiresNonAlpha
-  /// numeric..."]}`. Dio only throws on a non-2xx transport status, so
-  /// without this check that response was silently treated as a
-  /// success — the UI showed "account created" and navigated to Login
-  /// for an account that was never created.
-  ///
-  /// `envelope.code` is itself typed as `HttpStatusCode` in the
-  /// backend's own contract (every `*ApiResponse` schema in
-  /// `docker/auth-swagger.json`), so a failed envelope is routed through
-  /// the exact same [ApiException] → [ErrorParser] status-code mapping
-  /// as a real HTTP error status — one mapping table, not a second
-  /// bespoke one.
+  /// The backend can return HTTP 200 with a business-logic failure in the envelope — confirmed live, so this check exists to avoid silently treating that as success.
   void _throwIfEnvelopeFailed(AuthApiEnvelope envelope) {
     if (envelope.status) return;
     final serverErrors = envelope.errors;
@@ -175,9 +134,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     throw ApiException(statusCode: envelope.code ?? 400, message: message);
   }
 
-  /// Writes accessToken/refreshToken/expiry to secure storage — the
-  /// single place this happens, so every entry point (login today,
-  /// refresh tomorrow) keeps the session store consistent.
+  /// Single place accessToken/refreshToken/expiry are written to secure storage, so every entry point stays consistent.
   Future<void> _persistSession(Map<String, dynamic> authResponse) async {
     final accessToken = authResponse['accessToken'] as String? ?? '';
     final refreshToken = authResponse['refreshToken'] as String?;
@@ -203,10 +160,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     final accessToken = authResponse['accessToken'] as String? ?? '';
     final claims = JwtPayloadDecoder.decode(accessToken) ?? const {};
 
-    // The Auth service's login response carries only accessToken,
-    // refreshToken, expiresIn, role, driverStatus — no name/email — so
-    // the display name/id are read from the JWT's own claims (issued by
-    // the same backend, not fabricated) rather than left blank or faked.
+    // Login's response carries no name/email, so the display name/id are read from the JWT's own claims instead.
     final fullNameClaim = claims['unique_name'] as String?;
     final (firstName, lastName) = _splitFullName(fullNameClaim);
     final userId = claims['nameid'] as String? ?? '';
@@ -220,11 +174,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     );
   }
 
-  /// Splits a single `fullName` claim into (firstName, lastName) at the
-  /// first space — the backend only stores/returns a single name field,
-  /// while [UserEntity] (shared with the rest of the app) models
-  /// first/last separately. Not lossless for multi-part surnames, but
-  /// there is no better signal available from the backend today.
+  /// Splits a single `fullName` claim at the first space since the backend has no separate first/last name fields; not lossless for multi-part surnames.
   (String, String) _splitFullName(String? fullName) {
     final trimmed = fullName?.trim() ?? '';
     if (trimmed.isEmpty) return ('', '');

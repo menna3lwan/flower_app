@@ -1,26 +1,9 @@
-// Hand-authored stand-in for Injectable's generated registration file —
-// see `features/auth/api/auth_api_service.g.dart`'s header comment for
-// why (this sandbox can't run `dart run build_runner build`).
-//
-// Behaviorally equivalent to what `injectable_generator` would emit for
-// the `@injectable` / `@LazySingleton` / `@module` annotations declared
-// across `features/auth/**`: the same GetIt registration calls, the same
-// singleton/factory semantics — `AuthApiService`, the data source, the
-// repository, and every use case as lazy singletons; `AuthCubit` as a
-// factory (a fresh instance per `BlocProvider`, matching the old
-// `registerFactory<AuthCubit>` call in the now-retired
-// `core/di/auth_injector.dart`) — just written by hand instead of
-// generated from those annotations.
-//
-// Run `dart run build_runner build --delete-conflicting-outputs` to
-// replace this file with the real generated one; nothing outside this
-// file needs to change when that happens — every caller only ever calls
-// `configureAuthDependencies(sl)` (`injectable_injector.dart`), never
-// anything in here directly.
+// Hand-authored stand-in for Injectable's generated config (no Dart/Flutter SDK in this sandbox) — run `dart run build_runner build --delete-conflicting-outputs` elsewhere to replace it for real.
 
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
+// Auth module.
 import '../../features/auth/api/auth_api_service.dart';
 import '../../features/auth/data/datasources/auth_local_data_source.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
@@ -34,37 +17,36 @@ import '../../features/auth/domain/usecases/reset_password_usecase.dart';
 import '../../features/auth/domain/usecases/sign_up_usecase.dart';
 import '../../features/auth/domain/usecases/verify_otp_usecase.dart';
 import '../../features/auth/presentation/cubit/auth_cubit.dart';
+
+// Commerce module (shared catalog foundation + Home).
+import '../../features/commerce/home/presentation/cubit/home_cubit.dart';
+import '../../features/commerce/shared/data/datasources/catalog_local_data_source.dart';
+import '../../features/commerce/shared/data/repositories/catalog_repository_impl.dart';
+import '../../features/commerce/shared/domain/repositories/catalog_repository.dart';
+import '../../features/commerce/shared/domain/usecases/get_best_sellers_use_case.dart';
+import '../../features/commerce/shared/domain/usecases/get_categories_use_case.dart';
+import '../../features/commerce/shared/domain/usecases/get_occasions_use_case.dart';
+import '../../features/commerce/shared/domain/usecases/get_product_by_id_use_case.dart';
+import '../../features/commerce/shared/domain/usecases/get_products_by_category_use_case.dart';
+import '../../features/commerce/shared/domain/usecases/get_products_by_occasion_use_case.dart';
+import '../../features/commerce/shared/domain/usecases/search_products_use_case.dart';
+
 import '../storage/secure_storage_service.dart';
 
-/// `@module`-provided types (see `AuthApiModule`) don't have their own
-/// constructor Injectable can call directly — the real generator
-/// instantiates the module class itself (here, a trivial subclass, since
-/// `AuthApiModule` is abstract) and calls its provider method. Mirrored
-/// here for the same reason.
+/// Instantiates the abstract `@module` class so its provider method can be called, mirroring what the real generator does.
 class _AuthApiModuleImpl extends AuthApiModule {}
 
 extension GetItInjectableX on GetIt {
-  /// Registers every Auth-module dependency — replaces the old manual
-  /// `setupAuthDependencies()` in the now-retired
-  /// `core/di/auth_injector.dart`. Core-level dependencies ([Dio],
-  /// [SecureStorageService], ...) are assumed already registered by
-  /// `core/di/injector.dart`'s `setupCoreDependencies()`, which still
-  /// runs first — see `core/di/customer_app_injector.dart`.
+  /// Registers every `@injectable`/`@LazySingleton`/`@module` class; core deps are assumed already registered first.
   GetIt init() {
+    // ---- Auth ----
     final authApiModule = _AuthApiModuleImpl();
 
     registerLazySingleton<AuthApiService>(
       () => authApiModule.authApiService(get<Dio>()),
     );
 
-    // AuthLocalDataSourceImpl (the offline fake) is deliberately NOT
-    // registered here — the app always talks to the real backend via
-    // AuthRemoteDataSourceImpl, and tests construct FakeAuthRepository
-    // directly rather than resolving a data source from GetIt. Two
-    // unnamed registrations for the same AuthLocalDataSource interface
-    // would be ambiguous to GetIt, so only the active implementation is
-    // registered — same behavior as the old manual injector's
-    // "ACTIVATION SWITCH" comment described.
+    // AuthLocalDataSourceImpl (offline fake) is deliberately not registered — only the active AuthRemoteDataSourceImpl is, to avoid an ambiguous duplicate.
     registerLazySingleton<AuthLocalDataSource>(
       () => AuthRemoteDataSourceImpl(
         get<AuthApiService>(),
@@ -103,6 +85,46 @@ extension GetItInjectableX on GetIt {
         get<ForgotPasswordUseCase>(),
         get<VerifyOtpUseCase>(),
         get<ResetPasswordUseCase>(),
+      ),
+    );
+
+    // ---- Commerce (shared catalog foundation) ---- no remote data source/API module yet since no real catalog backend contract exists.
+    registerLazySingleton<CatalogLocalDataSource>(
+      CatalogLocalDataSourceImpl.new,
+    );
+
+    registerLazySingleton<CatalogRepository>(
+      () => CatalogRepositoryImpl(get<CatalogLocalDataSource>()),
+    );
+
+    registerLazySingleton<GetCategoriesUseCase>(
+      () => GetCategoriesUseCase(get<CatalogRepository>()),
+    );
+    registerLazySingleton<GetOccasionsUseCase>(
+      () => GetOccasionsUseCase(get<CatalogRepository>()),
+    );
+    registerLazySingleton<GetBestSellersUseCase>(
+      () => GetBestSellersUseCase(get<CatalogRepository>()),
+    );
+    registerLazySingleton<GetProductsByCategoryUseCase>(
+      () => GetProductsByCategoryUseCase(get<CatalogRepository>()),
+    );
+    registerLazySingleton<GetProductsByOccasionUseCase>(
+      () => GetProductsByOccasionUseCase(get<CatalogRepository>()),
+    );
+    registerLazySingleton<GetProductByIdUseCase>(
+      () => GetProductByIdUseCase(get<CatalogRepository>()),
+    );
+    registerLazySingleton<SearchProductsUseCase>(
+      () => SearchProductsUseCase(get<CatalogRepository>()),
+    );
+
+    // ---- Commerce: Home ----
+    registerFactory<HomeCubit>(
+      () => HomeCubit(
+        get<GetCategoriesUseCase>(),
+        get<GetBestSellersUseCase>(),
+        get<GetOccasionsUseCase>(),
       ),
     );
 

@@ -1,1 +1,1 @@
-// TODO(commerce): GetIt/Injectable registrations for the catalog module (repository, data sources, use cases, api service) — structure-only placeholder, no implementation yet.
+// Registrations now live as annotations on the concrete classes themselves; this file is reserved for an `@module` once `catalog_api_service.dart` has a real Retrofit class.

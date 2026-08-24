@@ -21,13 +21,7 @@ abstract interface class AuthRepository {
 
   Future<Result<void>> sendPasswordResetEmail(String email);
 
-  /// Confirms the code sent by [sendPasswordResetEmail] to `email`.
-  ///
-  /// Returns the one-time `resetToken` the backend issues on a
-  /// successful verification (`VerifyOtpResponse.resetToken`, confirmed
-  /// against the live Auth service) — [resetPassword] requires it in
-  /// place of the email/code, so it must be threaded through the
-  /// Verify-OTP -> Reset-Password navigation instead of being discarded.
+  /// Confirms the code sent by [sendPasswordResetEmail]; returns the one-time `resetToken` [resetPassword] requires.
   Future<Result<String>> verifyCode({
     required String email,
     required String code,
@@ -39,11 +33,6 @@ abstract interface class AuthRepository {
     required String confirmNewPassword,
   });
 
-  /// Exchanges the stored refresh token for a new access/refresh token
-  /// pair and persists them, without requiring the user to log in again.
-  /// Confirmed supported by the backend (`POST /Auth/api/v1/refresh-token`
-  /// -> `AuthResponseApiResponse`) — not wired to an automatic 401-retry
-  /// interceptor yet (see docs/BACKEND_INTEGRATION_TODO.md), but callable
-  /// today for a deliberate "restore session" use on app start.
+  /// Exchanges the stored refresh token for a new session without re-login; confirmed backend-supported but not yet wired to an auto-retry interceptor.
   Future<Result<void>> refreshSession();
 }

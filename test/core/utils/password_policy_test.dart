@@ -5,9 +5,7 @@ import 'package:customer_app/core/utils/password_policy.dart';
 
 import '../../support/localization_harness.dart';
 
-/// [PasswordPolicy] is the single source of truth both [Validators.password]
-/// and the live [PasswordRulesChecklist] read from — these tests pin down
-/// exactly which passwords each rule accepts and rejects.
+/// [PasswordPolicy] is the single source of truth for both [Validators.password] and the live checklist — these tests pin down what each rule accepts.
 Future<void> _withLocale(WidgetTester tester, Locale locale) async {
   await pumpLocalized(
     tester,

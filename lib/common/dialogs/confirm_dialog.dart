@@ -4,16 +4,7 @@ import 'package:customer_app/core/constants/app_dimens.dart';
 import 'package:customer_app/core/theme/app_text_styles.dart';
 import '../widgets/buttons/primary_button.dart';
 
-/// Generic two-action confirmation dialog (title, message, Cancel /
-/// Confirm) — e.g. the "LOGOUT — Confirm logout!!" dialog in the Figma
-/// Profile screen. `showConfirmDialog` returns `true` only when the
-/// user tapped the confirm action, `false`/`null` otherwise, so callers
-/// can `if (await showConfirmDialog(...)) { ... }`.
-///
-/// `confirmLabel`/`cancelLabel` are required (not defaulted) on purpose:
-/// this lives in the shared `common` package, which must never depend on
-/// an application's own copy deck (see monorepo dependency rules) — each
-/// app passes its own localized strings at the call site instead.
+/// Two-action confirmation dialog; resolves `true` only when the user taps confirm, `false`/`null` otherwise.
 Future<bool?> showConfirmDialog(
   BuildContext context, {
   required String title,

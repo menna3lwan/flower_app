@@ -13,9 +13,7 @@ class FlowerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Kept in sync with the active locale so the network layer can send
-    // `Accept-Language` without needing a BuildContext of its own — see
-    // CurrentLanguage's doc comment.
+    // Kept in sync with the active locale so the network layer can send Accept-Language without a BuildContext.
     CurrentLanguage.code = context.locale.languageCode;
 
     return GetMaterialApp(
@@ -26,10 +24,7 @@ class FlowerApp extends StatelessWidget {
       supportedLocales: context.supportedLocales,
       locale: context.locale,
       getPages: CustomerPages.pages,
-      // SplashView is a real, already-built screen (branded launch state
-      // + redirect to Login) that was simply never reachable before —
-      // starting here instead of Login is the routing fix that makes it
-      // actually run.
+      // SplashView was built but never reachable before; starting here is the routing fix that makes it run.
       initialRoute: CustomerRoutes.splash,
     );
   }

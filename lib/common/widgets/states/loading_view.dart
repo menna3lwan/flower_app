@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:customer_app/core/constants/app_colors.dart';
 
-/// Shared full-screen/section loading indicator so every `Loading` state
-/// variant renders identically across features.
+/// Shared loading indicator so every `Loading` state variant renders identically.
 class LoadingView extends StatelessWidget {
   const LoadingView({super.key});
 

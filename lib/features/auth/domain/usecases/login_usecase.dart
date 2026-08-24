@@ -4,12 +4,7 @@ import '../../../../core/domain/entities/user_entity.dart';
 import '../../../../core/result/result.dart';
 import '../repositories/auth_repository.dart';
 
-/// Thin, single-purpose wrapper over [AuthRepository.login] — exists so
-/// [AuthCubit] depends only on use cases (per the DI flow: GetIt -> API
-/// Service -> Data Source -> Repository -> Use Case -> Cubit), never on
-/// a repository directly. Deliberately does nothing beyond delegating:
-/// there is no extra business rule for Login today, and this class is
-/// not the place to invent one.
+/// Thin wrapper over [AuthRepository.login] so [AuthCubit] depends only on use cases, never a repository directly — no extra business rule here today.
 @lazySingleton
 class LoginUseCase {
   const LoginUseCase(this._repository);

@@ -1,9 +1,4 @@
-/// Central registry of every route name in the app.
-///
-/// Screens never hardcode a path string when navigating — they reference
-/// a constant from here via `Get.toNamed(CustomerRoutes.productDetails)`. The
-/// GetX `GetPage` table that maps these names to widgets lives in
-/// `app_pages.dart`, right next to this file.
+/// Central registry of every route name; screens reference a constant here instead of hardcoding a path string.
 abstract final class CustomerRoutes {
   const CustomerRoutes._();
 

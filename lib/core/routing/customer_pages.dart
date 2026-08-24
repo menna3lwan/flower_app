@@ -49,9 +49,7 @@ abstract final class CustomerPages {
         child: const OtpVerificationView(),
       ),
     ),
-    // Reached from OtpVerificationView once state.verifyOtpState succeeds,
-    // carrying the one-time resetToken forward as the route argument
-    // (Forgot Password → OTP → Reset Password → Login).
+    // Reached from OtpVerificationView's success, carrying the one-time resetToken forward as the route argument.
     GetPage(
       name: CustomerRoutes.resetPassword,
       page: () => BlocProvider(
@@ -59,18 +57,12 @@ abstract final class CustomerPages {
         child: const ResetPasswordView(),
       ),
     ),
-    // Reached from Login/Sign Up on success. Confirmed live: without this
-    // entry `Get.offAllNamed(CustomerRoutes.main)` crashed the app
-    // outright (GetX couldn't resolve `/main` to any page). See
-    // MainView's own doc comment — the real Home/Catalog shell is a
-    // separate, not-yet-built feature; this only stops Auth success from
-    // crashing.
+    // Reached from Login/Sign Up success; confirmed live that without this entry Get.offAllNamed(main) crashed the app outright.
     GetPage(
       name: CustomerRoutes.main,
       page: () => const MainView(),
     ),
-    // The Commerce module owns its own routes — see CommercePages' doc
-    // comment for why they're defined there instead of inline here.
+    // The Commerce module owns its own routes — see CommercePages for why they're defined there, not inline here.
     ...CommercePages.pages,
   ];
 }

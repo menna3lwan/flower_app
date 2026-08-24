@@ -6,8 +6,7 @@ import 'package:customer_app/core/utils/validators.dart';
 
 import '../../support/localization_harness.dart';
 
-/// Pumps a throwaway widget purely to bring an `EasyLocalization` context
-/// into scope, since `AppStrings` getters resolve `.tr()` against it.
+/// Pumps a throwaway widget purely to bring an `EasyLocalization` context into scope for `.tr()`.
 Future<void> _withLocale(WidgetTester tester, Locale locale) async {
   await pumpLocalized(
     tester,
@@ -28,8 +27,7 @@ void main() {
       expect(Validators.email('not-an-email'), AppStrings.invalidEmail);
       expect(Validators.email('missing@tld'), AppStrings.invalidEmail);
 
-      // The two cases must not collapse into one message — that was the
-      // bug: every email problem rendered as "This Email is not valid".
+      // The two cases must not collapse into one message — that was the bug being regression-tested.
       expect(AppStrings.emailRequired, isNot(AppStrings.invalidEmail));
     });
 
@@ -71,10 +69,7 @@ void main() {
         'enough but still fails a rule', (tester) async {
       await _withLocale(tester, const Locale('en'));
 
-      // 6+ characters, so this is NOT the too-short case — it's missing
-      // the uppercase-letter and number rules instead, which
-      // Validators.password only started enforcing once it began sharing
-      // PasswordPolicy with the live rules checklist.
+      // 6+ characters, so this isn't the too-short case — it's missing the uppercase/number rules instead.
       expect(
         Validators.password('lowercase'),
         AppStrings.passwordRequirementsNotMet,
@@ -149,9 +144,7 @@ void main() {
       (tester) async {
     await _withLocale(tester, const Locale('ar'));
 
-    // In Arabic each message must differ from its English counterpart and
-    // contain Arabic script — a validator returning a raw English literal
-    // would fail both checks.
+    // Each Arabic message must differ from its English counterpart and contain Arabic script.
     final arabicMessages = <String?>[
       Validators.email(''),
       Validators.email('nope'),

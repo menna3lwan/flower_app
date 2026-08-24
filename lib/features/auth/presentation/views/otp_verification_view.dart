@@ -28,22 +28,10 @@ class OtpVerificationView extends StatefulWidget {
 }
 
 class _OtpVerificationViewState extends State<OtpVerificationView> {
-  /// Digit count for the verification code.
-  ///
-  /// Not declared by the live Auth service's Swagger contract (`otp` is an
-  /// unconstrained string on `VerifyOtpCommand`) and not covered at all by
-  /// the provided Postman collection, so there is no authoritative source
-  /// to read a length from. Kept at the app's existing 4-digit convention
-  /// as a single named constant — flagged in the delivery report as an
-  /// unconfirmed assumption that should be verified with Backend rather
-  /// than silently guessed differently.
+  /// OTP digit count — not declared anywhere in the backend contract; kept at this app's existing 4-digit convention as an unconfirmed assumption.
   static const int _codeLength = 4;
 
-  /// Local, client-side resend cooldown. The backend does not declare a
-  /// mandated cooldown window for Forgot Password/OTP resend (only a
-  /// generic 429 "too many requests" is documented), so this is a UX
-  /// safeguard against accidental double-taps rather than a value read
-  /// from the API contract.
+  /// Local resend cooldown — a UX safeguard against double-taps, not a value the backend contract mandates.
   static const int _resendCooldownSeconds = 30;
 
   late final String _email;
@@ -59,8 +47,7 @@ class _OtpVerificationViewState extends State<OtpVerificationView> {
     super.initState();
     final arguments = Get.arguments;
     _email = arguments is String ? arguments : '';
-    // A code was already sent by the Forgot Password screen right before
-    // this screen was pushed, so the resend cooldown starts immediately.
+    // A code was already sent by Forgot Password right before this screen was pushed, so the cooldown starts immediately.
     _startResendCooldown();
   }
 
@@ -115,9 +102,7 @@ class _OtpVerificationViewState extends State<OtpVerificationView> {
       appBar: AppBackAppBar(title: AppStrings.passwordSectionTitle),
       body: MultiBlocListener(
         listeners: [
-          // Submitting the code itself: success carries the resetToken
-          // forward to Reset Password; failure reports "wrong/expired
-          // code" specifically.
+          // Submitting the code: success carries the resetToken forward; failure reports "wrong/expired code" specifically.
           BlocListener<AuthCubit, AuthState>(
             listenWhen: (previous, current) =>
                 previous.verifyOtpState != current.verifyOtpState,
@@ -133,11 +118,7 @@ class _OtpVerificationViewState extends State<OtpVerificationView> {
               }
             },
           ),
-          // The "Resend" action reuses ForgotPasswordRequested on this
-          // same Cubit instance — tracked as its own field
-          // (forgotPasswordState) rather than being folded into
-          // verifyOtpState, so a resend failure is reported with its own
-          // "couldn't send the code" wording instead of "wrong code".
+          // The "Resend" action reuses ForgotPasswordRequested but is tracked via its own forgotPasswordState, so its failure never reads as "wrong code".
           BlocListener<AuthCubit, AuthState>(
             listenWhen: (previous, current) =>
                 previous.forgotPasswordState != current.forgotPasswordState,
@@ -158,108 +139,111 @@ class _OtpVerificationViewState extends State<OtpVerificationView> {
             final isSubmitting = state.verifyOtpState.isLoading ||
                 state.forgotPasswordState.isLoading;
             return SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppDimens.space16),
-              child: ValueListenableBuilder<String?>(
-                valueListenable: _codeError,
-                builder: (context, codeError, _) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              AppStrings.verificationCodeTitle,
-                              style: AppTextStyles.titleLarge,
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: AppDimens.space16),
-                            Text(
-                              AppStrings.verificationCodeSubtitle,
-                              style: AppTextStyles.bodyMedium,
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: AppDimens.space32),
-                      Center(
-                        child: _OtpPinInput(
-                          controller: _pinController,
-                          focusNode: _pinFocusNode,
-                          length: _codeLength,
-                          enabled: !isSubmitting,
-                          hasError: codeError != null,
-                          onChanged: _onCodeChanged,
-                          onCompleted: (_) =>
-                              _submit(context, isSubmitting: isSubmitting),
-                        ),
-                      ),
-                      if (codeError != null) ...[
-                        const SizedBox(height: AppDimens.labelToFieldGap),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(AppDimens.space16),
+                child: ValueListenableBuilder<String?>(
+                  valueListenable: _codeError,
+                  builder: (context, codeError, _) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         SizedBox(
                           width: double.infinity,
-                          child: Text(
-                            codeError,
-                            style: AppTextStyles.bodySmall
-                                .copyWith(color: AppColors.error),
-                            textAlign: TextAlign.center,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                AppStrings.verificationCodeTitle,
+                                style: AppTextStyles.titleLarge,
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: AppDimens.space16),
+                              Text(
+                                AppStrings.verificationCodeSubtitle,
+                                style: AppTextStyles.bodyMedium,
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                      const SizedBox(height: AppDimens.space24),
-                      PrimaryButton(
-                        label: AppStrings.confirm,
-                        isLoading: isSubmitting,
-                        onPressed: () =>
-                            _submit(context, isSubmitting: isSubmitting),
-                      ),
-                      const SizedBox(height: AppDimens.space16),
-                      Builder(
-                        builder: (context) {
-                          final onCooldown = _secondsUntilResend > 0;
-                          final resendDisabled = isSubmitting || onCooldown;
-                          return Center(
-                            child: GestureDetector(
-                              onTap: resendDisabled
-                                  ? null
-                                  : () => _resend(context,
-                                      isSubmitting: isSubmitting),
-                              child: Text.rich(
-                                TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: '${AppStrings.resendCodePrefix} ',
-                                      style: AppTextStyles.bodyMedium,
-                                    ),
-                                    TextSpan(
-                                      text: onCooldown
-                                          ? AppStrings.resendCodeCountdown(
-                                              _secondsUntilResend)
-                                          : AppStrings.resendCodeAction,
-                                      style: resendDisabled
-                                          ? AppTextStyles.link.copyWith(
-                                              color: AppColors.textSecondary,
-                                              decoration: TextDecoration.none,
-                                            )
-                                          : AppTextStyles.link,
-                                    ),
-                                  ],
+                        const SizedBox(height: AppDimens.space32),
+                        Center(
+                          child: _OtpPinInput(
+                            controller: _pinController,
+                            focusNode: _pinFocusNode,
+                            length: _codeLength,
+                            enabled: !isSubmitting,
+                            hasError: codeError != null,
+                            onChanged: _onCodeChanged,
+                            onCompleted: (_) =>
+                                _submit(context, isSubmitting: isSubmitting),
+                          ),
+                        ),
+                        if (codeError != null) ...[
+                          const SizedBox(height: AppDimens.labelToFieldGap),
+                          SizedBox(
+                            width: double.infinity,
+                            child: Text(
+                              codeError,
+                              style: AppTextStyles.bodySmall
+                                  .copyWith(color: AppColors.error),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: AppDimens.space24),
+                        PrimaryButton(
+                          label: AppStrings.confirm,
+                          isLoading: isSubmitting,
+                          onPressed: () =>
+                              _submit(context, isSubmitting: isSubmitting),
+                        ),
+                        const SizedBox(height: AppDimens.space16),
+                        Builder(
+                          builder: (context) {
+                            final onCooldown = _secondsUntilResend > 0;
+                            final resendDisabled = isSubmitting || onCooldown;
+                            return Center(
+                              child: GestureDetector(
+                                onTap: resendDisabled
+                                    ? null
+                                    : () => _resend(context,
+                                        isSubmitting: isSubmitting),
+                                child: Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text:
+                                            '${AppStrings.resendCodePrefix} ',
+                                        style: AppTextStyles.bodyMedium,
+                                      ),
+                                      TextSpan(
+                                        text: onCooldown
+                                            ? AppStrings.resendCodeCountdown(
+                                                _secondsUntilResend)
+                                            : AppStrings.resendCodeAction,
+                                        style: resendDisabled
+                                            ? AppTextStyles.link.copyWith(
+                                                color:
+                                                    AppColors.textSecondary,
+                                                decoration:
+                                                    TextDecoration.none,
+                                              )
+                                            : AppTextStyles.link,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  );
-                },
+                            );
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
-            ),
-          );
+            );
           },
         ),
       ),
@@ -267,9 +251,7 @@ class _OtpVerificationViewState extends State<OtpVerificationView> {
   }
 }
 
-/// The Pinput-based verification code field, themed per interaction state
-/// (default / focused / filled / error / disabled) from the app's design
-/// tokens instead of Pinput's own defaults.
+/// The Pinput-based verification field, themed per interaction state from the app's design tokens instead of Pinput's defaults.
 class _OtpPinInput extends StatelessWidget {
   const _OtpPinInput({
     required this.controller,

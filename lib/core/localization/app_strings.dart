@@ -23,8 +23,7 @@ abstract final class AppStrings {
   static String enterField(String field) =>
       'enterFieldTemplate'.tr(namedArgs: {'field': field});
 
-  // Field validation — one message per rule, so "missing" and "malformed"
-  // never collapse into the same text.
+  // Field validation: one message per rule, so "missing" and "malformed" never collapse into the same text.
   static String get emailRequired => 'emailRequired'.tr();
   static String get invalidEmail => 'invalidEmail'.tr();
   static String get passwordRequired => 'passwordRequired'.tr();
@@ -82,9 +81,7 @@ abstract final class AppStrings {
   static String get currentPassword => 'currentPassword'.tr();
   static String get newPassword => 'newPassword'.tr();
 
-  // Password visibility toggle + live requirements checklist — shared by
-  // every password field via AppTextField/PasswordRulesChecklist, never
-  // hardcoded per screen.
+  // Password visibility toggle + live checklist strings, shared via AppTextField/PasswordRulesChecklist.
   static String get showPassword => 'showPassword'.tr();
   static String get hidePassword => 'hidePassword'.tr();
   static String get passwordRequirementsTitle =>

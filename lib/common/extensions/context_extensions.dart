@@ -3,13 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:customer_app/common/widgets/feedback/auth_message_banner.dart';
 import 'package:customer_app/core/constants/app_dimens.dart';
 
-/// Small ergonomics layer over [BuildContext] so widgets read
-/// `context.textTheme` / `context.screenWidth` instead of the more
-/// verbose `Theme.of(context).textTheme`.
-///
-/// Lives in `common` (not `core`) because it is inherently tied to the
-/// Flutter widget tree ([BuildContext], [ScaffoldMessenger]) — `core`
-/// stays framework-agnostic wherever practical.
+/// Ergonomics layer over [BuildContext]; lives in `common` (not `core`) since it's tied to the Flutter widget tree.
 extension ContextExtensions on BuildContext {
   TextTheme get textTheme => Theme.of(this).textTheme;
 
@@ -23,10 +17,7 @@ extension ContextExtensions on BuildContext {
 
   EdgeInsets get viewPadding => MediaQuery.viewPaddingOf(this);
 
-  /// Shows the shared [AuthMessageBanner] as floating, borderless
-  /// SnackBar content — the one feedback surface every Auth screen (and
-  /// anything else that wants it) should use instead of a plain default
-  /// SnackBar.
+  /// Shows the shared [AuthMessageBanner] as floating SnackBar content — the app's standard feedback surface.
   void showAuthMessage(AuthMessageType type, String message) {
     ScaffoldMessenger.of(this)
       ..hideCurrentSnackBar()
@@ -52,8 +43,7 @@ extension ContextExtensions on BuildContext {
   void showSuccessSnackBar(String message) =>
       showAuthMessage(AuthMessageType.success, message);
 
-  /// Non-blocking heads-up that isn't a failure — e.g. rate-limited,
-  /// please wait.
+  /// Non-blocking heads-up that isn't a failure — e.g. rate-limited, please wait.
   void showWarningSnackBar(String message) =>
       showAuthMessage(AuthMessageType.warning, message);
 

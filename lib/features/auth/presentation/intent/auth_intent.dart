@@ -55,8 +55,7 @@ final class ResetPasswordRequested extends AuthIntent {
     required this.confirmNewPassword,
   });
 
-  /// Issued by [VerifyCodeRequested]'s success response — see
-  /// [AuthRepository.verifyCode].
+  /// Issued by [VerifyCodeRequested]'s success response — see [AuthRepository.verifyCode].
   final String resetToken;
   final String newPassword;
   final String confirmNewPassword;

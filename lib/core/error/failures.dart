@@ -30,8 +30,7 @@ final class NotFoundFailure extends Failure {
   const NotFoundFailure([super.message = 'The requested item was not found.']);
 }
 
-/// The request conflicts with existing state (HTTP 409) — e.g. Sign Up
-/// with an email that is already registered.
+/// Request conflicts with existing state (HTTP 409) — e.g. Sign Up with an already-registered email.
 final class ConflictFailure extends Failure {
   const ConflictFailure([super.message = 'This already exists.']);
 }
@@ -57,9 +56,7 @@ final class UnexpectedFailure extends Failure {
   const UnexpectedFailure([super.message = 'An unexpected error occurred.']);
 }
 
-/// The backend rejected the request for being too frequent (HTTP 429) —
-/// confirmed on Login, Driver Login, and Forgot Password in the live
-/// Auth service's Swagger document.
+/// Backend rejected the request for being too frequent (HTTP 429) — confirmed on Login/Driver Login/Forgot Password.
 final class RateLimitedFailure extends Failure {
   const RateLimitedFailure([super.message = 'Too many attempts.']);
 }

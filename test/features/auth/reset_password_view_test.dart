@@ -32,8 +32,7 @@ void main() {
     expect(find.text(AppStrings.newPassword), findsOneWidget);
     expect(find.text(AppStrings.confirmPassword), findsOneWidget);
 
-    // A user who reached this screen through Forgot Password cannot supply
-    // a current password — that is the whole reason they are here.
+    // A user who reached this screen via Forgot Password cannot supply a current password — that's why they're here.
     expect(find.text(AppStrings.currentPassword), findsNothing);
   });
 

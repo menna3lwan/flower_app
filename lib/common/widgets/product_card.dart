@@ -45,7 +45,8 @@ class ProductCard extends StatelessWidget {
                     left: AppDimens.space8,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
+                          horizontal: AppDimens.space8,
+                          vertical: AppDimens.space4),
                       decoration: BoxDecoration(
                         color: AppColors.error,
                         borderRadius:

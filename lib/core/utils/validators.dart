@@ -7,9 +7,7 @@ abstract final class Validators {
   static final RegExp _emailPattern =
       RegExp(r'^[\w\.\-]+@([\w\-]+\.)+[\w\-]{2,}$');
 
-  /// Kept in sync with [PasswordPolicy.minLength] — [PasswordPolicy] is the
-  /// single source of truth for the actual rule; this alias just avoids
-  /// touching every call site that already reads `Validators.minPasswordLength`.
+  /// Alias kept in sync with [PasswordPolicy.minLength], the actual single source of truth for the rule.
   static const int minPasswordLength = PasswordPolicy.minLength;
   static const int minPhoneLength = 8;
 
@@ -19,14 +17,10 @@ abstract final class Validators {
     return null;
   }
 
-  /// Validates against [PasswordPolicy] — the exact same rule set the live
-  /// [PasswordRulesChecklist] ticks off on screen, so a password that shows
-  /// all-green checkmarks always passes here too, and vice versa.
+  /// Validates against [PasswordPolicy] — the same rule set [PasswordRulesChecklist] ticks off live, so the two can never disagree.
   static String? password(String? value) {
     if (value == null || value.isEmpty) return AppStrings.passwordRequired;
-    // Checked first, and reported with its own specific message, so the
-    // most common failure (just too short) keeps its precise wording
-    // instead of collapsing into the generic "doesn't meet requirements".
+    // Checked first so the common "too short" case keeps its precise message instead of the generic one.
     if (value.length < minPasswordLength) {
       return AppStrings.passwordTooShort(minPasswordLength);
     }

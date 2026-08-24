@@ -4,16 +4,10 @@ import 'package:customer_app/core/constants/app_colors.dart';
 import 'package:customer_app/core/constants/app_dimens.dart';
 import 'package:customer_app/core/theme/app_text_styles.dart';
 
-/// The four feedback categories the Auth flow (and, going forward, any
-/// other feature) needs — deliberately not tied to HTTP status codes or
-/// [Failure] subtypes, so a screen can also show e.g. an `info` banner
-/// for "OTP resent" without that being a failure at all.
+/// Feedback categories for Auth screens, not tied to HTTP/Failure types, so e.g. an `info` banner can be shown for non-failures.
 enum AuthMessageType { success, error, warning, info }
 
-/// A compact visual spec for one [AuthMessageType] — the accent color,
-/// tinted background, and icon it renders with. Kept as one small record
-/// per type instead of scattering `switch`es across the banner and any
-/// future consumer (e.g. an inline variant).
+/// Visual spec (accent color + icon) for one [AuthMessageType], kept as data instead of scattering switches.
 class _MessageStyle {
   const _MessageStyle({
     required this.accent,
@@ -43,12 +37,7 @@ _MessageStyle _styleFor(AuthMessageType type) => switch (type) {
         ),
     };
 
-/// A modern, self-contained feedback card — an icon in a tinted circle,
-/// the message, and a left accent stripe — used as the *content* of a
-/// floating [SnackBar] (see `context_extensions.dart`'s `showAuthMessage`)
-/// so it replaces the plain solid-color default SnackBar look everywhere
-/// Auth reports success/error/warning/info, without introducing a new
-/// overlay/toast package.
+/// Self-contained feedback card (icon + message + accent stripe) used as SnackBar content instead of the default look.
 class AuthMessageBanner extends StatelessWidget {
   const AuthMessageBanner({
     required this.type,

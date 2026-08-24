@@ -5,18 +5,7 @@ import 'package:customer_app/core/constants/app_dimens.dart';
 import 'package:customer_app/core/theme/app_text_styles.dart';
 import 'package:customer_app/core/utils/password_policy.dart';
 
-/// Live password-requirements checklist.
-///
-/// Listens to [controller] and re-evaluates every [PasswordPolicy] rule on
-/// each keystroke, ticking rules on/off as the user types. The rule list
-/// itself is never duplicated here — it always comes from [PasswordPolicy],
-/// the same source [Validators.password] validates against, so the
-/// checklist can never show a rule as satisfied that submit-time validation
-/// would still reject.
-///
-/// Used only on screens where a *new* password is being created (Sign Up,
-/// Reset Password) — not on Login, where the password already exists and
-/// re-stating creation rules would be meaningless.
+/// Live password-requirements checklist, driven by [PasswordPolicy] (the same source [Validators.password] uses) so it never drifts from submit-time validation.
 class PasswordRulesChecklist extends StatelessWidget {
   const PasswordRulesChecklist({required this.controller, super.key});
 

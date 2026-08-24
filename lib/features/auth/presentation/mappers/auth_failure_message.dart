@@ -53,16 +53,10 @@ extension AuthFailureMessage on Failure {
           AppStrings.somethingWentWrong,
       };
 
-  /// OTP / Verification screen: submitting the code. (Its "resend"
-  /// action reuses the same [AuthCubit] instance but is tracked as its
-  /// own `forgotPasswordState` field on `AuthState`, with its own
-  /// `forgotPasswordMessage` getter below — so a resend failure is never
-  /// read through this getter.)
+  /// OTP screen's "resend" failure is tracked separately via `forgotPasswordState`, never read through this getter.
   String get verifyOtpMessage => switch (this) {
         InvalidVerificationCodeFailure() => AppStrings.invalidVerificationCode,
-        // The backend's own 404 for verify-otp means the code/session
-        // wasn't found — from the user's point of view that reads
-        // identically to "wrong or expired code".
+        // The backend's 404 for verify-otp reads identically to "wrong or expired code" from the user's point of view.
         NotFoundFailure() => AppStrings.invalidVerificationCode,
         NetworkFailure() => AppStrings.noInternetConnection,
         RateLimitedFailure() => AppStrings.tooManyAttempts,
@@ -77,12 +71,9 @@ extension AuthFailureMessage on Failure {
           AppStrings.somethingWentWrong,
       };
 
-  /// Reset Password screen: submitting the new password with the reset
-  /// token carried over from OTP verification.
+  /// Reset Password screen: submitting the new password with the reset token carried over from OTP verification.
   String get resetPasswordMessage => switch (this) {
-        // The reset-password endpoint's own 404/401/403 means the reset
-        // token is unknown, already used, or expired — never "email not
-        // found" (there is no email field on this screen at all).
+        // The reset-password endpoint's 404/401/403 means the reset token is unknown/used/expired — never "email not found".
         NotFoundFailure() => AppStrings.resetLinkExpired,
         AuthFailure() => AppStrings.resetLinkExpired,
         NetworkFailure() => AppStrings.noInternetConnection,

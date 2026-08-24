@@ -34,8 +34,7 @@ void main() {
     useTallSurface(tester);
     await pumpLocalized(tester, _harness(FakeAuthRepository()));
 
-    // Sign Up previously used a second, floating-label input widget, which
-    // put its labels inside the border instead of above it.
+    // Sign Up previously used a floating-label input that put labels inside the border instead of above it.
     expect(find.byType(AppTextField), findsNWidgets(6));
     expect(_fieldLabels(tester), [
       AppStrings.firstName,

@@ -23,12 +23,7 @@ Widget _harness(AuthRepository repository, {Locale? locale}) {
   );
 }
 
-/// Types [code] into the Pinput field in one go. `enterText` locates the
-/// `EditableText` Pinput renders internally (its exact wrapper — `TextField`
-/// vs a bare `EditableText` — is a pinput-package implementation detail
-/// this suite deliberately doesn't depend on) and sets its full value,
-/// which drives Pinput's own onChanged/onCompleted exactly like a user
-/// finishing entry would.
+/// Types [code] into the Pinput field in one go via the internal EditableText, driving onChanged/onCompleted like a real user.
 Future<void> _enterCode(WidgetTester tester, String code) async {
   await tester.enterText(find.byType(Pinput), code);
   await tester.pump();
@@ -78,8 +73,7 @@ void main() {
       ),
     );
 
-    // A full 4-digit code auto-submits via Pinput's onCompleted, exactly
-    // like a real user finishing entry — no explicit Confirm tap needed.
+    // A full 4-digit code auto-submits via Pinput's onCompleted — no explicit Confirm tap needed.
     await _enterCode(tester, '9999');
     await tester.pumpAndSettle();
 
@@ -107,8 +101,7 @@ void main() {
   testWidgets('shows a loading spinner while verifying', (tester) async {
     await pumpLocalized(tester, _harness(FakeAuthRepository()));
 
-    // Completing the code auto-submits (see `_OtpPinInput.onCompleted`),
-    // so the loading state should appear without an explicit tap.
+    // Completing the code auto-submits, so the loading state should appear without an explicit tap.
     await _enterCode(tester, '1234');
 
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -118,13 +111,10 @@ void main() {
       (tester) async {
     await pumpLocalized(tester, _harness(FakeAuthRepository()));
 
-    // A code was just sent to reach this screen, so the cooldown starts
-    // immediately — the resend link should read as a countdown, not a
-    // bare "Resend" action, and tapping it must be a no-op.
+    // A code was just sent to reach this screen, so the resend link should read as a countdown and tapping it must be a no-op.
     expect(find.text(AppStrings.resendCodeAction), findsNothing);
 
-    // Advance less than the full cooldown; the resend action must still
-    // be unavailable.
+    // Advance less than the full cooldown; the resend action must still be unavailable.
     await tester.pump(const Duration(seconds: 5));
     expect(find.text(AppStrings.resendCodeAction), findsNothing);
   });

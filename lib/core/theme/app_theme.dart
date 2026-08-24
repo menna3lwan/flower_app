@@ -53,9 +53,7 @@ abstract final class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.textPrimary,
           minimumSize: const Size.fromHeight(AppDimens.buttonHeight),
-          // Figma Dev Mode: the "Continue as guest" outlined button's
-          // stroke is the Design System's `Gray` style, not `divider` —
-          // corrected after direct inspection (see AppColors.gray).
+          // Figma Dev Mode: the outlined button's stroke is the Design System's `Gray` style, not `divider` — corrected after inspection.
           side: const BorderSide(color: AppColors.gray),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppDimens.radiusPill),

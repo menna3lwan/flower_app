@@ -1,24 +1,31 @@
+import 'package:injectable/injectable.dart';
+
 import 'package:customer_app/core/base/base_cubit.dart';
-import '../../../shared/domain/repositories/catalog_repository.dart';
+import 'package:customer_app/core/usecase/usecase.dart';
+import '../../../shared/domain/usecases/get_best_sellers_use_case.dart';
+import '../../../shared/domain/usecases/get_categories_use_case.dart';
+import '../../../shared/domain/usecases/get_occasions_use_case.dart';
 import '../state/home_state.dart';
 
-/// Loads everything the Home screen renders (categories row, best-seller
-/// row, occasion row) in parallel and exposes it as a single
-/// [HomeLoaded] snapshot. Modeled as one Cubit rather than three
-/// independent ones because the Home screen is one cohesive view — the
-/// user does not perceive "categories" and "best sellers" as separately
-/// loadable regions.
+/// Loads Home's three sections as one [HomeLoaded] snapshot via three single-purpose use cases, never `CatalogRepository` directly.
+@injectable
 class HomeCubit extends BaseCubit<HomeState> {
-  HomeCubit(this._catalogRepository) : super(const HomeLoading());
+  HomeCubit(
+    this._getCategories,
+    this._getBestSellers,
+    this._getOccasions,
+  ) : super(const HomeLoading());
 
-  final CatalogRepository _catalogRepository;
+  final GetCategoriesUseCase _getCategories;
+  final GetBestSellersUseCase _getBestSellers;
+  final GetOccasionsUseCase _getOccasions;
 
   Future<void> loadHome() async {
     safeEmit(const HomeLoading());
 
-    final categoriesResult = await _catalogRepository.getCategories();
-    final bestSellersResult = await _catalogRepository.getBestSellers();
-    final occasionsResult = await _catalogRepository.getOccasions();
+    final categoriesResult = await _getCategories(const NoParams());
+    final bestSellersResult = await _getBestSellers(const NoParams());
+    final occasionsResult = await _getOccasions(const NoParams());
 
     if (categoriesResult.isFailure) {
       safeEmit(categoriesResult.fold(

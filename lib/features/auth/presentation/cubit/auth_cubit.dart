@@ -10,14 +10,7 @@ import '../../domain/usecases/verify_otp_usecase.dart';
 import '../intent/auth_intent.dart';
 import '../state/auth_state.dart';
 
-/// The single Cubit for the whole Auth module — Login, Sign Up, Forgot
-/// Password, Verify OTP, and Reset Password all flow through
-/// [onIntent], never through a per-screen Cubit. Each handler only ever
-/// does two things: call its use case, and turn the [Result] into the
-/// matching slice of [AuthState] via `state.copyWith(...)` — no API
-/// calls, no parsing, no navigation decisions live here (those belong to
-/// `AuthApiService`/`AuthRemoteDataSourceImpl` and the Views' listeners,
-/// respectively).
+/// The single Cubit for the whole Auth module — every intent flows through [onIntent], which only calls a use case and maps the [Result] into [AuthState].
 @injectable
 class AuthCubit extends BaseCubit<AuthState> {
   AuthCubit(
@@ -80,10 +73,7 @@ class AuthCubit extends BaseCubit<AuthState> {
       gender: intent.gender,
     );
     safeEmit(state.copyWith(
-      // The newly created UserEntity is deliberately discarded here —
-      // Sign Up does not start a session (see `AuthRemoteDataSourceImpl.
-      // signUp`, which never persists a token), the flow is
-      // Sign Up -> Success -> Login, not an auto-login.
+      // The new UserEntity is discarded — Sign Up doesn't start a session; the flow is Sign Up -> Success -> Login.
       signUpState: result.fold(
         (failure) => state.signUpState.failed(failure),
         (_) => state.signUpState.success(null),

@@ -31,10 +31,7 @@ class _LoginViewState extends State<LoginView> {
   final _passwordController = TextEditingController();
   final ValueNotifier<bool> _rememberMe = ValueNotifier(false);
 
-  // Set once a Submit press fails validation, so every field — including
-  // ones the user hasn't visited yet — starts validating live from then
-  // on instead of only reporting errors after the next blur. See
-  // AppTextField's `forceLiveValidation` doc for why this lives per-screen.
+  // Set once a Submit press fails validation, so every field — visited or not — starts validating live from then on.
   bool _forceLiveValidation = false;
 
   @override
@@ -103,11 +100,7 @@ class _LoginViewState extends State<LoginView> {
                       validator: Validators.password,
                       forceLiveValidation: _forceLiveValidation,
                     ),
-                    // Figma Dev Mode (Login frame, "Email&Pass. field" group):
-                    // uniform 24px gap between Email→Password AND
-                    // Password→Remember-me row — this SizedBox was missing,
-                    // so the checkbox row sat flush against the Password
-                    // field instead of matching that rhythm.
+                    // Figma Dev Mode: uniform 24px gap Email->Password->Remember-me — this SizedBox was missing, breaking that rhythm.
                     const SizedBox(height: AppDimens.space24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

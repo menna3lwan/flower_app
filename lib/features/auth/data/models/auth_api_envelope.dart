@@ -1,4 +1,3 @@
-
 class AuthApiEnvelope {
   const AuthApiEnvelope({
     required this.status,
@@ -24,12 +23,10 @@ class AuthApiEnvelope {
   final int? code;
   final String? message;
 
-  /// `data` as a JSON object, or an empty map if it is absent/not an
-  /// object (e.g. a 200 with a null payload).
+  /// `data` as a JSON object, or an empty map if absent/not an object.
   Map<String, dynamic> get dataAsMap =>
       data is Map<String, dynamic> ? data as Map<String, dynamic> : const {};
 
-  /// `data` as a plain string (the shape `GuidApiResponse` uses for the
-  /// newly created user's id).
+  /// `data` as a plain string — the shape `GuidApiResponse` uses for the newly created user's id.
   String get dataAsString => data is String ? data as String : '';
 }

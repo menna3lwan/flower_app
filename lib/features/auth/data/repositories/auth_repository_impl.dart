@@ -6,13 +6,7 @@ import '../../../../core/result/result.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_local_data_source.dart';
 
-/// Every method here is a one-line `safeCall(...)` wrapper around the
-/// data source — no `try`/`catch`, no manual exception-to-[Failure]
-/// switch. That mapping used to live in this class's own private
-/// `_guard`/`_mapException` pair; it now lives once, centrally, in
-/// `core/base/safe_call.dart` + `core/network/error_parser.dart`, so
-/// every future repository in the app gets the exact same error handling
-/// for free instead of re-implementing it.
+/// Every method is a one-line `safeCall(...)` wrapper — exception-to-Failure mapping lives centrally, not per-repository.
 @LazySingleton(as: AuthRepository)
 class AuthRepositoryImpl implements AuthRepository {
   const AuthRepositoryImpl(this._dataSource);

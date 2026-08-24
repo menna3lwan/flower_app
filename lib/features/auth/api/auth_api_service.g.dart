@@ -3,46 +3,14 @@
 
 part of 'auth_api_service.dart';
 
-// **************************************************************************
-// HAND-WRITTEN STAND-IN FOR RetrofitGenerator'S OUTPUT
-//
-// This environment could not run `dart run build_runner build` while this
-// refactor was authored (no Dart/Flutter SDK reachable from the sandbox
-// that wrote it), so this part file is a manually written implementation
-// of the exact same `AuthApiService` interface declared in
-// `auth_api_service.dart` — same method signatures, same externally
-// observable behavior: each method POSTs `body` as JSON to its
-// `ApiEndpoints` path over the injected [Dio] instance (so every
-// interceptor registered in `core/network/dio_client_factory.dart` —
-// auth header, Accept-Language, logging — still runs), returns the
-// decoded JSON body as `Map<String, dynamic>`, and lets any non-2xx
-// response surface as Dio's own `DioException` exactly like real
-// Retrofit-generated code does, which `ErrorParser` already knows how to
-// read (see `core/network/error_parser.dart`).
-//
-// It deliberately does NOT try to hand-replicate retrofit_generator's
-// internal `RequestOptions`-composition machinery (`_setStreamType`,
-// `compose`, base-URL combination, etc.) — that has no externally
-// observable difference from a plain `dio.post(...)` call for this
-// project's usage (no multipart/query-parameter/header-annotation
-// methods on this service), and hand-guessing generator internals with
-// no compiler to check them against is a real correctness risk, whereas
-// this is ordinary, verifiable Dio usage.
-//
-// Run `dart run build_runner build --delete-conflicting-outputs` to
-// replace this file with the real generated one. Nothing outside this
-// file needs to change when that happens — every caller only ever
-// depends on the abstract `AuthApiService`, never on `_AuthApiService`.
-// **************************************************************************
+// Hand-written stand-in for RetrofitGenerator's output (no Dart/Flutter SDK in this sandbox) — same externally observable behavior as real generated code; run build_runner elsewhere to replace it.
 
 class _AuthApiService implements AuthApiService {
   _AuthApiService(this._dio, {this.baseUrl});
 
   final Dio _dio;
 
-  // Not part of AuthApiService's own abstract interface (only the
-  // factory constructor declares it) — just this implementation's own
-  // storage for the optional base-URL override, hence no @override here.
+  // Not part of AuthApiService's abstract interface — just this implementation's storage for the optional base-URL override.
   final String? baseUrl;
 
   @override

@@ -30,14 +30,10 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  // Lets `_onNewPasswordChanged` imperatively re-run just the Confirm
-  // Password validator the moment New Password changes, so a stale
-  // "passwords don't match" error clears the instant it becomes true
-  // again — without waiting for the user to touch Confirm Password too.
+  // Lets `_onNewPasswordChanged` re-run the Confirm Password validator live so a stale mismatch error clears immediately.
   final _confirmPasswordFieldKey = GlobalKey<FormFieldState<String>>();
 
-  // See AppTextField's `forceLiveValidation` doc — flipped on once a
-  // Submit press fails validation.
+  // Flipped on once a failed Submit press — see AppTextField's `forceLiveValidation` doc.
   bool _forceLiveValidation = false;
 
   late final String _resetToken;
@@ -57,10 +53,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
   }
 
   void _onNewPasswordChanged(String _) {
-    // Only re-validate Confirm Password if the user has already put
-    // something in it — otherwise this would show "required"/"doesn't
-    // match" on a field they haven't reached yet, which is exactly the
-    // aggressive-validation behavior AppTextField is built to avoid.
+    // Only re-validates Confirm Password if it already has content, matching AppTextField's non-aggressive validation.
     if (_confirmPasswordController.text.isNotEmpty) {
       _confirmPasswordFieldKey.currentState?.validate();
     }
@@ -84,9 +77,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Figma: the Reset Password screen's AppBar reads "Password", the
-      // same generic label used across the whole password-recovery flow
-      // (Forgot Password, OTP) — not the "Reset password" body heading.
+      // Figma: this AppBar reads the generic "Password" label shared across the whole recovery flow, not "Reset password".
       appBar: AppBackAppBar(title: AppStrings.passwordSectionTitle),
       body: BlocConsumer<AuthCubit, AuthState>(
         listenWhen: (previous, current) =>
@@ -94,8 +85,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
         listener: (context, state) {
           final resetPasswordState = state.resetPasswordState;
           if (resetPasswordState.isSuccess) {
-            // Clear the whole reset chain (Forgot Password → OTP → here)
-            // off the stack so Back cannot walk into a spent OTP screen.
+            // Clears the whole reset chain off the stack so Back cannot walk into a spent OTP screen.
             Get.offAllNamed(CustomerRoutes.login);
             context.showSuccessSnackBar(AppStrings.passwordResetSuccess);
           } else if (resetPasswordState.isFailure) {

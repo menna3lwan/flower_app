@@ -16,7 +16,6 @@ class NetworkException implements Exception {
   final String message;
 }
 
-
 class ApiException implements Exception {
   const ApiException({required this.statusCode, required this.message});
 
@@ -39,8 +38,7 @@ class EmailNotFoundException implements Exception {
   const EmailNotFoundException();
 }
 
-/// [AuthRepository.refreshSession] was called with no refresh token in
-/// secure storage (e.g. never logged in, or already logged out).
+/// Thrown when refreshSession runs with no refresh token stored (never logged in, or already logged out).
 class InvalidSessionException implements Exception {
   const InvalidSessionException();
 }

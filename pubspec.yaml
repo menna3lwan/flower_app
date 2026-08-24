@@ -18,10 +18,11 @@ dependencies:
   # Dependency injection (core/di/injector.dart is the single GetIt instance).
   get_it: ^7.7.0
 
-  # Generates the GetIt registrations for the auth module from
-  # @injectable/@LazySingleton/@module annotations (core/di/injectable_injector.dart)
-  # instead of the hand-written registerX() calls core/di/auth_injector.dart
-  # used to contain.
+  # Generates the app-wide GetIt registrations from @injectable/
+  # @LazySingleton/@module annotations across features/** (see
+  # core/di/injectable_injector.dart's single configureDependencies()) —
+  # no feature hand-registers its own dependencies in a per-feature
+  # injector file anymore.
   injectable: ^2.5.0
 
   # Navigation / utilities only — never state management (see core/routing/).

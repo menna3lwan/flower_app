@@ -1,7 +1,6 @@
 import 'package:customer_app/core/localization/app_strings.dart';
 
-/// One password requirement, evaluated live against whatever the user has
-/// typed so far.
+/// One password requirement, evaluated live against whatever the user has typed so far.
 class PasswordRule {
   const PasswordRule({required this.label, required this.isSatisfied});
 
@@ -12,20 +11,7 @@ class PasswordRule {
   final bool Function(String value) isSatisfied;
 }
 
-/// The password policy actually enforced by this app.
-///
-/// This is the **single confirmed source** for what a valid password looks
-/// like — not an assumption. It mirrors the policy copy the project already
-/// ships to users (`AppStrings.resetPasswordSubtitle`: "Password must not
-/// be empty and must contain 6 characters with upper case letter and one
-/// number at least"). No rule exists here that isn't already promised by
-/// that copy — in particular there is deliberately no lowercase-letter or
-/// special-character rule, because neither the product copy nor Figma
-/// specifies one.
-///
-/// [Validators.password] and [PasswordRulesChecklist] both read from
-/// [rules] so the submit-time validation and the live ✓/✕ checklist can
-/// never drift apart.
+/// The single confirmed password policy (mirrors `AppStrings.resetPasswordSubtitle`'s promised copy) — [Validators.password] and [PasswordRulesChecklist] both read from [rules] so they can never drift apart.
 abstract final class PasswordPolicy {
   const PasswordPolicy._();
 
