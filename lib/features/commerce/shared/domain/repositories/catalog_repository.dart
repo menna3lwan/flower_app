@@ -1,6 +1,6 @@
-import '../../../../core/domain/entities/category_entity.dart';
-import '../../../../core/domain/entities/occasion_entity.dart';
-import '../../../../core/domain/entities/product_entity.dart';
+import '../../../../../core/domain/entities/category_entity.dart';
+import '../../../../../core/domain/entities/occasion_entity.dart';
+import '../../../../../core/domain/entities/product_entity.dart';
 import 'package:customer_app/core/result/result.dart';
 
 /// Shared catalog contract used by the Home, Categories, Product details

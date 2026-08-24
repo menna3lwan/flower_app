@@ -1,6 +1,6 @@
 import 'package:customer_app/core/base/base_cubit.dart';
-import '../../../catalog/domain/repositories/catalog_repository.dart';
-import './home_state.dart';
+import '../../../shared/domain/repositories/catalog_repository.dart';
+import '../state/home_state.dart';
 
 /// Loads everything the Home screen renders (categories row, best-seller
 /// row, occasion row) in parallel and exposes it as a single

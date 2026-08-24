@@ -8,7 +8,8 @@ import 'package:customer_app/features/auth/presentation/views/login_view.dart';
 import 'package:customer_app/features/auth/presentation/views/otp_verification_view.dart';
 import 'package:customer_app/features/auth/presentation/views/reset_password_view.dart';
 import 'package:customer_app/features/auth/presentation/views/sign_up_view.dart';
-import 'package:customer_app/features/home/presentation/views/main_view.dart';
+import 'package:customer_app/features/commerce/home/presentation/views/main_view.dart';
+import 'package:customer_app/features/commerce/shared/routing/commerce_pages.dart';
 import 'package:customer_app/features/splash/presentation/views/splash_view.dart';
 import './customer_routes.dart';
 
@@ -68,5 +69,8 @@ abstract final class CustomerPages {
       name: CustomerRoutes.main,
       page: () => const MainView(),
     ),
+    // The Commerce module owns its own routes — see CommercePages' doc
+    // comment for why they're defined there instead of inline here.
+    ...CommercePages.pages,
   ];
 }

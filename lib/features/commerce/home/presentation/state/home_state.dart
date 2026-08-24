@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 
-import '../../../../core/domain/entities/category_entity.dart';
-import '../../../../core/domain/entities/occasion_entity.dart';
-import '../../../../core/domain/entities/product_entity.dart';
+import '../../../../../core/domain/entities/category_entity.dart';
+import '../../../../../core/domain/entities/occasion_entity.dart';
+import '../../../../../core/domain/entities/product_entity.dart';
 
 sealed class HomeState extends Equatable {
   const HomeState();
