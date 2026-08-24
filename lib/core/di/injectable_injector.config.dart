@@ -19,18 +19,18 @@ import '../../features/auth/domain/usecases/verify_otp_usecase.dart';
 import '../../features/auth/presentation/cubit/auth_cubit.dart';
 
 // Commerce module (shared catalog foundation + Home).
-import '../../features/commerce/home/presentation/cubit/home_cubit.dart';
-import '../../features/commerce/shared/data/datasources/catalog_local_data_source.dart';
-import '../../features/commerce/shared/data/datasources/catalog_local_data_source_impl.dart';
-import '../../features/commerce/shared/data/repositories/catalog_repository_impl.dart';
-import '../../features/commerce/shared/domain/repositories/catalog_repository.dart';
-import '../../features/commerce/shared/domain/usecases/get_best_sellers_use_case.dart';
-import '../../features/commerce/shared/domain/usecases/get_categories_use_case.dart';
-import '../../features/commerce/shared/domain/usecases/get_occasions_use_case.dart';
-import '../../features/commerce/shared/domain/usecases/get_product_by_id_use_case.dart';
-import '../../features/commerce/shared/domain/usecases/get_products_by_category_use_case.dart';
-import '../../features/commerce/shared/domain/usecases/get_products_by_occasion_use_case.dart';
-import '../../features/commerce/shared/domain/usecases/search_products_use_case.dart';
+import '../../features/commerce/data/data_sources/local/catalog_local_data_source.dart';
+import '../../features/commerce/data/data_sources/local/catalog_local_data_source_impl.dart';
+import '../../features/commerce/data/repositories/catalog_repository_impl.dart';
+import '../../features/commerce/domain/repositories/catalog_repository.dart';
+import '../../features/commerce/domain/use_cases/get_best_sellers_use_case.dart';
+import '../../features/commerce/domain/use_cases/get_categories_use_case.dart';
+import '../../features/commerce/domain/use_cases/get_occasions_use_case.dart';
+import '../../features/commerce/domain/use_cases/get_product_by_id_use_case.dart';
+import '../../features/commerce/domain/use_cases/get_products_by_category_use_case.dart';
+import '../../features/commerce/domain/use_cases/get_products_by_occasion_use_case.dart';
+import '../../features/commerce/domain/use_cases/search_products_use_case.dart';
+import '../../features/commerce/ui/home/manager/home_cubit.dart';
 
 import '../storage/secure_storage_service.dart';
 
