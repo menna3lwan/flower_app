@@ -41,7 +41,19 @@ void main() {
         'nameid': 'user-1',
         'email': 'test@flowery.com',
       });
-      when(apiService.login(any)).thenAnswer((_) async => {
+      // Stubbed against the exact JSON body `AuthRemoteDataSourceImpl`
+      // actually sends (see its `login`/`signUp`/etc. methods), instead of
+      // `any`/`captureAny` — the real, installed Mockito types those
+      // matchers as `Null`, which the analyzer rejects for
+      // `AuthApiService`'s required non-nullable `Map<String, dynamic>
+      // body` parameter (confirmed live via the Dart analyzer). Where the
+      // test genuinely needs to accept/capture whatever was sent (the
+      // `captureAny`/`verifyNever` calls below), the matcher is cast to
+      // `dynamic` instead — that only affects the call site's *static*
+      // type, not runtime behavior, since Mockito's matcher substitution
+      // never inspects it.
+      when(apiService.login({'email': 'test@flowery.com', 'password': 'Password123'}))
+          .thenAnswer((_) async => {
             'status': true,
             'data': {
               'accessToken': accessToken,
@@ -68,7 +80,7 @@ void main() {
     });
 
     test('propagates whatever the API service throws', () async {
-      when(apiService.login(any))
+      when(apiService.login({'email': 'a@b.com', 'password': 'wrong'}))
           .thenThrow(const InvalidCredentialsException());
 
       expect(
@@ -81,7 +93,14 @@ void main() {
   group('signUp', () {
     test('returns a user built from the submitted fields, not invented',
         () async {
-      when(apiService.signUp(any)).thenAnswer((_) async => {
+      when(apiService.signUp({
+        'fullName': 'Sara Ali',
+        'email': 'sara@flowery.com',
+        'phoneNumber': '01012345678',
+        'gender': 2,
+        'password': 'Password123',
+        'confirmPassword': 'Password123',
+      })).thenAnswer((_) async => {
             'status': true,
             'data': 'new-user-id',
             'errors': null,
@@ -109,7 +128,14 @@ void main() {
 
     test('sends the confirmed Gender wire mapping (male=1, female=2)',
         () async {
-      when(apiService.signUp(any)).thenAnswer((_) async => {
+      when(apiService.signUp({
+        'fullName': 'A B',
+        'email': 'a@b.com',
+        'phoneNumber': '01000000000',
+        'gender': 1,
+        'password': 'Password123',
+        'confirmPassword': 'Password123',
+      })).thenAnswer((_) async => {
             'status': true,
             'data': 'id',
           });
@@ -125,17 +151,19 @@ void main() {
       );
 
       final body =
-          verify(apiService.signUp(captureAny)).captured.single as Map;
+          verify(apiService.signUp(captureAny as dynamic)).captured.single
+              as Map;
       expect(body['gender'], 1);
     });
   });
 
   group('verifyCode', () {
     test('returns the resetToken from the response envelope', () async {
-      when(apiService.verifyOtp(any)).thenAnswer((_) async => {
-            'status': true,
-            'data': {'resetToken': 'reset-token-123'},
-          });
+      when(apiService.verifyOtp({'email': 'a@b.com', 'otp': '1234'}))
+          .thenAnswer((_) async => {
+                'status': true,
+                'data': {'resetToken': 'reset-token-123'},
+              });
 
       final resetToken = await dataSource.verifyCode(
         email: 'a@b.com',
@@ -146,7 +174,7 @@ void main() {
     });
 
     test('propagates a wrong-code exception unchanged', () async {
-      when(apiService.verifyOtp(any))
+      when(apiService.verifyOtp({'email': 'a@b.com', 'otp': '0000'}))
           .thenThrow(const InvalidVerificationCodeException());
 
       expect(
@@ -159,7 +187,19 @@ void main() {
   group('resetPassword', () {
     test('posts the resetToken/newPassword/confirmNewPassword as-is',
         () async {
-      when(apiService.resetPassword(any)).thenAnswer((_) async => {});
+      // A bare `{}` used to be accepted here, but that isn't what a real
+      // success envelope looks like (see `AuthApiEnvelope`/
+      // `_throwIfEnvelopeFailed`) — confirmed live: a real backend 200 with
+      // an empty/absent `status` is actually a *failure* envelope
+      // (`status` defaults to `false`), e.g. the Forgot Password endpoint
+      // returning `{"status":false,...,"errors":["SENDGRID_API_KEY is not
+      // set."]}` with HTTP 200 while the Docker environment's SendGrid key
+      // is unset. A stub claiming success must say so explicitly.
+      when(apiService.resetPassword({
+        'resetToken': 'token-1',
+        'newPassword': 'NewPassword123',
+        'confirmNewPassword': 'NewPassword123',
+      })).thenAnswer((_) async => {'status': true});
 
       await dataSource.resetPassword(
         resetToken: 'token-1',
@@ -168,7 +208,8 @@ void main() {
       );
 
       final body =
-          verify(apiService.resetPassword(captureAny)).captured.single as Map;
+          verify(apiService.resetPassword(captureAny as dynamic)).captured
+              .single as Map;
       expect(body['resetToken'], 'token-1');
       expect(body['newPassword'], 'NewPassword123');
     });
@@ -181,13 +222,14 @@ void main() {
         () => dataSource.refreshSession(),
         throwsA(isA<InvalidSessionException>()),
       );
-      verifyNever(apiService.refreshToken(any));
+      verifyNever(apiService.refreshToken(any as dynamic));
     });
 
     test('calls the API and persists the new session when one exists',
         () async {
       await secureStorage.saveRefreshToken('old-refresh');
-      when(apiService.refreshToken(any)).thenAnswer((_) async => {
+      when(apiService.refreshToken({'refreshToken': 'old-refresh'}))
+          .thenAnswer((_) async => {
             'status': true,
             'data': {
               'accessToken': 'new-access',

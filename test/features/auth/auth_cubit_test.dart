@@ -46,9 +46,21 @@ void main() {
   group('login', () {
     test('goes idle -> loading -> success, leaving every other field idle',
         () async {
+      // Stubbed against the exact literal values `LoginRequested` sends
+      // below, instead of `anyNamed`/`any` — the real, installed Mockito
+      // (`package:mockito/mockito.dart`, confirmed against the live
+      // analyzer) types `any`/`anyNamed` as `Null`, which the sound-null-
+      // safety analyzer rejects for `AuthRepository.login`'s *required*
+      // non-nullable `email`/`password` parameters ("The argument type
+      // 'Null' can't be assigned to the parameter type 'String'"). Manual
+      // `extends Mock implements X` mocks (no `@GenerateMocks` codegen —
+      // deliberate, see `test/support/mocks.dart`) have no other built-in
+      // way around this for required params, so every matcher below that
+      // stubbed a required parameter is pinned to the literal value the
+      // test actually sends.
       when(repository.login(
-        email: anyNamed('email'),
-        password: anyNamed('password'),
+        email: 'test@flowery.com',
+        password: 'Password123',
       )).thenAnswer((_) async => const Result.success(_user));
 
       final states = <AuthState>[];
@@ -70,8 +82,8 @@ void main() {
 
     test('a rejected login carries the Failure, not a string', () async {
       when(repository.login(
-        email: anyNamed('email'),
-        password: anyNamed('password'),
+        email: 'test@flowery.com',
+        password: 'wrong',
       )).thenAnswer(
         (_) async => const Result.failure(InvalidCredentialsFailure()),
       );
@@ -107,13 +119,13 @@ void main() {
   group('sign up', () {
     test('success leaves signUpState successful with no payload', () async {
       when(repository.signUp(
-        firstName: anyNamed('firstName'),
-        lastName: anyNamed('lastName'),
-        email: anyNamed('email'),
-        password: anyNamed('password'),
-        confirmPassword: anyNamed('confirmPassword'),
-        phoneNumber: anyNamed('phoneNumber'),
-        gender: anyNamed('gender'),
+        firstName: 'Nour',
+        lastName: 'Mohamed',
+        email: 'test@flowery.com',
+        password: 'Password123',
+        confirmPassword: 'Password123',
+        phoneNumber: '01012345678',
+        gender: Gender.female,
       )).thenAnswer((_) async => const Result.success(_user));
 
       await cubit.onIntent(
@@ -137,13 +149,13 @@ void main() {
 
     test('an existing email surfaces ConflictFailure', () async {
       when(repository.signUp(
-        firstName: anyNamed('firstName'),
-        lastName: anyNamed('lastName'),
-        email: anyNamed('email'),
-        password: anyNamed('password'),
-        confirmPassword: anyNamed('confirmPassword'),
-        phoneNumber: anyNamed('phoneNumber'),
-        gender: anyNamed('gender'),
+        firstName: 'Nour',
+        lastName: 'Mohamed',
+        email: 'test@flowery.com',
+        password: 'Password123',
+        confirmPassword: 'Password123',
+        phoneNumber: '01012345678',
+        gender: Gender.female,
       )).thenAnswer((_) async => const Result.failure(ConflictFailure()));
 
       await cubit.onIntent(
@@ -166,7 +178,7 @@ void main() {
   group('forgot password', () {
     test('success carries the submitted email forward as the payload',
         () async {
-      when(repository.sendPasswordResetEmail(any))
+      when(repository.sendPasswordResetEmail('test@flowery.com'))
           .thenAnswer((_) async => const Result.success(null));
 
       await cubit.onIntent(const ForgotPasswordRequested('test@flowery.com'));
@@ -176,7 +188,7 @@ void main() {
     });
 
     test('an unknown email surfaces NotFoundFailure', () async {
-      when(repository.sendPasswordResetEmail(any))
+      when(repository.sendPasswordResetEmail('nobody@x.com'))
           .thenAnswer((_) async => const Result.failure(NotFoundFailure()));
 
       await cubit.onIntent(const ForgotPasswordRequested('nobody@x.com'));
@@ -189,8 +201,8 @@ void main() {
   group('verify otp', () {
     test('success carries the resetToken forward as the payload', () async {
       when(repository.verifyCode(
-        email: anyNamed('email'),
-        code: anyNamed('code'),
+        email: 'test@flowery.com',
+        code: '1234',
       )).thenAnswer((_) async => const Result.success('reset-token-123'));
 
       await cubit.onIntent(
@@ -204,8 +216,8 @@ void main() {
     test('a wrong/expired code surfaces InvalidVerificationCodeFailure',
         () async {
       when(repository.verifyCode(
-        email: anyNamed('email'),
-        code: anyNamed('code'),
+        email: 'test@flowery.com',
+        code: '9999',
       )).thenAnswer(
         (_) async => const Result.failure(InvalidVerificationCodeFailure()),
       );
@@ -230,9 +242,9 @@ void main() {
     test('passes the verified resetToken to the repository unchanged',
         () async {
       when(repository.resetPassword(
-        resetToken: anyNamed('resetToken'),
-        newPassword: anyNamed('newPassword'),
-        confirmNewPassword: anyNamed('confirmNewPassword'),
+        resetToken: 'reset-token-123',
+        newPassword: 'NewPassword123',
+        confirmNewPassword: 'NewPassword123',
       )).thenAnswer((_) async => const Result.success(null));
 
       await cubit.onIntent(
@@ -253,9 +265,9 @@ void main() {
 
     test('an expired reset link surfaces NotFoundFailure', () async {
       when(repository.resetPassword(
-        resetToken: anyNamed('resetToken'),
-        newPassword: anyNamed('newPassword'),
-        confirmNewPassword: anyNamed('confirmNewPassword'),
+        resetToken: 'expired',
+        newPassword: 'NewPassword123',
+        confirmNewPassword: 'NewPassword123',
       )).thenAnswer((_) async => const Result.failure(NotFoundFailure()));
 
       await cubit.onIntent(

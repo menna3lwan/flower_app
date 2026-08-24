@@ -1,48 +1,15 @@
 import 'package:customer_app/core/error/failures.dart';
 import 'package:customer_app/core/localization/app_strings.dart';
-
-/// Maps a [Failure] to the copy shown on-screen — one getter per Auth
-/// screen instead of a single global mapping.
-///
-/// Why per-screen instead of one shared `localizedMessage`: the *same*
-/// [Failure] subtype means something different depending on which action
-/// produced it. A [NotFoundFailure] on Forgot Password means "no account
-/// with that email"; the same [NotFoundFailure] on Reset Password (the
-/// backend's own 404 for an unknown/expired reset token, per
-/// `docker/auth-swagger.json`) means "this reset link expired" — showing
-/// the Forgot-Password wording there would be actively confusing. Each
-/// getter below is a deliberate, screen-specific reading of what a given
-/// failure means in that one context.
-///
-/// [ValidationFailure] is the one case that *does* pass the backend's own
-/// message straight through: it carries the API's own field-validation
-/// text (already localized server-side via the `Accept-Language` header —
-/// see `AcceptLanguageInterceptor`), which is a legitimate, human-authored
-/// message rather than framework/HTTP internals. Everything else
-/// (`ServerFailure`, `UnexpectedFailure`, a bare `AuthFailure`) collapses
-/// to a single safe, friendly fallback so raw exception text can never
-/// reach the user.
-///
-/// [InvalidCredentialsFailure] is only ever produced by Login (see
-/// `AuthRepositoryImpl`/`ErrorParser` — nothing on Sign Up, Forgot
-/// Password, Verify OTP, or Reset Password can raise it), but `Failure`
-/// is one shared sealed hierarchy, so every switch over it must stay
-/// exhaustive regardless of which cases are actually reachable on a given
-/// screen. It is intentionally folded into each of those four screens'
-/// generic fallback rather than left unhandled — an IDE "quick fix" once
-/// filled the gap with `throw UnimplementedError()`, which would have
-/// crashed the app the first time the sealed-class checker's edge case
-/// was hit; a safe fallback message is the correct unreachable-in-practice
-/// default, never a throw.
 extension AuthFailureMessage on Failure {
   /// Login screen: email/password submit.
   String get loginMessage => switch (this) {
-        InvalidCredentialsFailure() => AppStrings.loginInvalidCredentials,
+        InvalidCredentialsFailure() ||
+        AuthFailure() =>
+          AppStrings.loginInvalidCredentials,
         NetworkFailure() => AppStrings.noInternetConnection,
         RateLimitedFailure() => AppStrings.tooManyAttempts,
         ValidationFailure(:final message) when message.trim().isNotEmpty =>
           message,
-        AuthFailure() ||
         ServerFailure() ||
         ValidationFailure() ||
         UnexpectedFailure() ||

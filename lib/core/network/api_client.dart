@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 
-import 'api_endpoints.dart';
 import '../error/exceptions.dart';
 
 

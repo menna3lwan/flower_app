@@ -49,6 +49,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }) async {
     final json = await _apiService.login({'email': email, 'password': password});
     final envelope = AuthApiEnvelope.fromJson(json);
+    _throwIfEnvelopeFailed(envelope);
     return _persistSessionAndBuildUser(envelope.dataAsMap, fallbackEmail: email);
   }
 
@@ -71,6 +72,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       'confirmPassword': confirmPassword,
     });
     final envelope = AuthApiEnvelope.fromJson(json);
+    _throwIfEnvelopeFailed(envelope);
 
     // Register only returns the new user's id (`GuidApiResponse`) — no
     // token, no echoed profile — so the rest of the entity is built from
@@ -99,7 +101,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<void> sendPasswordResetEmail(String email) async {
-    await _apiService.forgotPassword({'email': email});
+    final json = await _apiService.forgotPassword({'email': email});
+    _throwIfEnvelopeFailed(AuthApiEnvelope.fromJson(json));
   }
 
   @override
@@ -109,6 +112,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }) async {
     final json = await _apiService.verifyOtp({'email': email, 'otp': code});
     final envelope = AuthApiEnvelope.fromJson(json);
+    _throwIfEnvelopeFailed(envelope);
     return envelope.dataAsMap['resetToken'] as String? ?? '';
   }
 
@@ -118,11 +122,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String newPassword,
     required String confirmNewPassword,
   }) async {
-    await _apiService.resetPassword({
+    final json = await _apiService.resetPassword({
       'resetToken': resetToken,
       'newPassword': newPassword,
       'confirmNewPassword': confirmNewPassword,
     });
+    _throwIfEnvelopeFailed(AuthApiEnvelope.fromJson(json));
   }
 
   @override
@@ -138,7 +143,36 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     final json =
         await _apiService.refreshToken({'refreshToken': storedRefreshToken});
     final envelope = AuthApiEnvelope.fromJson(json);
+    _throwIfEnvelopeFailed(envelope);
     await _persistSession(envelope.dataAsMap);
+  }
+
+  /// The backend can respond with HTTP 200 while the envelope itself
+  /// reports a business-logic failure — confirmed live against the
+  /// running Auth service: a Sign Up rejected for an Identity
+  /// password-policy violation came back as HTTP 200 with
+  /// `{"status":false,"code":500,"errors":["...PasswordRequiresNonAlpha
+  /// numeric..."]}`. Dio only throws on a non-2xx transport status, so
+  /// without this check that response was silently treated as a
+  /// success — the UI showed "account created" and navigated to Login
+  /// for an account that was never created.
+  ///
+  /// `envelope.code` is itself typed as `HttpStatusCode` in the
+  /// backend's own contract (every `*ApiResponse` schema in
+  /// `docker/auth-swagger.json`), so a failed envelope is routed through
+  /// the exact same [ApiException] → [ErrorParser] status-code mapping
+  /// as a real HTTP error status — one mapping table, not a second
+  /// bespoke one.
+  void _throwIfEnvelopeFailed(AuthApiEnvelope envelope) {
+    if (envelope.status) return;
+    final serverErrors = envelope.errors;
+    final serverMessage = envelope.message;
+    final message = (serverErrors != null && serverErrors.isNotEmpty)
+        ? serverErrors.first
+        : (serverMessage != null && serverMessage.isNotEmpty)
+            ? serverMessage
+            : 'Request failed.';
+    throw ApiException(statusCode: envelope.code ?? 400, message: message);
   }
 
   /// Writes accessToken/refreshToken/expiry to secure storage — the
