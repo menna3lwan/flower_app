@@ -187,11 +187,19 @@ void main() {
   group('resetPassword', () {
     test('posts the resetToken/newPassword/confirmNewPassword as-is',
         () async {
+      // A bare `{}` used to be accepted here, but that isn't what a real
+      // success envelope looks like (see `AuthApiEnvelope`/
+      // `_throwIfEnvelopeFailed`) — confirmed live: a real backend 200 with
+      // an empty/absent `status` is actually a *failure* envelope
+      // (`status` defaults to `false`), e.g. the Forgot Password endpoint
+      // returning `{"status":false,...,"errors":["SENDGRID_API_KEY is not
+      // set."]}` with HTTP 200 while the Docker environment's SendGrid key
+      // is unset. A stub claiming success must say so explicitly.
       when(apiService.resetPassword({
         'resetToken': 'token-1',
         'newPassword': 'NewPassword123',
         'confirmNewPassword': 'NewPassword123',
-      })).thenAnswer((_) async => {});
+      })).thenAnswer((_) async => {'status': true});
 
       await dataSource.resetPassword(
         resetToken: 'token-1',

@@ -8,6 +8,7 @@ import 'package:customer_app/features/auth/presentation/views/login_view.dart';
 import 'package:customer_app/features/auth/presentation/views/otp_verification_view.dart';
 import 'package:customer_app/features/auth/presentation/views/reset_password_view.dart';
 import 'package:customer_app/features/auth/presentation/views/sign_up_view.dart';
+import 'package:customer_app/features/home/presentation/views/main_view.dart';
 import 'package:customer_app/features/splash/presentation/views/splash_view.dart';
 import './customer_routes.dart';
 
@@ -56,6 +57,16 @@ abstract final class CustomerPages {
         create: (_) => sl<AuthCubit>(),
         child: const ResetPasswordView(),
       ),
+    ),
+    // Reached from Login/Sign Up on success. Confirmed live: without this
+    // entry `Get.offAllNamed(CustomerRoutes.main)` crashed the app
+    // outright (GetX couldn't resolve `/main` to any page). See
+    // MainView's own doc comment — the real Home/Catalog shell is a
+    // separate, not-yet-built feature; this only stops Auth success from
+    // crashing.
+    GetPage(
+      name: CustomerRoutes.main,
+      page: () => const MainView(),
     ),
   ];
 }
