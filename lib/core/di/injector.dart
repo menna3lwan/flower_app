@@ -1,8 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
+import '../network/connectivity_network_info.dart';
 import '../network/dio_client_factory.dart';
 import '../network/network_info.dart';
+import '../storage/flutter_secure_storage_service.dart';
+import '../storage/in_memory_local_storage_service.dart';
 import '../storage/local_storage_service.dart';
 import '../storage/secure_storage_service.dart';
 

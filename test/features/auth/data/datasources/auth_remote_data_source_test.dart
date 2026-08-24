@@ -5,7 +5,7 @@ import 'package:mockito/mockito.dart';
 
 import 'package:customer_app/core/domain/entities/user_entity.dart';
 import 'package:customer_app/core/error/exceptions.dart';
-import 'package:customer_app/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:customer_app/features/auth/data/datasources/auth_remote_data_source_impl.dart';
 
 import '../../../../support/fake_secure_storage_service.dart';
 import '../../../../support/mocks.dart';

@@ -16,11 +16,11 @@ const _user = UserEntity(
 );
 
 void main() {
-  late MockAuthLocalDataSource dataSource;
+  late MockAuthRemoteDataSource dataSource;
   late AuthRepositoryImpl repository;
 
   setUp(() {
-    dataSource = MockAuthLocalDataSource();
+    dataSource = MockAuthRemoteDataSource();
     repository = AuthRepositoryImpl(dataSource);
   });
 

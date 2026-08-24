@@ -80,7 +80,7 @@ dev_dependencies:
   injectable_generator: ^2.6.2
   retrofit_generator: ^9.1.5
 
-  # Unit-test mocking for AuthApiService/AuthRepository/AuthLocalDataSource
+  # Unit-test mocking for AuthApiService/AuthRepository/AuthRemoteDataSource
   # (test/support/mocks.dart) — manual `extends Mock implements X` mocks,
   # deliberately not the `@GenerateMocks`-annotated codegen flavor, so the
   # test suite doesn't also depend on a build_runner run to exist.

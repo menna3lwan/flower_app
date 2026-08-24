@@ -28,7 +28,7 @@ DioException _dioError({
 
 void main() {
   group('ErrorParser.parse — DioException', () {
-    test('every timeout/connection variant becomes NetworkFailure', () {
+    test('every timeout/connection variant becomes a NetworkFailure', () {
       for (final type in [
         DioExceptionType.connectionTimeout,
         DioExceptionType.sendTimeout,
@@ -37,8 +37,29 @@ void main() {
         DioExceptionType.transformTimeout,
       ]) {
         final failure = ErrorParser.parse(_dioError(type: type));
+        // TimeoutFailure extends NetworkFailure, so this still holds for both buckets below.
         expect(failure, isA<NetworkFailure>(), reason: type.toString());
       }
+    });
+
+    test('connect/send/receive/transform timeouts become TimeoutFailure specifically', () {
+      for (final type in [
+        DioExceptionType.connectionTimeout,
+        DioExceptionType.sendTimeout,
+        DioExceptionType.receiveTimeout,
+        DioExceptionType.transformTimeout,
+      ]) {
+        final failure = ErrorParser.parse(_dioError(type: type));
+        expect(failure, isA<TimeoutFailure>(), reason: type.toString());
+      }
+    });
+
+    test('connectionError is a plain NetworkFailure, not TimeoutFailure', () {
+      final failure = ErrorParser.parse(
+        _dioError(type: DioExceptionType.connectionError),
+      );
+      expect(failure, isA<NetworkFailure>());
+      expect(failure, isNot(isA<TimeoutFailure>()));
     });
 
     test('400 becomes ValidationFailure using the envelope\'s errors[0]',
@@ -65,21 +86,24 @@ void main() {
       expect(failure, isA<ValidationFailure>());
     });
 
-    test('401 becomes AuthFailure', () {
+    test('401 becomes UnauthorizedFailure (which is still an AuthFailure)', () {
       final failure = ErrorParser.parse(_dioError(
         type: DioExceptionType.badResponse,
         statusCode: 401,
         responseData: {'message': 'Unauthorized'},
       ));
+      expect(failure, isA<UnauthorizedFailure>());
       expect(failure, isA<AuthFailure>());
     });
 
-    test('403 also becomes AuthFailure', () {
+    test('403 becomes ForbiddenFailure (which is still an AuthFailure)', () {
       final failure = ErrorParser.parse(_dioError(
         type: DioExceptionType.badResponse,
         statusCode: 403,
       ));
+      expect(failure, isA<ForbiddenFailure>());
       expect(failure, isA<AuthFailure>());
+      expect(failure, isNot(isA<UnauthorizedFailure>()));
     });
 
     test('404 becomes NotFoundFailure', () {
@@ -139,7 +163,12 @@ void main() {
       expect(
         ErrorParser.parse(
             const ApiException(statusCode: 401, message: 'nope')),
-        isA<AuthFailure>(),
+        isA<UnauthorizedFailure>(),
+      );
+      expect(
+        ErrorParser.parse(
+            const ApiException(statusCode: 403, message: 'nope')),
+        isA<ForbiddenFailure>(),
       );
       expect(
         ErrorParser.parse(
@@ -188,11 +217,11 @@ void main() {
       );
     });
 
-    test('InvalidSessionException -> AuthFailure', () {
-      expect(
-        ErrorParser.parse(const InvalidSessionException()),
-        isA<AuthFailure>(),
-      );
+    test('InvalidSessionException -> AuthFailure (not Unauthorized/Forbidden — it never hit the network)', () {
+      final failure = ErrorParser.parse(const InvalidSessionException());
+      expect(failure, isA<AuthFailure>());
+      expect(failure, isNot(isA<UnauthorizedFailure>()));
+      expect(failure, isNot(isA<ForbiddenFailure>()));
     });
 
     test('a totally unrecognized error -> UnexpectedFailure', () {

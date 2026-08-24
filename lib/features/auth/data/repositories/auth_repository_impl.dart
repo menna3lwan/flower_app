@@ -4,14 +4,14 @@ import '../../../../core/base/safe_call.dart';
 import '../../../../core/domain/entities/user_entity.dart';
 import '../../../../core/result/result.dart';
 import '../../domain/repositories/auth_repository.dart';
-import '../datasources/auth_local_data_source.dart';
+import '../datasources/auth_remote_data_source.dart';
 
-/// Every method is a one-line `safeCall(...)` wrapper — exception-to-Failure mapping lives centrally, not per-repository.
+/// Every method is a one-line `safeCall(...)` wrapper — exception-to-Failure mapping lives centrally, not per-repository. Depends on the [AuthRemoteDataSource] interface only, never the concrete [AuthRemoteDataSourceImpl].
 @LazySingleton(as: AuthRepository)
 class AuthRepositoryImpl implements AuthRepository {
   const AuthRepositoryImpl(this._dataSource);
 
-  final AuthLocalDataSource _dataSource;
+  final AuthRemoteDataSource _dataSource;
 
   @override
   Future<Result<UserEntity>> login({

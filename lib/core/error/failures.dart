@@ -9,9 +9,14 @@ sealed class Failure extends Equatable {
   List<Object?> get props => [message];
 }
 
-/// The local/remote data source is unreachable or timed out.
-final class NetworkFailure extends Failure {
+/// The local/remote data source is unreachable or timed out. `base` (not `final`) so [TimeoutFailure] can specialize it below while every existing `NetworkFailure()` switch pattern keeps matching both.
+base class NetworkFailure extends Failure {
   const NetworkFailure([super.message = 'No internet connection.']);
+}
+
+/// The request reached the network stack but exceeded its time budget (connect/send/receive) — distinct from [NetworkFailure]'s plain "no connectivity" case, still routed through the same UI copy today.
+final class TimeoutFailure extends NetworkFailure {
+  const TimeoutFailure([super.message = 'The request timed out. Please try again.']);
 }
 
 /// The data source responded but with an error payload/status.
@@ -35,9 +40,19 @@ final class ConflictFailure extends Failure {
   const ConflictFailure([super.message = 'This already exists.']);
 }
 
-/// Authentication/authorization failed (bad credentials, expired session).
-final class AuthFailure extends Failure {
+/// Authentication/authorization failed (bad credentials, expired session). `base` (not `final`) so [UnauthorizedFailure]/[ForbiddenFailure] can specialize it below while every existing `AuthFailure()` switch pattern keeps matching both.
+base class AuthFailure extends Failure {
   const AuthFailure([super.message = 'Authentication failed.']);
+}
+
+/// HTTP 401 — the request had no/invalid/expired credentials.
+final class UnauthorizedFailure extends AuthFailure {
+  const UnauthorizedFailure([super.message = 'Your session has expired. Please log in again.']);
+}
+
+/// HTTP 403 — credentials were valid but don't permit this action.
+final class ForbiddenFailure extends AuthFailure {
+  const ForbiddenFailure([super.message = "You don't have permission to perform this action."]);
 }
 
 /// The email/password pair supplied at Login was rejected.

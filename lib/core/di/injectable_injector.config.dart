@@ -5,8 +5,8 @@ import 'package:get_it/get_it.dart';
 
 // Auth module.
 import '../../features/auth/api/auth_api_service.dart';
-import '../../features/auth/data/datasources/auth_local_data_source.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
+import '../../features/auth/data/datasources/auth_remote_data_source_impl.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/di/auth_module.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
@@ -21,6 +21,7 @@ import '../../features/auth/presentation/cubit/auth_cubit.dart';
 // Commerce module (shared catalog foundation + Home).
 import '../../features/commerce/home/presentation/cubit/home_cubit.dart';
 import '../../features/commerce/shared/data/datasources/catalog_local_data_source.dart';
+import '../../features/commerce/shared/data/datasources/catalog_local_data_source_impl.dart';
 import '../../features/commerce/shared/data/repositories/catalog_repository_impl.dart';
 import '../../features/commerce/shared/domain/repositories/catalog_repository.dart';
 import '../../features/commerce/shared/domain/usecases/get_best_sellers_use_case.dart';
@@ -46,8 +47,8 @@ extension GetItInjectableX on GetIt {
       () => authApiModule.authApiService(get<Dio>()),
     );
 
-    // AuthLocalDataSourceImpl (offline fake) is deliberately not registered — only the active AuthRemoteDataSourceImpl is, to avoid an ambiguous duplicate.
-    registerLazySingleton<AuthLocalDataSource>(
+    // AuthRemoteDataSource is Auth's one and only data source — the real backend over Retrofit/Dio. There is no dummy/local implementation to accidentally wire up anymore.
+    registerLazySingleton<AuthRemoteDataSource>(
       () => AuthRemoteDataSourceImpl(
         get<AuthApiService>(),
         get<SecureStorageService>(),
@@ -55,7 +56,7 @@ extension GetItInjectableX on GetIt {
     );
 
     registerLazySingleton<AuthRepository>(
-      () => AuthRepositoryImpl(get<AuthLocalDataSource>()),
+      () => AuthRepositoryImpl(get<AuthRemoteDataSource>()),
     );
 
     registerLazySingleton<LoginUseCase>(
