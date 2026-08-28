@@ -8,6 +8,8 @@ import 'package:customer_app/features/commerce/ui/occasions/pages/occasions_view
 import 'package:customer_app/features/commerce/ui/product_details/pages/product_details_view.dart';
 
 import '../../../core/di/injector.dart';
+import '../ui/best_seller/manager/cubit/best_seller_cubit.dart';
+import '../ui/best_seller/manager/cubit/best_selleter_intent.dart';
 import '../ui/product_details/manager/cubit/product_details_cubit.dart';
 import '../ui/product_details/manager/cubit/product_details_intent.dart';
 
@@ -22,7 +24,9 @@ abstract final class CommercePages {
     ),
     GetPage(
       name: CustomerRoutes.bestSellerListing,
-      page: () => const BestSellerView(),
+      page: () => BlocProvider<BestSellerCubit>(
+          create: (context) => sl<BestSellerCubit>()..doIntent(GetBestSellerIntent()),
+          child: const BestSellerView()),
     ),
     GetPage(
       name: CustomerRoutes.occasionListing,
