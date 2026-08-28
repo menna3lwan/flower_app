@@ -102,6 +102,56 @@ void main() {
       });
     });
 
+    group('getCategories', () {
+      test('should return a valid CategoriesResponse', () async {
+        final result = await dataSource.getCategories();
+
+        expect(result.status, isTrue);
+        expect(result.code, 200);
+        expect(result.data, hasLength(2));
+        expect(result.data![0].name, 'Electronics');
+        expect(result.data![1].name, 'Groceries');
+      });
+    });
+
+    group('getAllProducts', () {
+      test('should return paginated list correctly for page 1', () async {
+        // Act
+        final result = await dataSource.getAllProducts(1, 15);
+
+        // Assert
+        expect(result.status, isTrue);
+        expect(result.code, 200);
+        expect(result.data!.items, hasLength(15));
+        expect(result.data!.pageNumber, 1);
+        expect(result.data!.pageSize, 15);
+        expect(result.data!.totalCount, 50);
+        expect(result.data!.hasNextPage, isTrue);
+      });
+
+      test('should return paginated list correctly for last page', () async {
+        // Act
+        final result = await dataSource.getAllProducts(4, 15);
+
+        // Assert
+        expect(result.status, isTrue);
+        expect(result.data!.items, hasLength(5)); // 50 % 15 = 5
+        expect(result.data!.pageNumber, 4);
+        expect(result.data!.hasNextPage, isFalse);
+      });
+
+      test('should return empty list if page is beyond total pages', () async {
+        // Act
+        final result = await dataSource.getAllProducts(5, 15);
+
+        // Assert
+        expect(result.status, isTrue);
+        expect(result.data!.items, isEmpty);
+        expect(result.data!.pageNumber, 5);
+        expect(result.data!.hasNextPage, isFalse);
+      });
+    });
+
     group('unimplemented methods', () {
 
       test('occasionProductIds should throw UnimplementedError', () {

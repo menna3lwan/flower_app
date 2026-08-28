@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:customer_app/core/constants/app_colors.dart';
-import 'package:customer_app/core/constants/app_dimens.dart';
-import 'package:customer_app/core/localization/app_strings.dart';
-import 'package:customer_app/core/theme/app_text_styles.dart';
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_dimens.dart';
+import '../../../core/localization/app_strings.dart';
+import '../../../core/theme/app_text_styles.dart';
+
 
 /// Shared text field: obscureText fields get an automatic show/hide toggle, and validation stays quiet until first blur or forceLiveValidation.
 class AppTextField extends StatefulWidget {

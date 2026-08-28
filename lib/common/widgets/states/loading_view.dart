@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:customer_app/core/constants/app_colors.dart';
+import '../../../core/constants/app_colors.dart';
+
 
 /// Shared loading indicator so every `Loading` state variant renders identically.
 class LoadingView extends StatelessWidget {
