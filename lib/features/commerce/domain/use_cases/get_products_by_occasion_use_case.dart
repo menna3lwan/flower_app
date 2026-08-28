@@ -1,20 +1,20 @@
 import 'package:injectable/injectable.dart';
 
-import '../../../../core/domain/entities/product_entity.dart';
 import '../../../../core/result/result.dart';
 import '../../../../core/usecase/usecase.dart';
+import '../entities/products_data_entity.dart';
 import '../repositories/catalog_repository.dart';
 
 /// Thin, single-purpose wrapper over [CatalogRepository.getProductsByOccasion]. See `GetCategoriesUseCase`'s doc comment for why this exists.
 @lazySingleton
 class GetProductsByOccasionUseCase
-    implements UseCase<List<ProductEntity>, String> {
+    implements UseCase<ProductsDataEntity, ParamsWithPagination<String>> {
   const GetProductsByOccasionUseCase(this._repository);
 
   final CatalogRepository _repository;
 
   @override
-  Future<Result<List<ProductEntity>>> call(String occasionId) {
-    return _repository.getProductsByOccasion(occasionId);
+  Future<Result<ProductsDataEntity>> call(ParamsWithPagination<String> params) {
+    return _repository.getProductsByOccasion(params.pagination, params.param!);
   }
 }

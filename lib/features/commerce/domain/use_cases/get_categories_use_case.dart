@@ -13,7 +13,7 @@ class GetCategoriesUseCase implements UseCase<List<CategoryEntity>, NoParams> {
   final CatalogRepository _repository;
 
   @override
-  Future<Result<List<CategoryEntity>>> call(NoParams params) {
-    return _repository.getCategories();
+  Future<Result<List<CategoryEntity>>> call(NoParams params) async {
+    return await _repository.getCategories();
   }
 }
