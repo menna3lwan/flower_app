@@ -1,19 +1,18 @@
 import 'package:injectable/injectable.dart';
-
-import '../../../../core/domain/entities/product_entity.dart';
+import '../../../../core/base/pagination_params.dart';
 import '../../../../core/result/result.dart';
 import '../../../../core/usecase/usecase.dart';
+import '../entities/products_data_entity.dart';
 import '../repositories/catalog_repository.dart';
 
-/// Thin, single-purpose wrapper over [CatalogRepository.getBestSellers]. See [GetCategoriesUseCase]'s doc comment for why this exists.
 @lazySingleton
-class GetBestSellersUseCase implements UseCase<List<ProductEntity>, NoParams> {
+class GetBestSellersUseCase implements UseCase<ProductsDataEntity, PaginationParams> {
   const GetBestSellersUseCase(this._repository);
 
   final CatalogRepository _repository;
 
   @override
-  Future<Result<List<ProductEntity>>> call(NoParams params) {
-    return _repository.getBestSellers();
+  Future<Result<ProductsDataEntity>> call(PaginationParams params) async {
+    return await _repository.getBestSellers(params);
   }
 }

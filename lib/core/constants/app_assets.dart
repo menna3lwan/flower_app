@@ -15,6 +15,9 @@ abstract final class AppAssets {
   /// The Flowery brand mark.
   static const String logo = '$_imagesPath/flower_app_logo.png';
 
+  static const String flower1 = '$_imagesPath/product_placeholder_image.png';
+
+
   /// Brand icon (app icon / small mark).
   static const String appIcon = '$_iconsPath/flowery_icon.svg';
 }
