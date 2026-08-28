@@ -1,69 +1,106 @@
 import 'package:injectable/injectable.dart';
-
-import 'package:customer_app/core/base/safe_call.dart';
-import 'package:customer_app/core/domain/entities/product_entity.dart';
-import 'package:customer_app/core/error/exceptions.dart';
-import 'package:customer_app/core/error/failures.dart';
-import 'package:customer_app/core/result/result.dart';
+import '../../../../core/base/pagination_params.dart';
+import '../../../../core/base/safe_call.dart';
+import '../../../../core/domain/entities/product_entity.dart';
+import '../../../../core/error/exceptions.dart';
+import '../../../../core/error/failures.dart';
+import '../../../../core/result/result.dart';
 import '../../domain/entities/category_entity.dart';
 import '../../domain/entities/occasion_entity.dart';
+import '../../domain/entities/product_details_entity.dart';
+import '../../domain/entities/products_data_entity.dart';
 import '../../domain/repositories/catalog_repository.dart';
 import '../data_sources/local/catalog_local_data_source.dart';
+import '../data_sources/remote/catalog_remote_data_source.dart';
+import '../mappers/commerce_mapper.dart';
 
 /// Depends on the [CatalogLocalDataSource] interface, never a concrete implementation — the seam a Server-Driven Commerce needs to swap in a remote source later.
-@LazySingleton(as: CatalogRepository)
+@Injectable(as: CatalogRepository)
 class CatalogRepositoryImpl implements CatalogRepository {
-  const CatalogRepositoryImpl(this._dataSource);
+  const CatalogRepositoryImpl(this._dataSource, this._commerceMapper, this._remoteDataSource);
 
+  final CommerceMapper _commerceMapper;
+  final CatalogRemoteDataSource _remoteDataSource;
   final CatalogLocalDataSource _dataSource;
 
   @override
   Future<Result<List<CategoryEntity>>> getCategories() {
-    return safeCall(() => _dataSource.getCategories());
+    return safeCall(() async {
+      final response = await _remoteDataSource.getCategories();
+      final categories = _commerceMapper.mapCategoriesResponseToEntity(response).data;
+      if (categories == null) {
+        throw const ServerException('Data is null');
+      }
+      return categories;
+    },);
   }
 
   @override
   Future<Result<List<OccasionEntity>>> getOccasions() {
-    return safeCall(() => _dataSource.getOccasions());
+    return safeCall(() async {
+      final response = await _remoteDataSource.getOccasions();
+      final occasions = _commerceMapper.mapOccasionsResponseToEntity(response).data;
+      if (occasions == null) {
+        throw const ServerException('Data is null');
+      }
+      return occasions;
+    },);
   }
 
   @override
-  Future<Result<List<ProductEntity>>> getBestSellers() {
+  Future<Result<ProductsDataEntity>> getBestSellers(PaginationParams params) {
     return safeCall(() async {
-      final products = await _dataSource.getAllProducts();
-      return [...products]..sort((a, b) => b.rating.compareTo(a.rating));
+      final response = await _remoteDataSource.getBestSeller(params.page, params.pageSize);
+      final entity = _commerceMapper.mapProductsResponseToEntity(response);
+      if (entity.data == null) {
+        throw const ServerException('Data is null');
+      }
+      return entity.data!;
     });
   }
 
   @override
-  Future<Result<List<ProductEntity>>> getAllProducts() {
-    return safeCall(() => _dataSource.getAllProducts());
-  }
-
-  @override
-  Future<Result<List<ProductEntity>>> getProductsByCategory(
-      String categoryId) {
+  Future<Result<ProductsDataEntity>> getAllProducts(PaginationParams params) {
     return safeCall(() async {
-      final products = await _dataSource.getAllProducts();
-      return products.where((p) => p.categoryId == categoryId).toList();
+      final response = await _remoteDataSource.getAllProducts(params.page, params.pageSize);
+      final entity = _commerceMapper.mapProductsResponseToEntity(response);
+      if (entity.data == null) {
+        throw const ServerException('Data is null');
+      }
+      return entity.data!;
     });
   }
 
   @override
-  Future<Result<List<ProductEntity>>> getProductsByOccasion(
-      String occasionId) {
+  Future<Result<ProductsDataEntity>> getProductsByCategory(PaginationParams params,String categoryId) {
     return safeCall(() async {
-      final ids = await _dataSource.occasionProductIds(occasionId);
-      final products = await _dataSource.getAllProducts();
-      return products.where((p) => ids.contains(p.id)).toList();
+      final response = await _remoteDataSource.getAllProducts(params.page, params.pageSize, categoryId);
+      final entity = _commerceMapper.mapProductsResponseToEntity(response);
+      if (entity.data == null) {
+        throw const ServerException('Data is null');
+      }
+      return entity.data!;
+    });
+  }
+
+  @override
+  Future<Result<ProductsDataEntity>> getProductsByOccasion(PaginationParams params, String occasionId) {
+    return safeCall(() async {
+      final response = await _remoteDataSource.getAllProducts(params.page, params.pageSize, occasionId);
+      final entity = _commerceMapper.mapProductsResponseToEntity(response);
+      if (entity.data == null) {
+        throw const ServerException('Data is null');
+      }
+      return entity.data!;
     });
   }
 
   // Kept as its own try/catch rather than safeCall: the one Catalog method with a genuine special case (missing product -> NotFoundFailure).
   @override
-  Future<Result<ProductEntity>> getProductById(String id) async {
+  Future<Result<ProductDetailsEntity>> getProductById(String id) async {
     try {
-      return Result.success(await _dataSource.getProductById(id));
+      final response = await _remoteDataSource.getProductById(id);
+      return Result.success(_commerceMapper.mapProductDetailsResponse(response).data!);
     } on ServerException catch (e) {
       return Result.failure(NotFoundFailure(e.message));
     } catch (_) {

@@ -21,8 +21,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String email,
     required String password,
   }) async {
-    final json = await _apiService.login({'email': email, 'password': password});
-    final envelope = AuthApiEnvelope.fromJson(json);
+    final envelope = await _apiService.login({'email': email, 'password': password});
     _throwIfEnvelopeFailed(envelope);
     return _persistSessionAndBuildUser(envelope.dataAsMap, fallbackEmail: email);
   }
@@ -37,7 +36,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String phoneNumber,
     required Gender gender,
   }) async {
-    final json = await _apiService.signUp({
+    final envelope = await _apiService.signUp({
       'fullName': '$firstName $lastName'.trim(),
       'email': email,
       'phoneNumber': phoneNumber,
@@ -45,7 +44,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       'password': password,
       'confirmPassword': confirmPassword,
     });
-    final envelope = AuthApiEnvelope.fromJson(json);
     _throwIfEnvelopeFailed(envelope);
 
     // Register only returns the new user's id, no token/profile — the rest of the entity is built from what the caller submitted.
@@ -73,8 +71,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<void> sendPasswordResetEmail(String email) async {
-    final json = await _apiService.forgotPassword({'email': email});
-    _throwIfEnvelopeFailed(AuthApiEnvelope.fromJson(json));
+    final envelope = await _apiService.forgotPassword({'email': email});
+    _throwIfEnvelopeFailed(envelope);
   }
 
   @override
@@ -82,8 +80,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String email,
     required String code,
   }) async {
-    final json = await _apiService.verifyOtp({'email': email, 'otp': code});
-    final envelope = AuthApiEnvelope.fromJson(json);
+    final envelope = await _apiService.verifyOtp({'email': email, 'otp': code});
     _throwIfEnvelopeFailed(envelope);
     return envelope.dataAsMap['resetToken'] as String? ?? '';
   }
@@ -94,12 +91,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String newPassword,
     required String confirmNewPassword,
   }) async {
-    final json = await _apiService.resetPassword({
+    final envelope = await _apiService.resetPassword({
       'resetToken': resetToken,
       'newPassword': newPassword,
       'confirmNewPassword': confirmNewPassword,
     });
-    _throwIfEnvelopeFailed(AuthApiEnvelope.fromJson(json));
+    _throwIfEnvelopeFailed(envelope);
   }
 
   @override
@@ -110,9 +107,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw const InvalidSessionException();
     }
 
-    final json =
+    final envelope =
         await _apiService.refreshToken({'refreshToken': storedRefreshToken});
-    final envelope = AuthApiEnvelope.fromJson(json);
     _throwIfEnvelopeFailed(envelope);
     await _persistSession(envelope.dataAsMap);
   }
