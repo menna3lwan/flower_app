@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:customer_app/core/constants/app_colors.dart';
-import 'package:customer_app/core/theme/app_text_styles.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/theme/app_text_styles.dart';
+
 
 /// Minimal "coming soon" screen reserving a Commerce route before its real UI exists; swap in the real screen later.
 class RoutePlaceholderView extends StatelessWidget {
