@@ -25,7 +25,7 @@ class FlowerApp extends StatelessWidget {
       locale: context.locale,
       getPages: CustomerPages.pages,
       // SplashView was built but never reachable before; starting here is the routing fix that makes it run.
-      initialRoute: CustomerRoutes.productDetails,
+      initialRoute: CustomerRoutes.categories,
     );
   }
 }

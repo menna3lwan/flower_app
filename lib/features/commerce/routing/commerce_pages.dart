@@ -10,6 +10,8 @@ import 'package:customer_app/features/commerce/ui/product_details/pages/product_
 import '../../../core/di/injector.dart';
 import '../ui/best_seller/manager/cubit/best_seller_cubit.dart';
 import '../ui/best_seller/manager/cubit/best_selleter_intent.dart';
+import '../ui/categories/manager/cubit/categories_cubit.dart';
+import '../ui/categories/manager/cubit/categories_intent.dart';
 import '../ui/product_details/manager/cubit/product_details_cubit.dart';
 import '../ui/product_details/manager/cubit/product_details_intent.dart';
 
@@ -20,7 +22,26 @@ abstract final class CommercePages {
   static final List<GetPage> pages = <GetPage>[
     GetPage(
       name: CustomerRoutes.categories,
-      page: () => const CategoriesView(),
+      page: () {
+        final String? categoryId = Get.arguments as String?;
+
+        return BlocProvider<CategoriesCubit>(
+          create: (context) {
+            final cubit = sl<CategoriesCubit>();
+
+            if (categoryId != null) {
+              cubit.doIntent(
+                GetProductsByCategoryIdIntent(categoryId),
+              );
+            }
+
+            return cubit;
+          },
+          child: CategoriesView(
+            initialCategoryId: categoryId,
+          ),
+        );
+      },
     ),
     GetPage(
       name: CustomerRoutes.bestSellerListing,

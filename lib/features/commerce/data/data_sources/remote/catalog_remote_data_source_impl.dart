@@ -2,6 +2,7 @@ import 'package:customer_app/features/commerce/data/models/occasions_response.da
 import 'package:injectable/injectable.dart';
 import '../../../../../core/constants/app_assets.dart';
 import '../../models/categories_response.dart';
+import '../../models/category_dto.dart';
 import '../../models/product_details_data_dto.dart';
 import '../../models/product_details_response.dart';
 import '../../models/product_item_dto.dart';
@@ -50,10 +51,50 @@ class CatalogRemoteDataSourceImpl implements CatalogRemoteDataSource {
   }
 
   @override
-  Future<ProductsResponse> getAllProducts(int page, int pageSize, [String? filterId]) {
-    // TODO: implement getAllProducts
-    throw UnimplementedError();
+  Future<ProductsResponse> getAllProducts(int page, int pageSize, [String? filterId]) async {
+    await Future.delayed(_simulatedLatency);
+
+    const totalItems = 50;
+    final totalPages = (totalItems / pageSize).ceil();
+    final isLastPage = page >= totalPages;
+
+    // Simulate empty if page is beyond total pages
+    final itemsCount = page > totalPages ? 0 : (isLastPage ? totalItems % pageSize : pageSize);
+    final count = itemsCount == 0 && isLastPage && totalItems % pageSize == 0 ? pageSize : itemsCount;
+
+    final items = List.generate(
+      page > totalPages ? 0 : count,
+          (index) {
+        final id = ((page - 1) * pageSize) + index + 1;
+        return ProductItemDTO(
+          id: id.toString(),
+          name: 'Bouquet $id',
+          imageUrl: AppAssets.flower1,
+          originalPrice: 400.0 + (id * 10),
+          discountedPrice: 350.0 + (id * 10),
+          discountPercentage: 12,
+          isOutOfStock: id % 3 == 0,
+        );
+      },
+    );
+
+    final response = ProductsResponse(
+      status: true,
+      data: ProductsDataDTO(
+        items: items,
+        pageNumber: page,
+        pageSize: pageSize,
+        totalCount: totalItems,
+        hasNextPage: page < totalPages,
+      ),
+      errors: const [],
+      code: 200,
+      message: 'Products retrieved successfully',
+    );
+
+    return response;
   }
+
 
   @override
   Future<ProductsResponse> getBestSeller(int page, int pageSize) async {
@@ -102,10 +143,31 @@ class CatalogRemoteDataSourceImpl implements CatalogRemoteDataSource {
 
 
   @override
-  Future<CategoriesResponse> getCategories() {
-    // TODO: implement getCategories
-    throw UnimplementedError();
+  Future<CategoriesResponse> getCategories() async {
+    await Future.delayed(_simulatedLatency);
+
+    final response = CategoriesResponse(
+      status: true,
+      data: [
+        CategoryDTO(
+          id: '0b674089-eb6c-2ffb-a321-c9eb0a9bef25',
+          name: 'Electronics',
+          iconUrl: 'https://example.com/electronics.png',
+        ),
+        CategoryDTO(
+          id: 'b857afb2-8535-c6a5-f093-72d52cad46a2',
+          name: 'Groceries',
+          iconUrl: 'https://example.com/groceries.png',
+        ),
+      ],
+      errors: [],
+      code: 200,
+      message: 'Categories retrieved successfully',
+    );
+
+    return response;
   }
+
 
   @override
   Future<OccasionsResponse> getOccasions() {
