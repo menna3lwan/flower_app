@@ -53,11 +53,16 @@
   "viewAll": "View All",
   "search": "Search",
   "searchEmptyState": "Search For Any Product You Want",
+  "filter": "Filter",
   "description": "Description",
   "bouquetIncludes": "Bouquet Includes",
   "addToCart": "Add to cart",
   "inStock": "In stock",
-  "cart": "Cart",
+  "outOfStock": "Out of stock",
+  "status": "Status",
+  "allPricesIncludeTax": "All prices include tax",
+  "bestSellerPageDescription": "Bloom with our exquisite best sellers",
+  "occasionsPageDescription": "Beautiful flowers for every special occasion",
   "subTotal": "Sub Total",
   "deliveryFee": "Delivery Fee",
   "total": "Total",
@@ -129,5 +134,16 @@
   "passwordRuleMinLength": "At least 6 characters",
   "passwordRuleUppercase": "At least one uppercase letter",
   "passwordRuleNumber": "At least one number",
-  "passwordRequirementsNotMet": "Password does not meet the requirements below."
+  "passwordRequirementsNotMet": "Password does not meet the requirements below.",
+
+  "noTitle": "No Title",
+  "noDescription": "No Description",
+
+  "loading": "Loading...",
+  "emptyProducts": "No products found",
+  "errorProduct": "Failed to load the product",
+  "errorProducts": "Failed to load products",
+  "errorCategories": "Failed to load categories",
+  "errorOccasions": "Failed to load occasions",
+  "errorGallery": "Failed to load the product gallery"
 }

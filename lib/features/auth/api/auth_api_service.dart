@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 
 import '../../../core/network/api_endpoints.dart';
+import '../data/models/auth_api_envelope.dart';
 
 part 'auth_api_service.g.dart';
 
@@ -11,26 +12,26 @@ abstract class AuthApiService {
   factory AuthApiService(Dio dio, {String? baseUrl}) = _AuthApiService;
 
   @POST(ApiEndpoints.userLogin)
-  Future<Map<String, dynamic>> login(@Body() Map<String, dynamic> body);
+  Future<AuthApiEnvelope> login(@Body() Map<String, dynamic> body);
 
   @POST(ApiEndpoints.register)
-  Future<Map<String, dynamic>> signUp(@Body() Map<String, dynamic> body);
+  Future<AuthApiEnvelope> signUp(@Body() Map<String, dynamic> body);
 
   @POST(ApiEndpoints.forgotPassword)
-  Future<Map<String, dynamic>> forgotPassword(
+  Future<AuthApiEnvelope> forgotPassword(
     @Body() Map<String, dynamic> body,
   );
 
   @POST(ApiEndpoints.verifyOtp)
-  Future<Map<String, dynamic>> verifyOtp(@Body() Map<String, dynamic> body);
+  Future<AuthApiEnvelope> verifyOtp(@Body() Map<String, dynamic> body);
 
   @POST(ApiEndpoints.resetPassword)
-  Future<Map<String, dynamic>> resetPassword(
+  Future<AuthApiEnvelope> resetPassword(
     @Body() Map<String, dynamic> body,
   );
 
   @POST(ApiEndpoints.refreshToken)
-  Future<Map<String, dynamic>> refreshToken(
+  Future<AuthApiEnvelope> refreshToken(
     @Body() Map<String, dynamic> body,
   );
 }
