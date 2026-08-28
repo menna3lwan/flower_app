@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:customer_app/core/constants/app_colors.dart';
-import 'package:customer_app/core/constants/app_dimens.dart';
-import 'package:customer_app/core/theme/app_text_styles.dart';
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_dimens.dart';
+import '../../../core/theme/app_text_styles.dart';
 
 /// Centered icon + message for empty results/cart/orders, instead of ad-hoc Center(Column(...)) per screen.
 class EmptyState extends StatelessWidget {

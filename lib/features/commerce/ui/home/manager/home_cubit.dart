@@ -1,10 +1,11 @@
 import 'package:injectable/injectable.dart';
 
-import 'package:customer_app/core/base/base_cubit.dart';
-import 'package:customer_app/core/usecase/usecase.dart';
+import '../../../../../core/base/base_cubit.dart';
+import '../../../../../core/usecase/usecase.dart';
 import '../../../domain/use_cases/get_best_sellers_use_case.dart';
 import '../../../domain/use_cases/get_categories_use_case.dart';
 import '../../../domain/use_cases/get_occasions_use_case.dart';
+import '../../../../../core/base/pagination_params.dart';
 import 'home_state.dart';
 
 /// Loads Home's three sections as one [HomeLoaded] snapshot via three single-purpose use cases, never `CatalogRepository` directly.
@@ -24,7 +25,7 @@ class HomeCubit extends BaseCubit<HomeState> {
     safeEmit(const HomeLoading());
 
     final categoriesResult = await _getCategories(const NoParams());
-    final bestSellersResult = await _getBestSellers(const NoParams());
+    final bestSellersResult = await _getBestSellers(const PaginationParams(page: 1, pageSize: 6));
     final occasionsResult = await _getOccasions(const NoParams());
 
     if (categoriesResult.isFailure) {
@@ -47,7 +48,7 @@ class HomeCubit extends BaseCubit<HomeState> {
       HomeLoaded(
         categories: categoriesResult.fold((_) => const [], (data) => data),
         bestSellers: bestSellersResult.fold(
-            (_) => const [], (data) => data.take(6).toList()),
+            (_) => const [], (data) => (data.items ?? []).take(6).toList()),
         occasions: occasionsResult.fold((_) => const [], (data) => data),
       ),
     );

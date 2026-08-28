@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:customer_app/core/constants/app_colors.dart';
-import 'package:customer_app/core/constants/app_dimens.dart';
-import 'package:customer_app/core/theme/app_text_styles.dart';
-import 'package:customer_app/core/utils/password_policy.dart';
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_dimens.dart';
+import '../../../core/theme/app_text_styles.dart';
+import '../../../core/utils/password_policy.dart';
 
 /// Live password-requirements checklist, driven by [PasswordPolicy] (the same source [Validators.password] uses) so it never drifts from submit-time validation.
 class PasswordRulesChecklist extends StatelessWidget {

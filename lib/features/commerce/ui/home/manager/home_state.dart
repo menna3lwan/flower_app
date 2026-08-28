@@ -1,8 +1,7 @@
 import 'package:equatable/equatable.dart';
-
-import 'package:customer_app/core/domain/entities/product_entity.dart';
 import '../../../domain/entities/category_entity.dart';
 import '../../../domain/entities/occasion_entity.dart';
+import '../../../domain/entities/product_item_entity.dart';
 
 sealed class HomeState extends Equatable {
   const HomeState();
@@ -23,7 +22,7 @@ final class HomeLoaded extends HomeState {
   });
 
   final List<CategoryEntity> categories;
-  final List<ProductEntity> bestSellers;
+  final List<ProductItemEntity> bestSellers;
   final List<OccasionEntity> occasions;
 
   @override

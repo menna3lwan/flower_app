@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:customer_app/core/constants/app_colors.dart';
-import 'package:customer_app/core/constants/app_dimens.dart';
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_dimens.dart';
 
 /// UI-skeleton image placeholder (no CDN yet); swap for `Image.network`/`CachedNetworkImage` once real media exists.
 class AppImagePlaceholder extends StatelessWidget {

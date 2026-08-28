@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:customer_app/core/constants/app_dimens.dart';
+import '../../../core/constants/app_dimens.dart';
+
 
 /// Full-width pill-shaped filled button (Login/Checkout/Place order); centralizes the loading-spinner-vs-label swap.
 class PrimaryButton extends StatelessWidget {
