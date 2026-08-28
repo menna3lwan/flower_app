@@ -152,6 +152,18 @@ void main() {
       });
     });
 
+    group('getOccasions', () {
+      test('should return a valid OccasionsResponse', () async {
+        final result = await dataSource.getOccasions();
+
+        expect(result.status, isTrue);
+        expect(result.code, 200);
+        expect(result.data, hasLength(2));
+        expect(result.data![0].name, 'Wedding');
+        expect(result.data![1].name, 'Graduation');
+      });
+    });
+
     group('unimplemented methods', () {
 
       test('occasionProductIds should throw UnimplementedError', () {

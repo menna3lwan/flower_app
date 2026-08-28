@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 import '../../../../../core/constants/app_assets.dart';
 import '../../models/categories_response.dart';
 import '../../models/category_dto.dart';
+import '../../models/occasion_dto.dart';
 import '../../models/product_details_data_dto.dart';
 import '../../models/product_details_response.dart';
 import '../../models/product_item_dto.dart';
@@ -95,7 +96,6 @@ class CatalogRemoteDataSourceImpl implements CatalogRemoteDataSource {
     return response;
   }
 
-
   @override
   Future<ProductsResponse> getBestSeller(int page, int pageSize) async {
     await Future.delayed(_simulatedLatency);
@@ -141,7 +141,6 @@ class CatalogRemoteDataSourceImpl implements CatalogRemoteDataSource {
     return response;
   }
 
-
   @override
   Future<CategoriesResponse> getCategories() async {
     await Future.delayed(_simulatedLatency);
@@ -170,10 +169,56 @@ class CatalogRemoteDataSourceImpl implements CatalogRemoteDataSource {
 
 
   @override
-  Future<OccasionsResponse> getOccasions() {
-    // TODO: implement getOccasions
-    throw UnimplementedError();
+  Future<OccasionsResponse> getOccasions() async {
+    await Future.delayed(_simulatedLatency);
+
+    final response = OccasionsResponse(
+      status: true,
+      data: [
+        OccasionDTO(
+          id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+          name: 'Wedding',
+          imageUrl: 'https://example.com/electronics.png',
+        ),
+
+        OccasionDTO(
+          id: '3fa85f64-5717-4562-b3fc-2c963f66afa7',
+          name: 'Graduation',
+          imageUrl: 'https://example.com/electronics.png',
+        ),
+
+        OccasionDTO(
+          id: '3fa85f64-5717-4562-b3fc-2c963f66afa8',
+          name: 'Birthday',
+          imageUrl: 'https://example.com/electronics.png',
+        ),
+
+        OccasionDTO(
+          id: '3fa85f64-5717-4562-b3fc-2c963f66afa9',
+          name: 'Ramadan',
+          imageUrl: 'https://example.com/electronics.png',
+        ),
+
+        OccasionDTO(
+          id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
+          name: 'Eid',
+          imageUrl: 'https://example.com/electronics.png',
+        ),
+
+        OccasionDTO(
+          id: '3fa85f64-5717-4562-b3fc-2c963f66afa2',
+          name: 'Party',
+          imageUrl: 'https://example.com/electronics.png',
+        ),
+      ],
+      errors: [],
+      code: 200,
+      message: 'Categories retrieved successfully',
+    );
+
+    return response;
   }
+
 
   @override
   Future<List<String>> occasionProductIds(String occasionId) {

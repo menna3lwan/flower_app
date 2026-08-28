@@ -12,6 +12,8 @@ import '../ui/best_seller/manager/cubit/best_seller_cubit.dart';
 import '../ui/best_seller/manager/cubit/best_selleter_intent.dart';
 import '../ui/categories/manager/cubit/categories_cubit.dart';
 import '../ui/categories/manager/cubit/categories_intent.dart';
+import '../ui/occasions/manager/cubit/occasions_cubit.dart';
+import '../ui/occasions/manager/cubit/occasions_intent.dart';
 import '../ui/product_details/manager/cubit/product_details_cubit.dart';
 import '../ui/product_details/manager/cubit/product_details_intent.dart';
 
@@ -51,7 +53,26 @@ abstract final class CommercePages {
     ),
     GetPage(
       name: CustomerRoutes.occasionListing,
-      page: () => const OccasionsView(),
+      page: () {
+        final String? occasionId = Get.arguments as String?;
+
+        return BlocProvider<OccasionsCubit>(
+          create: (context) {
+            final cubit = sl<OccasionsCubit>();
+
+            if (occasionId != null) {
+              cubit.doIntent(
+                GetProductsByOccasionIdIntent(occasionId),
+              );
+            }
+
+            return cubit;
+          },
+          child: OccasionsView(
+            initialOccasionId: occasionId,
+          ),
+        );
+      },
     ),
     GetPage(
       name: CustomerRoutes.productDetails,

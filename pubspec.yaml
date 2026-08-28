@@ -71,6 +71,7 @@ dependencies:
   lottie: ^3.5.1
   bloc_test: ^9.1.7
   flutter_svg: ^2.3.0
+  another_flushbar: ^2.2.4
 
 dev_dependencies:
   flutter_test:

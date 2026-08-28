@@ -66,6 +66,8 @@ import '../../features/commerce/ui/best_seller/manager/cubit/best_seller_cubit.d
 import '../../features/commerce/ui/categories/manager/cubit/categories_cubit.dart'
     as _i446;
 import '../../features/commerce/ui/home/manager/home_cubit.dart' as _i20;
+import '../../features/commerce/ui/occasions/manager/cubit/occasions_cubit.dart'
+    as _i636;
 import '../../features/commerce/ui/product_details/manager/cubit/product_details_cubit.dart'
     as _i525;
 import '../storage/secure_storage_service.dart' as _i666;
@@ -117,6 +119,10 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i711.SearchProductsUseCase(gh<_i896.CatalogRepository>()));
     gh.lazySingleton<_i787.AuthRepository>(
         () => _i153.AuthRepositoryImpl(gh<_i107.AuthRemoteDataSource>()));
+    gh.factory<_i636.OccasionsCubit>(() => _i636.OccasionsCubit(
+          gh<_i874.GetProductsByOccasionUseCase>(),
+          gh<_i448.GetOccasionsUseCase>(),
+        ));
     gh.factory<_i680.BestSellerCubit>(
         () => _i680.BestSellerCubit(gh<_i498.GetBestSellersUseCase>()));
     gh.factory<_i525.ProductDetailsCubit>(
