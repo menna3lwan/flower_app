@@ -12,6 +12,10 @@ abstract final class AppDimens {
   static const double space40 = 40;
 
   static const double space48 = 48;
+  static const double space64 = 64;
+  static const double space100 = 100;
+  static const double space120 = 120;
+
   static const double labelToFieldGap = 6;
 
   /// Verification-screen OTP box size (Pinput's per-digit box theme).

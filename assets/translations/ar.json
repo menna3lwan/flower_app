@@ -53,10 +53,16 @@
   "viewAll": "عرض الكل",
   "search": "بحث",
   "searchEmptyState": "ابحث عن أي منتج تريده",
+  "filter": "تصفية",
   "description": "الوصف",
   "bouquetIncludes": "تحتوي الباقة على",
   "addToCart": "أضف إلى السلة",
   "inStock": "متوفر",
+  "outOfStock": "غير متوفر",
+  "status": "الحالة",
+  "allPricesIncludeTax": "جميع الأسعار شاملة الضريبة",
+  "bestSellerPageDescription": "تفتّح وزهّر مع أجمل باقاتنا الأكثر مبيعاً",
+  "occasionsPageDescription": "زهور جميلة لكل مناسبة مميزة",
   "cart": "السلة",
   "subTotal": "المجموع الفرعي",
   "deliveryFee": "رسوم التوصيل",
@@ -129,5 +135,16 @@
   "passwordRuleMinLength": "6 أحرف على الأقل",
   "passwordRuleUppercase": "حرف كبير واحد على الأقل",
   "passwordRuleNumber": "رقم واحد على الأقل",
-  "passwordRequirementsNotMet": "كلمة المرور لا تحقق المتطلبات الموضحة أدناه."
+  "passwordRequirementsNotMet": "كلمة المرور لا تحقق المتطلبات الموضحة أدناه.",
+
+  "noTitle": "لا عنوان",
+  "noDescription": "لا يوجد وصف",
+
+  "loading": "جاري التحميل...",
+  "emptyProducts": "لا يوجد منتجات",
+  "errorProduct": "تعذر تحميل المنتج",
+  "errorProducts": "حدث خطأ أثناء تحميل المنتجات",
+  "errorCategories": "حدث خطأ أثناء تحميل التصنيفات",
+  "errorOccasions": "حدث خطأ أثناء تحميل المناسبات",
+  "errorGallery": "تعذر تحميل صور المنتج"
 }

@@ -12,3 +12,8 @@ extension StringExtensions on String {
 extension PriceFormatting on num {
   String get asEgp => 'EGP ${toStringAsFixed(0)}';
 }
+
+/// Nullable variant so `price?.asEgp` call sites don't need extra null handling.
+extension PriceFormattingNullable on num? {
+  String get asEgp => this == null ? '—' : this!.asEgp;
+}
