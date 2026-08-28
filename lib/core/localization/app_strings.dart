@@ -108,12 +108,18 @@ abstract final class AppStrings {
   static String get viewAll => 'viewAll'.tr();
   static String get search => 'search'.tr();
   static String get searchEmptyState => 'searchEmptyState'.tr();
+  static String get filter => 'filter'.tr();
 
   // Product.
   static String get description => 'description'.tr();
   static String get bouquetIncludes => 'bouquetIncludes'.tr();
   static String get addToCart => 'addToCart'.tr();
   static String get inStock => 'inStock'.tr();
+  static String get outOfStock => 'outOfStock'.tr();
+  static String get status => 'status'.tr();
+  static String get allPricesIncludeTax => 'allPricesIncludeTax'.tr();
+  static String get bestSellerPageDescription => 'bestSellerPageDescription'.tr();
+  static String get occasionsPageDescription => 'occasionsPageDescription'.tr();
 
   // Cart & checkout.
   static String get cart => 'cart'.tr();
@@ -151,4 +157,17 @@ abstract final class AppStrings {
   static String get cancel => 'cancel'.tr();
   static String get update => 'update'.tr();
   static String get save => 'save'.tr();
+
+  // Not Available Data
+  static String get noTitle => 'noTitle'.tr();
+  static String get noDescription => 'noDescription'.tr();
+
+  // Status.
+  static String get loading => 'loading'.tr();
+  static String get emptyProducts => 'emptyProducts'.tr();
+  static String get errorProduct => 'errorProduct'.tr();
+  static String get errorGallery => 'errorGallery'.tr();
+  static String get errorProducts => 'errorProducts'.tr();
+  static String get errorCategories => 'errorCategories'.tr();
+  static String get errorOccasions => 'errorOccasions'.tr();
 }
