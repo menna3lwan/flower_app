@@ -64,6 +64,44 @@ void main() {
       );
     });
 
+    group('getBestSeller', () {
+      test('should return paginated list correctly for page 1', () async {
+        // Act
+        final result = await dataSource.getBestSeller(1, 15);
+
+        // Assert
+        expect(result.status, isTrue);
+        expect(result.code, 200);
+        expect(result.data!.items, hasLength(15));
+        expect(result.data!.pageNumber, 1);
+        expect(result.data!.pageSize, 15);
+        expect(result.data!.totalCount, 50);
+        expect(result.data!.hasNextPage, isTrue);
+      });
+
+      test('should return paginated list correctly for last page', () async {
+        // Act
+        final result = await dataSource.getBestSeller(4, 15);
+
+        // Assert
+        expect(result.status, isTrue);
+        expect(result.data!.items, hasLength(5)); // 50 % 15 = 5
+        expect(result.data!.pageNumber, 4);
+        expect(result.data!.hasNextPage, isFalse);
+      });
+
+      test('should return empty list if page is beyond total pages', () async {
+        // Act
+        final result = await dataSource.getBestSeller(5, 15);
+
+        // Assert
+        expect(result.status, isTrue);
+        expect(result.data!.items, isEmpty);
+        expect(result.data!.pageNumber, 5);
+        expect(result.data!.hasNextPage, isFalse);
+      });
+    });
+
     group('unimplemented methods', () {
 
       test('occasionProductIds should throw UnimplementedError', () {

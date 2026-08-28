@@ -1,5 +1,4 @@
 import 'package:injectable/injectable.dart';
-
 import '../../../../core/base/pagination_params.dart';
 import '../../../../core/result/result.dart';
 import '../../../../core/usecase/usecase.dart';
