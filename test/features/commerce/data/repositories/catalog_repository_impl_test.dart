@@ -1,3 +1,4 @@
+import 'package:customer_app/core/base/pagination_params.dart';
 import 'package:customer_app/core/error/exceptions.dart';
 import 'package:customer_app/core/error/failures.dart';
 import 'package:customer_app/core/result/result.dart';
@@ -6,9 +7,13 @@ import 'package:customer_app/features/commerce/data/data_sources/local/catalog_l
 import 'package:customer_app/features/commerce/data/data_sources/remote/catalog_remote_data_source.dart';
 import 'package:customer_app/features/commerce/data/mappers/commerce_mapper.dart';
 import 'package:customer_app/features/commerce/data/models/product_details_response.dart';
+import 'package:customer_app/features/commerce/data/models/products_response.dart';
 import 'package:customer_app/features/commerce/data/repositories/catalog_repository_impl.dart';
+import 'package:customer_app/features/commerce/domain/entities/pagination_entity.dart';
 import 'package:customer_app/features/commerce/domain/entities/product_details_entity.dart';
 import 'package:customer_app/features/commerce/domain/entities/product_details_response_entity.dart';
+import 'package:customer_app/features/commerce/domain/entities/products_data_entity.dart';
+import 'package:customer_app/features/commerce/domain/entities/products_response_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -89,6 +94,25 @@ void main() {
         (_) => fail('Expected failure but got success'),
       );
       verify(catalogRemoteDataSource.getProductById(productId)).called(1);
+    });
+  });
+
+  group('getBestSellers', () {
+    test('should return paginated list of products from remote data source', () async {
+      final mockProductsResponse = ProductsResponse();
+      const mockProductsDataEntity = ProductsDataEntity(items: [], pagination: PaginationEntity(page: 1, pageSize: 10, totalCount: 0, totalPages: 1, hasNextPage: false, hasPreviousPage: false));
+      const mockResponseEntity = ProductsResponseEntity(status: true, data: mockProductsDataEntity, errors: [], code: 200, message: '');
+
+      when(catalogRemoteDataSource.getBestSeller(1, 10)).thenAnswer((_) async => mockProductsResponse);
+      when(commerceMapper.mapProductsResponseToEntity(mockProductsResponse)).thenReturn(mockResponseEntity);
+
+      final result = await catalogRepository.getBestSellers(const PaginationParams(page: 1, pageSize: 10));
+
+      expect(result, isA<Success<ProductsDataEntity>>());
+      result.fold((_) => fail('Expected Success'), (data) {
+        expect(data, mockProductsDataEntity);
+      });
+      verify(catalogRemoteDataSource.getBestSeller(1, 10)).called(1);
     });
   });
 }

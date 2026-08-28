@@ -4,6 +4,8 @@ import '../../../../../core/constants/app_assets.dart';
 import '../../models/categories_response.dart';
 import '../../models/product_details_data_dto.dart';
 import '../../models/product_details_response.dart';
+import '../../models/product_item_dto.dart';
+import '../../models/products_data_dto.dart';
 import '../../models/products_response.dart';
 import 'catalog_remote_data_source.dart';
 
@@ -54,10 +56,50 @@ class CatalogRemoteDataSourceImpl implements CatalogRemoteDataSource {
   }
 
   @override
-  Future<ProductsResponse> getBestSeller(int page, int pageSize) {
-    // TODO: implement getBestSeller
-    throw UnimplementedError();
+  Future<ProductsResponse> getBestSeller(int page, int pageSize) async {
+    await Future.delayed(_simulatedLatency);
+
+    const totalItems = 50;
+    final totalPages = (totalItems / pageSize).ceil();
+    final isLastPage = page >= totalPages;
+
+    // Simulate empty if page is beyond total pages
+    final itemsCount = page > totalPages ? 0 : (isLastPage ? totalItems % pageSize : pageSize);
+    final count = itemsCount == 0 && isLastPage && totalItems % pageSize == 0 ? pageSize : itemsCount;
+
+    final items = List.generate(
+      page > totalPages ? 0 : count,
+          (index) {
+        final id = ((page - 1) * pageSize) + index + 1;
+        return ProductItemDTO(
+          id: id.toString(),
+          name: 'Bouquet $id',
+          imageUrl: AppAssets.flower1,
+          originalPrice: 400.0 + (id * 10),
+          discountedPrice: 350.0 + (id * 10),
+          discountPercentage: 12,
+          isOutOfStock: id % 3 == 0,
+        );
+      },
+    );
+
+    final response = ProductsResponse(
+      status: true,
+      data: ProductsDataDTO(
+        items: items,
+        pageNumber: page,
+        pageSize: pageSize,
+        totalCount: totalItems,
+        hasNextPage: page < totalPages,
+      ),
+      errors: const [],
+      code: 200,
+      message: 'Products retrieved successfully',
+    );
+
+    return response;
   }
+
 
   @override
   Future<CategoriesResponse> getCategories() {
