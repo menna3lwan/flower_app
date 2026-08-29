@@ -141,6 +141,7 @@
   "noDescription": "لا يوجد وصف",
 
   "loading": "جاري التحميل...",
+  "nullData": "البيانات فارغة",
   "emptyProducts": "لا يوجد منتجات",
   "errorProduct": "تعذر تحميل المنتج",
   "errorProducts": "حدث خطأ أثناء تحميل المنتجات",

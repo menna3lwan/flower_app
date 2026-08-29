@@ -6,7 +6,7 @@ import '../entities/products_data_entity.dart';
 import '../repositories/catalog_repository.dart';
 
 /// Thin, single-purpose wrapper over [CatalogRepository.getProductsByCategory] — `Params` is the plain `categoryId` string, no dedicated params class (YAGNI).
-@lazySingleton
+@injectable
 class GetProductsByCategoryUseCase implements UseCase<ProductsDataEntity, ParamsWithPagination<String>> {
   const GetProductsByCategoryUseCase(this._repository);
 

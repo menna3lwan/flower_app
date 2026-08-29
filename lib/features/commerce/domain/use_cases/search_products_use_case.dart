@@ -6,7 +6,7 @@ import '../../../../core/usecase/usecase.dart';
 import '../repositories/catalog_repository.dart';
 
 /// Thin, single-purpose wrapper over [CatalogRepository.searchProducts]. See `GetCategoriesUseCase`'s doc comment for why this exists.
-@lazySingleton
+@injectable
 class SearchProductsUseCase implements UseCase<List<ProductEntity>, String> {
   const SearchProductsUseCase(this._repository);
 

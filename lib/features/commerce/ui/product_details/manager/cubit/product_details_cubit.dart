@@ -1,6 +1,5 @@
 import 'package:customer_app/features/commerce/ui/product_details/manager/cubit/product_details_intent.dart';
 import 'package:customer_app/features/commerce/ui/product_details/manager/cubit/product_details_state.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import '../../../../../../core/base/operation_state.dart';
@@ -25,7 +24,6 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
 
   Future<void> _getProductById(GetProductByIdIntent intent) async {
     emit(state.copyWith(operationState: state.operationState.loading()));
-    debugPrint('the current state: ${state.operationState.status}');
 
     final response = await _getProductByIdUseCase(intent.id);
 
@@ -36,8 +34,6 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
             operationState: state.operationState.success(response.data),
           ),
         );
-        debugPrint('the current state: ${state.operationState.status}');
-        debugPrint('the current product: ${state.operationState.data}');
         break;
       case ResultFailure<ProductDetailsEntity>():
         emit(
@@ -45,7 +41,6 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
             operationState: state.operationState.failed(response.failure),
           ),
         );
-        debugPrint('the current state: ${state.operationState.status}');
         break;
     }
   }

@@ -40,12 +40,12 @@ class CommerceMapper {
       status: dto.isOutOfStock == true ? ProductStatus.outOfStock : ProductStatus.inStock,
       images: dto.imageUrls,
       description: dto.description,
-      includes: dto.includes?.map((inc) => IncludesEntity(name: inc,quantity: dto.stockQuantity)).toList(),
+      stockQuantity: dto.stockQuantity,
+      includes: dto.includes?.map((inc) => IncludesEntity(name: inc)).toList() ?? [],
       categoryId: null,
       occasionIds: null,
     );
   }
-
   ProductDetailsResponseEntity mapProductDetailsResponse(
       ProductDetailsResponse response) {
     return ProductDetailsResponseEntity(

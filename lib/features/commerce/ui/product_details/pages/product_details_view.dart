@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
+
 import '../../../../../common/widgets/app_animated_loading.dart';
 import '../../../../../common/widgets/buttons/primary_button.dart';
 import '../../../../../common/widgets/states/error_view.dart';
@@ -15,70 +18,95 @@ import '../widgets/product_image_slider.dart';
 import '../widgets/product_images_slider_error.dart';
 import '../widgets/product_images_slider_loading.dart';
 
-class ProductDetailsView extends StatefulWidget {
+class ProductDetailsView extends StatelessWidget {
   const ProductDetailsView({super.key});
 
   @override
-  State<ProductDetailsView> createState() => _ProductDetailsViewState();
-}
-
-class _ProductDetailsViewState extends State<ProductDetailsView> {
-  int _currentIndex = 0;
-
-  @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
-      builder: (context, state) {
-        final status = state.operationState.status;
-        final product = state.operationState.data;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
 
-        return Scaffold(
-          backgroundColor: Colors.white,
-          body: SafeArea(
-            child: CustomScrollView(
-              slivers: [
-                SliverAppBar(
-                  expandedHeight: 400,
-                  pinned: true,
-                  toolbarHeight: 0,
-                  backgroundColor: AppColors.primaryLight,
-                  flexibleSpace: switch (status) {
-                    OperationStatus.idle ||
-                    OperationStatus.loading =>
-                    const ProductImagesSliderLoading(),
-                    OperationStatus.success => ProductImageSlider(
-                      images: product?.images ?? const [],
-                      currentIndex: _currentIndex,
-                      onPageChanged: (index) {
-                        setState(() {
-                          _currentIndex = index;
-                        });
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
+        builder: (context, state) {
+          final status = state.operationState.status;
+          final product = state.operationState.data;
+
+          return CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                expandedHeight: 400,
+                pinned: true,
+                toolbarHeight: 0,
+                backgroundColor: AppColors.primaryLight,
+                flexibleSpace: Stack(
+                  children: [
+                    // Slider Content
+                    Positioned.fill(
+                      child: switch (status) {
+                        OperationStatus.idle ||
+                        OperationStatus.loading =>
+                        const ProductImagesSliderLoading(),
+
+                        OperationStatus.success => ProductImageSlider(
+                          images: product?.images ?? const [],
+                        ),
+
+                        OperationStatus.failure => ProductImagesSliderError(
+                          message: AppStrings.errorGallery,
+                        ),
                       },
                     ),
-                    OperationStatus.failure => ProductImagesSliderError(message: AppStrings.errorGallery,),
-                  },
-                ),
-                SliverToBoxAdapter(
-                  child: switch (status) {
-                    OperationStatus.idle ||
-                    OperationStatus.loading => const AppAnimatedLoading(),
-                    OperationStatus.success => ProductDetailsContent(
-                      product: product!,
-                    ),
 
-                    OperationStatus.failure => ErrorView(message: AppStrings.errorProduct,),
-                  },
+                    // Floating Custom Back Button
+                    Positioned(
+                      top: MediaQuery.of(context).padding.top + 8,
+                      left: 16,
+                      child: CircleAvatar(
+                        backgroundColor: Colors.white.withOpacity(0.9),
+                        child: IconButton(
+                          icon: Transform.flip(
+                            flipX: isRtl,
+                            child: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+                          ),
+                          onPressed: () => Get.back(),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          bottomNavigationBar: Padding(
+              ),
+
+              SliverToBoxAdapter(
+                child: switch (status) {
+                  OperationStatus.idle ||
+                  OperationStatus.loading =>
+                  const AppAnimatedLoading(),
+
+                  OperationStatus.success => ProductDetailsContent(
+                    product: product!,
+                  ),
+
+                  OperationStatus.failure => ErrorView(
+                    message: AppStrings.errorProduct,
+                  ),
+                },
+              ),
+            ],
+          );
+        },
+      ),
+      bottomNavigationBar: BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
+        builder: (context, state) {
+          final status = state.operationState.status;
+          return Padding(
             padding: const EdgeInsets.all(AppDimens.space16),
             child: PrimaryButton(
               label: switch (status) {
                 OperationStatus.idle ||
                 OperationStatus.loading =>
                 AppStrings.loading,
+
                 OperationStatus.success ||
                 OperationStatus.failure =>
                 AppStrings.addToCart,
@@ -90,9 +118,9 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
             end: 0,
             curve: Curves.easeOutCubic,
             duration: 700.ms,
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

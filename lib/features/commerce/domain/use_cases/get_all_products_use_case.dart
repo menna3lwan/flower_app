@@ -6,7 +6,7 @@ import '../entities/products_data_entity.dart';
 import '../repositories/catalog_repository.dart';
 
 /// Thin, single-purpose wrapper over [CatalogRepository.getBestSellers]. See [GetCategoriesUseCase]'s doc comment for why this exists.
-@lazySingleton
+@injectable
 class GetAllProductsUseCase implements UseCase<ProductsDataEntity, PaginationParams> {
   const GetAllProductsUseCase(this._repository);
 

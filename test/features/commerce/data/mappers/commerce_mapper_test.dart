@@ -73,10 +73,8 @@ void main() {
         expect(result.includes, hasLength(2));
 
         expect(result.includes![0].name, 'Pink roses');
-        expect(result.includes![0].quantity, 10);
 
         expect(result.includes![1].name, 'White wrap');
-        expect(result.includes![1].quantity, 10);
 
         expect(result.categoryId, isNull);
         expect(result.occasionIds, isNull);

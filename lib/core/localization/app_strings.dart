@@ -164,6 +164,7 @@ abstract final class AppStrings {
 
   // Status.
   static String get loading => 'loading'.tr();
+  static String get nullData => 'nullData'.tr();
   static String get emptyProducts => 'emptyProducts'.tr();
   static String get errorProduct => 'errorProduct'.tr();
   static String get errorGallery => 'errorGallery'.tr();

@@ -7,7 +7,7 @@ import '../../models/product_details_response.dart';
 import '../../models/products_response.dart';
 import 'catalog_remote_data_source.dart';
 
-@LazySingleton(as: CatalogRemoteDataSource)
+@Injectable(as: CatalogRemoteDataSource)
 class CatalogRemoteDataSourceImpl implements CatalogRemoteDataSource {
   static const _simulatedLatency = Duration(seconds: 3);
 

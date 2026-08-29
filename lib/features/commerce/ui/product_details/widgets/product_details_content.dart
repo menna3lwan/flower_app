@@ -37,13 +37,7 @@ class ProductDetailsContent extends StatelessWidget {
   }
 
   Widget _buildPriceAndStatus() {
-    final num calculatedDiscount = product.hasDiscount
-        ? product.discountPercentage ??
-            (((product.originalPrice! - product.price!) /
-                        product.originalPrice!) *
-                    100)
-                .round()
-        : 0;
+    final num calculatedDiscount = product.safeDiscountPercentage;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -52,21 +46,22 @@ class ProductDetailsContent extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              product.price.asEgp,
+              product.price?.asEgp ?? '',
               style: AppTextStyles.appBarTitleEmphasis.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             if (product.hasDiscount) ...[
               const Gap(AppDimens.space8),
-              Text(
-                product.originalPrice!.toStringAsFixed(0),
-                style: AppTextStyles.titleLarge.copyWith(
-                  color: AppColors.gray,
-                  fontWeight: FontWeight.w400,
-                  decoration: TextDecoration.lineThrough,
+              if (product.originalPrice != null)
+                Text(
+                  product.originalPrice!.toStringAsFixed(0),
+                  style: AppTextStyles.titleLarge.copyWith(
+                    color: AppColors.gray,
+                    fontWeight: FontWeight.w400,
+                    decoration: TextDecoration.lineThrough,
+                  ),
                 ),
-              ),
               const Gap(AppDimens.space8),
               Text(
                 '$calculatedDiscount%',
@@ -95,7 +90,6 @@ class ProductDetailsContent extends StatelessWidget {
       ],
     );
   }
-
   Widget _buildTaxText() {
     return Text(
       AppStrings.allPricesIncludeTax,
@@ -144,16 +138,14 @@ class ProductDetailsContent extends StatelessWidget {
           ),
         ),
         const Gap(AppDimens.space8),
-        if (product.includes != null) ...[
+        if (product.includes != null && product.includes!.isNotEmpty) ...[
           ...product.includes!.map(
                 (item) => Padding(
               padding: const EdgeInsets.only(
                 bottom: AppDimens.space4,
               ),
               child: Text(
-                item.quantity != null
-                    ? '${item.name ?? AppStrings.noTitle}: ${item.quantity}'
-                    : item.name ?? AppStrings.noTitle,
+                item.name ?? AppStrings.noTitle,
                 style: AppTextStyles.bodyMedium,
               ),
             ),

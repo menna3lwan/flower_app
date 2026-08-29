@@ -4,17 +4,29 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 
-class ProductImageSlider extends StatelessWidget {
+class ProductImageSlider extends StatefulWidget {
   const ProductImageSlider({
     super.key,
     required this.images,
-    required this.currentIndex,
-    required this.onPageChanged,
   });
 
   final List<String> images;
-  final int currentIndex;
-  final ValueChanged<int> onPageChanged;
+
+  @override
+  State<ProductImageSlider> createState() => _ProductImageSliderState();
+}
+
+class _ProductImageSliderState extends State<ProductImageSlider> {
+  int _currentIndex = 0;
+
+  @override
+  void didUpdateWidget(covariant ProductImageSlider oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (_currentIndex >= widget.images.length) {
+      _currentIndex = 0;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,12 +42,12 @@ class ProductImageSlider extends StatelessWidget {
             ),
 
             CarouselSlider.builder(
-              itemCount: images.length,
+              itemCount: widget.images.length,
               itemBuilder: (context, index, realIndex) {
                 return Padding(
                   padding: const EdgeInsets.all(16),
                   child: Image.asset(
-                    images[index],
+                    widget.images[index],
                     fit: BoxFit.contain,
                   ),
                 );
@@ -47,20 +59,24 @@ class ProductImageSlider extends StatelessWidget {
                 enlargeFactor: 0.5,
                 autoPlay: true,
                 onPageChanged: (index, reason) {
-                  onPageChanged(index);
+                  if (index != _currentIndex) {
+                    setState(() {
+                      _currentIndex = index;
+                    });
+                  }
                 },
               ),
             ),
 
-            if (images.length > 1)
+            if (widget.images.length > 1)
               Positioned(
                 bottom: 12,
                 left: 0,
                 right: 0,
                 child: Center(
                   child: AnimatedSmoothIndicator(
-                    activeIndex: currentIndex,
-                    count: images.length,
+                    activeIndex: _currentIndex,
+                    count: widget.images.length,
                     effect: const WormEffect(
                       dotWidth: 10,
                       dotHeight: 10,

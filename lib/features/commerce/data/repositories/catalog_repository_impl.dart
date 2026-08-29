@@ -4,6 +4,7 @@ import '../../../../core/base/safe_call.dart';
 import '../../../../core/domain/entities/product_entity.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
+import '../../../../core/localization/app_strings.dart';
 import '../../../../core/result/result.dart';
 import '../../domain/entities/category_entity.dart';
 import '../../domain/entities/occasion_entity.dart';
@@ -29,7 +30,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
       final response = await _remoteDataSource.getCategories();
       final categories = _commerceMapper.mapCategoriesResponseToEntity(response).data;
       if (categories == null) {
-        throw const ServerException('Data is null');
+        throw ServerException(AppStrings.nullData);
       }
       return categories;
     },);
@@ -41,7 +42,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
       final response = await _remoteDataSource.getOccasions();
       final occasions = _commerceMapper.mapOccasionsResponseToEntity(response).data;
       if (occasions == null) {
-        throw const ServerException('Data is null');
+        throw ServerException(AppStrings.nullData);
       }
       return occasions;
     },);
@@ -53,7 +54,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
       final response = await _remoteDataSource.getBestSeller(params.page, params.pageSize);
       final entity = _commerceMapper.mapProductsResponseToEntity(response);
       if (entity.data == null) {
-        throw const ServerException('Data is null');
+        throw ServerException(AppStrings.nullData);
       }
       return entity.data!;
     });
@@ -65,7 +66,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
       final response = await _remoteDataSource.getAllProducts(params.page, params.pageSize);
       final entity = _commerceMapper.mapProductsResponseToEntity(response);
       if (entity.data == null) {
-        throw const ServerException('Data is null');
+        throw ServerException(AppStrings.nullData);
       }
       return entity.data!;
     });
@@ -77,7 +78,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
       final response = await _remoteDataSource.getAllProducts(params.page, params.pageSize, categoryId);
       final entity = _commerceMapper.mapProductsResponseToEntity(response);
       if (entity.data == null) {
-        throw const ServerException('Data is null');
+        throw ServerException(AppStrings.nullData);
       }
       return entity.data!;
     });
@@ -89,18 +90,24 @@ class CatalogRepositoryImpl implements CatalogRepository {
       final response = await _remoteDataSource.getAllProducts(params.page, params.pageSize, occasionId);
       final entity = _commerceMapper.mapProductsResponseToEntity(response);
       if (entity.data == null) {
-        throw const ServerException('Data is null');
+        throw ServerException(AppStrings.nullData);
       }
       return entity.data!;
     });
   }
 
-  // Kept as its own try/catch rather than safeCall: the one Catalog method with a genuine special case (missing product -> NotFoundFailure).
+// Kept as its own try/catch rather than safeCall: the one Catalog method with a genuine special case (missing product -> NotFoundFailure).
   @override
   Future<Result<ProductDetailsEntity>> getProductById(String id) async {
     try {
       final response = await _remoteDataSource.getProductById(id);
-      return Result.success(_commerceMapper.mapProductDetailsResponse(response).data!);
+      final entity = _commerceMapper.mapProductDetailsResponse(response);
+
+      if (entity.data == null) {
+        throw ServerException(AppStrings.nullData);
+      }
+
+      return Result.success(entity.data!);
     } on ServerException catch (e) {
       return Result.failure(NotFoundFailure(e.message));
     } catch (_) {

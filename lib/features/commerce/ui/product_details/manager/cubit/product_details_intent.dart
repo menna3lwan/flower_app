@@ -1,6 +1,6 @@
 sealed class ProductDetailsIntent {}
 
 final class GetProductByIdIntent extends ProductDetailsIntent {
-  String id;
+  final String id;
   GetProductByIdIntent(this.id);
 }

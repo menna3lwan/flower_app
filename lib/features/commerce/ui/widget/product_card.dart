@@ -25,13 +25,8 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final num calculatedDiscount = product.hasDiscount
-        ? product.discountPercentage ??
-            (((product.originalPrice! - product.price!) /
-                        product.originalPrice!) *
-                    100)
-                .round()
-        : 0;
+    final num calculatedDiscount = product.safeDiscountPercentage;
+
 
     return GestureDetector(
       onTap: onTap,

@@ -15,7 +15,9 @@ class ProductDetailsEntity extends Equatable {
   final List<String>? images;
   final String? description;
   final List<IncludesEntity>? includes;
+  final int? stockQuantity;
   final String? categoryId;
+
   final List<String>? occasionIds;
 
   bool get hasDiscount =>
@@ -35,6 +37,7 @@ class ProductDetailsEntity extends Equatable {
     this.includes,
     this.categoryId,
     this.occasionIds,
+    this.stockQuantity,
   });
 
   @override
@@ -52,5 +55,6 @@ class ProductDetailsEntity extends Equatable {
         includes,
         categoryId,
         occasionIds,
+        stockQuantity,
       ];
 }

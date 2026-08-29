@@ -6,7 +6,7 @@ import '../entities/category_entity.dart';
 import '../repositories/catalog_repository.dart';
 
 /// Thin, single-purpose wrapper over [CatalogRepository.getCategories], so presentation code depends only on use cases, never a repository directly.
-@lazySingleton
+@injectable
 class GetCategoriesUseCase implements UseCase<List<CategoryEntity>, NoParams> {
   const GetCategoriesUseCase(this._repository);
 

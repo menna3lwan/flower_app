@@ -140,6 +140,7 @@
   "noDescription": "No Description",
 
   "loading": "Loading...",
+  "nullData": "Data is null",
   "emptyProducts": "No products found",
   "errorProduct": "Failed to load the product",
   "errorProducts": "Failed to load products",
