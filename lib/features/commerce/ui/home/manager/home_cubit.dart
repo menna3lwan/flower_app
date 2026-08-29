@@ -23,20 +23,20 @@ class HomeCubit extends BaseCubit<HomeState> {
 
   /// Pull-to-refresh: keeps the currently visible sections on failure instead of replacing them with a full-screen error.
   Future<void> refreshHome() async {
-    final current = state;
+    final previousState = state;
     safeEmit(
-      current is HomeLoaded
-          ? current.copyWith(isRefreshing: true, clearRefreshFailure: true)
+      previousState is HomeLoaded
+          ? previousState.copyWith(isRefreshing: true, clearRefreshFailure: true)
           : const HomeLoading(),
     );
 
     final result = await _loadHome(const NoParams());
-    final refreshingState = state;
-    if (refreshingState is HomeLoaded && result.isFailure) {
+    if (previousState is HomeLoaded && result.isFailure) {
       safeEmit(
-        refreshingState.copyWith(
+        previousState.copyWith(
           isRefreshing: false,
-          refreshFailure: result.fold<Failure?>((failure) => failure, (_) => null),
+          refreshFailure:
+              result.fold<Failure?>((failure) => failure, (_) => null),
         ),
       );
       return;

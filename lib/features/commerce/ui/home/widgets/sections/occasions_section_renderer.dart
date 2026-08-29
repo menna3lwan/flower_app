@@ -77,8 +77,7 @@ class _OccasionCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const AspectRatio(
-              aspectRatio:
-                  AppDimens.homeCardWidth / AppDimens.productCardImageHeight,
+              aspectRatio: AppDimens.homeCardAspectRatio,
               child: AppImagePlaceholder(borderRadius: BorderRadius.zero),
             ),
             const SizedBox(height: AppDimens.space8),

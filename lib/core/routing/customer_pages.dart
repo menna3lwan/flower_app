@@ -48,7 +48,9 @@ abstract final class CustomerPages {
       name: CustomerRoutes.otpVerification,
       page: () => BlocProvider(
         create: (_) => sl<AuthCubit>(),
-        child: const OtpVerificationView(),
+        child: OtpVerificationView(
+          email: Get.arguments is String ? Get.arguments as String : '',
+        ),
       ),
     ),
     // Carries the one-time resetToken from OtpVerificationView.
@@ -56,7 +58,9 @@ abstract final class CustomerPages {
       name: CustomerRoutes.resetPassword,
       page: () => BlocProvider(
         create: (_) => sl<AuthCubit>(),
-        child: const ResetPasswordView(),
+        child: ResetPasswordView(
+          resetToken: Get.arguments is String ? Get.arguments as String : '',
+        ),
       ),
     ),
     // App shell after Login/Sign Up; omitting this entry made Get.offAllNamed(main) crash.

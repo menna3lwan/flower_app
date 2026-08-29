@@ -31,6 +31,13 @@ void main() {
       expect(dto.isActive, isFalse);
       expect(dto.title, isNull);
     });
+
+    test('defaults a missing id instead of throwing', () {
+      final dto = HomeSectionDto.fromJson({'type': 'Categories'});
+
+      expect(dto.id, 0);
+      expect(dto.type, 'Categories');
+    });
   });
 
   group('HomeSectionsResponseDto.fromJson', () {
@@ -52,6 +59,13 @@ void main() {
 
     test('missing/non-list data yields an empty section list', () {
       final response = HomeSectionsResponseDto.fromJson({'isSuccess': false});
+
+      expect(response.isSuccess, isFalse);
+      expect(response.sections, isEmpty);
+    });
+
+    test('missing isSuccess defaults to false', () {
+      final response = HomeSectionsResponseDto.fromJson({});
 
       expect(response.isSuccess, isFalse);
       expect(response.sections, isEmpty);

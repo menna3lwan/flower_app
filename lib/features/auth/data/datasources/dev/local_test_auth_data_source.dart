@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'dart:developer' as developer;
 
 import '../../../../../core/domain/entities/user_entity.dart';
 import '../auth_remote_data_source.dart';
@@ -21,8 +21,9 @@ class LocalTestAuthDataSource implements AuthRemoteDataSource {
     required String password,
   }) async {
     if (email.trim().toLowerCase() == testEmail && password == testPassword) {
-      debugPrint(
-        '[LocalTestAuthDataSource] DEV-ONLY local login used — no request sent to the real Auth API.',
+      developer.log(
+        'DEV-ONLY local login used — no request sent to the real Auth API.',
+        name: 'LocalTestAuthDataSource',
       );
       return const UserEntity(
         id: 'local-test-user',

@@ -120,6 +120,7 @@ abstract final class AppStrings {
   static String get homeNavLabel => 'homeNavLabel'.tr();
 
   // Product.
+  static String get productDetails => 'productDetails'.tr();
   static String get description => 'description'.tr();
   static String get bouquetIncludes => 'bouquetIncludes'.tr();
   static String get addToCart => 'addToCart'.tr();

@@ -46,6 +46,10 @@ abstract final class AppDimens {
   /// Figma-verified width for Home's horizontal preview cards (best seller, occasion, products carousel all share this).
   static const double homeCardWidth = 131;
 
+  /// Home preview-card image aspect ratio (131×151).
+  static const double homeCardAspectRatio =
+      homeCardWidth / productCardImageHeight;
+
   /// Figma-verified Home search bar height (logo & search row).
   static const double searchBarHeight = 36;
 

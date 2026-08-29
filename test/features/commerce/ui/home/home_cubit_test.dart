@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -83,6 +85,41 @@ void main() {
       expect(state.sections, [_section]);
       expect(state.isRefreshing, isFalse);
       expect(state.refreshFailure, isA<ServerFailure>());
+    });
+
+    test('a failed refresh keeps the pre-await snapshot if loadHome overlaps',
+        () async {
+      final refreshGate =
+          Completer<Result<List<HomeSectionContentEntity>>>();
+      final overlappingLoadGate =
+          Completer<Result<List<HomeSectionContentEntity>>>();
+      var calls = 0;
+      when(loadHome(const NoParams())).thenAnswer((_) async {
+        calls++;
+        if (calls == 1) return const Result.success([_section]);
+        if (calls == 2) return refreshGate.future;
+        return overlappingLoadGate.future;
+      });
+
+      await cubit.loadHome();
+      expect(cubit.state, isA<HomeLoaded>());
+
+      final refreshFuture = cubit.refreshHome();
+      await Future<void>.delayed(Duration.zero);
+
+      final overlappingLoad = cubit.loadHome();
+      await Future<void>.delayed(Duration.zero);
+      expect(cubit.state, const HomeLoading());
+
+      refreshGate.complete(const Result.failure(ServerFailure()));
+      await refreshFuture;
+
+      final state = cubit.state as HomeLoaded;
+      expect(state.sections, [_section]);
+      expect(state.refreshFailure, isA<ServerFailure>());
+
+      overlappingLoadGate.complete(const Result.success([_section]));
+      await overlappingLoad;
     });
 
     test('consumeRefreshFailure clears the one-shot failure', () async {

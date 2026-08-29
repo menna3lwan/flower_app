@@ -64,27 +64,28 @@ class _HomeViewState extends State<HomeView> {
                 builder: (context, state) => AnimatedSwitcher(
                   duration: homeFadeDuration,
                   switchInCurve: Curves.easeOut,
-                  child: KeyedSubtree(
-                    key: ValueKey(state.runtimeType),
-                    child: switch (state) {
-                      HomeInitial() || HomeLoading() => const LoadingView(),
-                      HomeEmpty() => EmptyState(
-                          message: AppStrings.homeEmptyState,
-                          icon: Icons.local_florist_outlined,
-                        ),
-                      HomeError(:final failure) => ErrorView(
-                          message: failure.homeMessage,
-                          retryLabel: AppStrings.retry,
-                          onRetry: () => context.read<HomeCubit>().loadHome(),
-                        ),
-                      HomeLoaded(:final sections) => _HomeSectionsList(
-                          sections: sections,
-                          registry: widget.registry,
-                          onRefresh: () =>
-                              context.read<HomeCubit>().refreshHome(),
-                        ),
-                    },
-                  ),
+                  child: switch (state) {
+                    HomeInitial() || HomeLoading() =>
+                      const LoadingView(key: ValueKey(HomeLoading)),
+                    HomeEmpty() => EmptyState(
+                        key: const ValueKey(HomeEmpty),
+                        message: AppStrings.homeEmptyState,
+                        icon: Icons.local_florist_outlined,
+                      ),
+                    HomeError(:final failure) => ErrorView(
+                        key: const ValueKey(HomeError),
+                        message: failure.homeMessage,
+                        retryLabel: AppStrings.retry,
+                        onRetry: () => context.read<HomeCubit>().loadHome(),
+                      ),
+                    HomeLoaded(:final sections) => _HomeSectionsList(
+                        key: const ValueKey(HomeLoaded),
+                        sections: sections,
+                        registry: widget.registry,
+                        onRefresh: () =>
+                            context.read<HomeCubit>().refreshHome(),
+                      ),
+                  },
                 ),
               ),
             ),
@@ -107,6 +108,7 @@ class _HomeSectionsList extends StatelessWidget {
     required this.sections,
     required this.registry,
     required this.onRefresh,
+    super.key,
   });
 
   final List<HomeSectionContentEntity> sections;
@@ -119,7 +121,10 @@ class _HomeSectionsList extends StatelessWidget {
       onRefresh: onRefresh,
       color: AppColors.primary,
       child: ListView.separated(
-        physics: homeScrollPhysics(context, alwaysScrollable: true),
+        physics: homeScrollPhysics(
+          Theme.of(context).platform,
+          alwaysScrollable: true,
+        ),
         padding: const EdgeInsets.only(bottom: AppDimens.space16),
         itemCount: sections.length,
         separatorBuilder: (_, __) => const SizedBox(height: AppDimens.space24),

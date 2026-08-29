@@ -28,8 +28,7 @@ dependencies:
   # Navigation / utilities only — never state management (see core/routing/).
   get: ^4.6.6
 
-  # Design system typography (see core/theme/app_text_styles.dart).
-  google_fonts: ^6.2.1
+  # Design system typography uses bundled Inter (see core/theme/app_text_styles.dart).
 
   # Localization (English + Arabic, LTR/RTL). Reads assets/translations/*.json
   # (see AppAssets.translationsPath); AppStrings' getters call `.tr()`.

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -54,7 +56,7 @@ class DeliveryLocationRow extends StatelessWidget {
               ),
               const SizedBox(width: AppDimens.space8),
               Transform.rotate(
-                angle: -1.5708,
+                angle: -math.pi / 2,
                 child: SvgPicture.asset(
                   AppAssets.chevronIcon,
                   width: AppDimens.iconSizeSmall,

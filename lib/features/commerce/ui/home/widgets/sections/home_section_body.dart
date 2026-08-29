@@ -12,17 +12,18 @@ Widget homeSectionBody({
   return AnimatedSwitcher(
     duration: homeFadeDuration,
     switchInCurve: Curves.easeOut,
-    child: KeyedSubtree(
-      key: ValueKey(status),
-      child: switch (status) {
-        HomeSectionLoadStatus.failed =>
-          SectionStateBox.error(message: AppStrings.somethingWentWrong),
-        HomeSectionLoadStatus.empty =>
-          SectionStateBox.empty(message: AppStrings.homeSectionEmpty),
-        HomeSectionLoadStatus.success ||
-        HomeSectionLoadStatus.unsupported =>
-          success(),
-      },
-    ),
+    child: switch (status) {
+      HomeSectionLoadStatus.failed => SectionStateBox.error(
+          key: ValueKey(status),
+          message: AppStrings.somethingWentWrong,
+        ),
+      HomeSectionLoadStatus.empty => SectionStateBox.empty(
+          key: ValueKey(status),
+          message: AppStrings.homeSectionEmpty,
+        ),
+      HomeSectionLoadStatus.success ||
+      HomeSectionLoadStatus.unsupported =>
+        KeyedSubtree(key: ValueKey(status), child: success()),
+    },
   );
 }

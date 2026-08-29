@@ -38,10 +38,7 @@ class ProductCard extends StatelessWidget {
             Stack(
               children: [
                 AspectRatio(
-                  aspectRatio: _isCompact
-                      ? AppDimens.homeCardWidth /
-                          AppDimens.productCardImageHeight
-                      : 1,
+                  aspectRatio: _isCompact ? AppDimens.homeCardAspectRatio : 1,
                   child: AppImagePlaceholder(
                     borderRadius: _isCompact
                         ? BorderRadius.zero

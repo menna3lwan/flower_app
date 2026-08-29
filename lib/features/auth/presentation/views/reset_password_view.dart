@@ -19,7 +19,9 @@ import '../mappers/auth_failure_message.dart';
 import '../state/auth_state.dart';
 
 class ResetPasswordView extends StatefulWidget {
-  const ResetPasswordView({super.key});
+  const ResetPasswordView({this.resetToken = '', super.key});
+
+  final String resetToken;
 
   @override
   State<ResetPasswordView> createState() => _ResetPasswordViewState();
@@ -41,8 +43,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
   @override
   void initState() {
     super.initState();
-    final arguments = Get.arguments;
-    _resetToken = arguments is String ? arguments : '';
+    _resetToken = widget.resetToken;
   }
 
   @override

@@ -6,10 +6,10 @@ const Duration homeFadeDuration = Duration(milliseconds: 200);
 
 /// Platform-native Home scroll feel — bounce on iOS, clamp on Android.
 ScrollPhysics homeScrollPhysics(
-  BuildContext context, {
+  TargetPlatform platform, {
   bool alwaysScrollable = false,
 }) {
-  final parent = switch (Theme.of(context).platform) {
+  final parent = switch (platform) {
     TargetPlatform.iOS || TargetPlatform.macOS => const BouncingScrollPhysics(),
     _ => const ClampingScrollPhysics(),
   };
@@ -38,7 +38,7 @@ class HomeHorizontalScroller extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         primary: false,
-        physics: homeScrollPhysics(context),
+        physics: homeScrollPhysics(Theme.of(context).platform),
         clipBehavior: Clip.none,
         padding: const EdgeInsets.symmetric(horizontal: AppDimens.space16),
         itemCount: itemCount,

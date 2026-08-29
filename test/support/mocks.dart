@@ -106,8 +106,7 @@ class MockGetBestSellersUseCase extends Mock implements GetBestSellersUseCase {
 
 class MockGetProductsByOccasionUseCase extends Mock
     implements GetProductsByOccasionUseCase {
-  // Param widened to Object? (a valid contravariant override) so callers can still pass Mockito's `any`
-  // matcher, which is itself typed as `Null`, not `String` — this method only ever forwards it as-is.
+  // Param widened to Object? so Mockito's `any` matcher (typed as Null) still type-checks.
   @override
   Future<Result<List<ProductEntity>>> call(Object? occasionId) =>
       super.noSuchMethod(

@@ -21,7 +21,9 @@ import '../mappers/auth_failure_message.dart';
 import '../state/auth_state.dart';
 
 class OtpVerificationView extends StatefulWidget {
-  const OtpVerificationView({super.key});
+  const OtpVerificationView({this.email = '', super.key});
+
+  final String email;
 
   @override
   State<OtpVerificationView> createState() => _OtpVerificationViewState();
@@ -45,8 +47,7 @@ class _OtpVerificationViewState extends State<OtpVerificationView> {
   @override
   void initState() {
     super.initState();
-    final arguments = Get.arguments;
-    _email = arguments is String ? arguments : '';
+    _email = widget.email;
     // A code was already sent by Forgot Password right before this screen was pushed, so the cooldown starts immediately.
     _startResendCooldown();
   }

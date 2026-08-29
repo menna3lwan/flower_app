@@ -27,7 +27,10 @@ class ProductsCarouselSectionRenderer implements HomeSectionRenderer {
       children: [
         AppSectionHeader(
           title: carousel.title ?? AppStrings.products,
-          onViewAllTap: () => Get.toNamed(_viewAllRoute(carousel)),
+          onViewAllTap: () => Get.toNamed(
+            viewAllRouteFor(carousel),
+            arguments: viewAllArgumentsFor(carousel),
+          ),
           viewAllLabel: AppStrings.viewAll,
           titleStyle: AppTextStyles.sectionTitle,
           viewAllStyle: AppTextStyles.sectionViewAll,
@@ -56,8 +59,13 @@ class ProductsCarouselSectionRenderer implements HomeSectionRenderer {
     );
   }
 
-  String _viewAllRoute(ProductsCarouselSectionContent section) {
+  @visibleForTesting
+  static String viewAllRouteFor(ProductsCarouselSectionContent section) {
     if (section.occasionId != null) return CustomerRoutes.occasionListing;
     return CustomerRoutes.categories;
   }
+
+  @visibleForTesting
+  static String? viewAllArgumentsFor(ProductsCarouselSectionContent section) =>
+      section.occasionId ?? section.categoryId;
 }

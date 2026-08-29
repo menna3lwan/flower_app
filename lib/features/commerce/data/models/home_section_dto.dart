@@ -12,7 +12,7 @@ class HomeSectionDto {
 
   factory HomeSectionDto.fromJson(Map<String, dynamic> json) {
     return HomeSectionDto(
-      id: json['id'] as int,
+      id: json['id'] as int? ?? 0,
       type: json['type'] as String? ?? '',
       index: json['index'] as int? ?? 0,
       isActive: json['isActive'] as bool? ?? false,
