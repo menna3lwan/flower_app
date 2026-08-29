@@ -64,17 +64,7 @@ extension GetItInjectableX on GetIt {
       () => authApiModule.authApiService(get<Dio>()),
     );
 
-    // AuthRemoteDataSource is Auth's one and only data source — the real backend over Retrofit/Dio.
-    // In debug builds only, it's wrapped by LocalTestAuthDataSource (a Decorator) so a single hardcoded
-    // local account can reach Home etc. before the real backend exists, without touching this class,
-    // AuthRepositoryImpl, or any use case/Cubit. Every other credential — and every build that isn't
-    // debug — goes through AuthRemoteDataSourceImpl exactly as before. In release builds the `if`
-    // below is compile-time false, so LocalTestAuthDataSource is dead-code-eliminated entirely.
-    // NOTE: AuthRemoteDataSourceImpl still carries @LazySingleton(as: AuthRemoteDataSource) from the
-    // earlier refactor. This file is hand-authored (see header), so that annotation is inert today —
-    // but if this project ever switches to a real `build_runner`-generated config, this manual
-    // debug/release branch must be ported over (or the annotation removed) so the real generator
-    // doesn't silently re-bind AuthRemoteDataSourceImpl directly and drop this gate.
+    // Debug-only LocalTestAuthDataSource wrapper; keep this kDebugMode branch if switching to build_runner.
     registerLazySingleton<AuthRemoteDataSource>(() {
       final realDataSource = AuthRemoteDataSourceImpl(
         get<AuthApiService>(),
@@ -120,7 +110,7 @@ extension GetItInjectableX on GetIt {
       ),
     );
 
-    // ---- Commerce (shared catalog foundation) ---- no remote data source/API module yet since no real catalog backend contract exists.
+    // Catalog foundation — no remote catalog API yet.
     registerLazySingleton<CatalogLocalDataSource>(
       CatalogLocalDataSourceImpl.new,
     );
@@ -151,19 +141,14 @@ extension GetItInjectableX on GetIt {
       () => SearchProductsUseCase(get<CatalogRepository>()),
     );
 
-    // ---- Commerce: Home (SDUI) ---- section list/order is real remote data; section content still reuses the Catalog use cases above.
+    // Home layout is remote; section content reuses the Catalog use cases above.
     final homeApiModule = _HomeApiModuleImpl();
 
     registerLazySingleton<HomeApiService>(
       () => homeApiModule.homeApiService(get<Dio>()),
     );
 
-    // The real Commerce Home API still doesn't exist (see docs/BACKEND_INTEGRATION_TODO.md), so in
-    // debug builds only, HomeRemoteDataSource resolves to LocalMockHomeRemoteDataSource instead of
-    // the real Retrofit-backed impl — same contract, zero network calls, and dead-code-eliminated
-    // from release builds since `kDebugMode` is compile-time false there. HomeRepositoryImpl, every
-    // use case, and HomeCubit are untouched either way; only this registration branches. Swap back to
-    // the real API by deleting this `if` once the backend is live — no other file needs to change.
+    // Debug-only mock Home API; release uses HomeRemoteDataSourceImpl. Swap by deleting this `if`.
     registerLazySingleton<HomeRemoteDataSource>(() {
       if (kDebugMode) {
         return LocalMockHomeRemoteDataSource();

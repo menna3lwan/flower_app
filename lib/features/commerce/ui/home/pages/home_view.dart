@@ -7,7 +7,6 @@ import 'package:customer_app/common/widgets/states/error_view.dart';
 import 'package:customer_app/common/widgets/states/loading_view.dart';
 import 'package:customer_app/core/constants/app_colors.dart';
 import 'package:customer_app/core/constants/app_dimens.dart';
-import 'package:customer_app/core/di/injector.dart';
 import 'package:customer_app/core/localization/app_strings.dart';
 import 'package:customer_app/features/commerce/domain/entities/home_section_content_entity.dart';
 import '../mappers/home_failure_message.dart';
@@ -19,17 +18,17 @@ import '../widgets/chrome/home_bottom_nav.dart';
 import '../widgets/chrome/home_logo_search_row.dart';
 import '../widgets/home_scroll_physics.dart';
 
-/// Server-driven Home screen: renders whatever sections `/home/sections` returns, in the order given.
+/// Server-driven Home: renders `/home/sections` in the order the data layer returns.
 class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+  const HomeView({required this.registry, super.key});
+
+  final HomeSectionRendererRegistry registry;
 
   @override
   State<HomeView> createState() => _HomeViewState();
 }
 
 class _HomeViewState extends State<HomeView> {
-  final _registry = sl<HomeSectionRendererRegistry>();
-
   @override
   void initState() {
     super.initState();
@@ -45,7 +44,6 @@ class _HomeViewState extends State<HomeView> {
         bottom: false,
         child: Column(
           children: [
-            // Figma-verified gap from the status bar to the logo row.
             const SizedBox(height: AppDimens.space16),
             const HomeLogoSearchRow(),
             const SizedBox(height: AppDimens.space16),
@@ -64,7 +62,7 @@ class _HomeViewState extends State<HomeView> {
                 },
                 listener: _handleRefreshFailure,
                 builder: (context, state) => AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
+                  duration: homeFadeDuration,
                   switchInCurve: Curves.easeOut,
                   child: KeyedSubtree(
                     key: ValueKey(state.runtimeType),
@@ -81,7 +79,7 @@ class _HomeViewState extends State<HomeView> {
                         ),
                       HomeLoaded(:final sections) => _HomeSectionsList(
                           sections: sections,
-                          registry: _registry,
+                          registry: widget.registry,
                           onRefresh: () =>
                               context.read<HomeCubit>().refreshHome(),
                         ),
@@ -121,7 +119,6 @@ class _HomeSectionsList extends StatelessWidget {
       onRefresh: onRefresh,
       color: AppColors.primary,
       child: ListView.separated(
-        // No top padding: the gap after DeliveryLocationRow already supplies it (see HomeView).
         physics: homeScrollPhysics(context, alwaysScrollable: true),
         padding: const EdgeInsets.only(bottom: AppDimens.space16),
         itemCount: sections.length,

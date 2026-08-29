@@ -10,9 +10,8 @@ import 'package:customer_app/common/widgets/product_card.dart';
 import 'package:customer_app/features/commerce/domain/entities/home_section_content_entity.dart';
 import '../../registry/home_section_renderer.dart';
 import '../home_scroll_physics.dart';
-import 'section_state_box.dart';
+import 'home_section_body.dart';
 
-/// Renders a [ProductsCarouselSectionContent] — a generic, server-titled products row; the title is server content, already localized, so it's shown as-is.
 class ProductsCarouselSectionRenderer implements HomeSectionRenderer {
   const ProductsCarouselSectionRenderer();
 
@@ -34,7 +33,25 @@ class ProductsCarouselSectionRenderer implements HomeSectionRenderer {
           viewAllStyle: AppTextStyles.sectionViewAll,
         ),
         const SizedBox(height: AppDimens.space16),
-        _animatedContent(context, carousel),
+        homeSectionBody(
+          status: carousel.status,
+          success: () => HomeHorizontalScroller(
+            height: AppDimens.productPreviewCardHeight,
+            itemCount: carousel.products.length,
+            itemBuilder: (context, index) {
+              final product = carousel.products[index];
+              return ProductCard(
+                key: ValueKey(product.id),
+                product: product,
+                width: AppDimens.homeCardWidth,
+                onTap: () => Get.toNamed(
+                  CustomerRoutes.productDetails,
+                  arguments: product.id,
+                ),
+              );
+            },
+          ),
+        ),
       ],
     );
   }
@@ -42,44 +59,5 @@ class ProductsCarouselSectionRenderer implements HomeSectionRenderer {
   String _viewAllRoute(ProductsCarouselSectionContent section) {
     if (section.occasionId != null) return CustomerRoutes.occasionListing;
     return CustomerRoutes.categories;
-  }
-
-  Widget _animatedContent(
-    BuildContext context,
-    ProductsCarouselSectionContent section,
-  ) {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 200),
-      switchInCurve: Curves.easeOut,
-      child: KeyedSubtree(
-        key: ValueKey(section.status),
-        child: _content(context, section),
-      ),
-    );
-  }
-
-  Widget _content(BuildContext context, ProductsCarouselSectionContent section) {
-    if (section.status == HomeSectionLoadStatus.failed) {
-      return SectionStateBox.error(message: AppStrings.somethingWentWrong);
-    }
-    if (section.status == HomeSectionLoadStatus.empty) {
-      return SectionStateBox.empty(message: AppStrings.homeSectionEmpty);
-    }
-    return HomeHorizontalScroller(
-      height: AppDimens.productPreviewCardHeight,
-      itemCount: section.products.length,
-      itemBuilder: (context, index) {
-        final product = section.products[index];
-        return ProductCard(
-          key: ValueKey(product.id),
-          product: product,
-          width: AppDimens.homeCardWidth,
-          onTap: () => Get.toNamed(
-            CustomerRoutes.productDetails,
-            arguments: product.id,
-          ),
-        );
-      },
-    );
   }
 }

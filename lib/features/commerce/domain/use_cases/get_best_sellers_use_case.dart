@@ -5,7 +5,7 @@ import '../../../../core/result/result.dart';
 import '../../../../core/usecase/usecase.dart';
 import '../repositories/catalog_repository.dart';
 
-/// Thin, single-purpose wrapper over [CatalogRepository.getBestSellers]. See [GetCategoriesUseCase]'s doc comment for why this exists.
+/// Thin wrapper over [CatalogRepository.getBestSellers].
 @lazySingleton
 class GetBestSellersUseCase implements UseCase<List<ProductEntity>, NoParams> {
   const GetBestSellersUseCase(this._repository);

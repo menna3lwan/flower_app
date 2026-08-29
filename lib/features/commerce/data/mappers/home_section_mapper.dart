@@ -2,7 +2,7 @@ import '../../domain/entities/home_section_entity.dart';
 import '../../domain/entities/home_section_type.dart';
 import '../models/home_section_dto.dart';
 
-/// DTO -> domain entity mapping for Home sections, kept separate from `commerce_mapper.dart` (catalog content), which is out of this task's scope.
+/// DTO → domain mapping for Home sections.
 extension HomeSectionDtoMapper on HomeSectionDto {
   HomeSectionEntity toEntity() {
     return HomeSectionEntity(

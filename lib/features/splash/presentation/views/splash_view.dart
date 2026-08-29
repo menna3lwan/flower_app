@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:customer_app/core/constants/app_colors.dart';
+import 'package:customer_app/core/constants/app_dimens.dart';
 import 'package:customer_app/core/localization/app_strings.dart';
-import '../../../../core/routing/customer_routes.dart';
+import 'package:customer_app/core/routing/customer_routes.dart';
 import 'package:customer_app/core/theme/app_text_styles.dart';
 
 /// Branded launch screen — not in the Figma file, but every shipped app needs one; redirects to Login once startup completes.
@@ -33,7 +34,7 @@ class _SplashViewState extends State<SplashView> {
           children: [
             const Icon(Icons.local_florist_rounded,
                 color: AppColors.white, size: 72),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppDimens.space12),
             Text(
               AppStrings.appName,
               style:

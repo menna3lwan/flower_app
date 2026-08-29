@@ -10,9 +10,8 @@ import 'package:customer_app/common/widgets/product_card.dart';
 import 'package:customer_app/features/commerce/domain/entities/home_section_content_entity.dart';
 import '../../registry/home_section_renderer.dart';
 import '../home_scroll_physics.dart';
-import 'section_state_box.dart';
+import 'home_section_body.dart';
 
-/// Renders a [BestSellerSectionContent] as Home's best-seller row — compact [ProductCard] (no add-to-cart), reusing [AppSectionHeader].
 class BestSellerSectionRenderer implements HomeSectionRenderer {
   const BestSellerSectionRenderer();
 
@@ -34,47 +33,26 @@ class BestSellerSectionRenderer implements HomeSectionRenderer {
           viewAllStyle: AppTextStyles.sectionViewAll,
         ),
         const SizedBox(height: AppDimens.space16),
-        _animatedContent(context, bestSeller),
-      ],
-    );
-  }
-
-  Widget _animatedContent(
-    BuildContext context,
-    BestSellerSectionContent section,
-  ) {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 200),
-      switchInCurve: Curves.easeOut,
-      child: KeyedSubtree(
-        key: ValueKey(section.status),
-        child: _content(context, section),
-      ),
-    );
-  }
-
-  Widget _content(BuildContext context, BestSellerSectionContent section) {
-    if (section.status == HomeSectionLoadStatus.failed) {
-      return SectionStateBox.error(message: AppStrings.somethingWentWrong);
-    }
-    if (section.status == HomeSectionLoadStatus.empty) {
-      return SectionStateBox.empty(message: AppStrings.homeSectionEmpty);
-    }
-    return HomeHorizontalScroller(
-      height: AppDimens.productPreviewCardHeight,
-      itemCount: section.products.length,
-      itemBuilder: (context, index) {
-        final product = section.products[index];
-        return ProductCard(
-          key: ValueKey(product.id),
-          product: product,
-          width: AppDimens.homeCardWidth,
-          onTap: () => Get.toNamed(
-            CustomerRoutes.productDetails,
-            arguments: product.id,
+        homeSectionBody(
+          status: bestSeller.status,
+          success: () => HomeHorizontalScroller(
+            height: AppDimens.productPreviewCardHeight,
+            itemCount: bestSeller.products.length,
+            itemBuilder: (context, index) {
+              final product = bestSeller.products[index];
+              return ProductCard(
+                key: ValueKey(product.id),
+                product: product,
+                width: AppDimens.homeCardWidth,
+                onTap: () => Get.toNamed(
+                  CustomerRoutes.productDetails,
+                  arguments: product.id,
+                ),
+              );
+            },
           ),
-        );
-      },
+        ),
+      ],
     );
   }
 }

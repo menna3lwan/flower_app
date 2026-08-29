@@ -12,10 +12,9 @@ import 'package:customer_app/features/commerce/domain/entities/category_entity.d
 import 'package:customer_app/features/commerce/domain/entities/home_section_content_entity.dart';
 import '../../registry/home_section_renderer.dart';
 import '../home_scroll_physics.dart';
-import 'section_state_box.dart';
 import 'category_icon.dart';
+import 'home_section_body.dart';
 
-/// Renders a [CategoriesSectionContent] as Home's categories row (icon chip + name), reusing [AppSectionHeader].
 class CategoriesSectionRenderer implements HomeSectionRenderer {
   const CategoriesSectionRenderer();
 
@@ -37,39 +36,21 @@ class CategoriesSectionRenderer implements HomeSectionRenderer {
           viewAllStyle: AppTextStyles.sectionViewAll,
         ),
         const SizedBox(height: AppDimens.space16),
-        _animatedContent(categories),
+        homeSectionBody(
+          status: categories.status,
+          success: () => HomeHorizontalScroller(
+            height: AppDimens.categoryCardsRowHeight,
+            itemCount: categories.categories.length,
+            itemBuilder: (context, index) {
+              final category = categories.categories[index];
+              return _CategoryChip(
+                key: ValueKey(category.id),
+                category: category,
+              );
+            },
+          ),
+        ),
       ],
-    );
-  }
-
-  Widget _animatedContent(CategoriesSectionContent section) {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 200),
-      switchInCurve: Curves.easeOut,
-      child: KeyedSubtree(
-        key: ValueKey(section.status),
-        child: _content(section),
-      ),
-    );
-  }
-
-  Widget _content(CategoriesSectionContent section) {
-    if (section.status == HomeSectionLoadStatus.failed) {
-      return SectionStateBox.error(message: AppStrings.somethingWentWrong);
-    }
-    if (section.status == HomeSectionLoadStatus.empty) {
-      return SectionStateBox.empty(message: AppStrings.homeSectionEmpty);
-    }
-    return HomeHorizontalScroller(
-      height: AppDimens.categoryCardsRowHeight,
-      itemCount: section.categories.length,
-      itemBuilder: (context, index) {
-        final category = section.categories[index];
-        return _CategoryChip(
-          key: ValueKey(category.id),
-          category: category,
-        );
-      },
     );
   }
 }
@@ -87,7 +68,6 @@ class _CategoryChip extends StatelessWidget {
         arguments: category.id,
       ),
       child: SizedBox(
-        // Figma-verified chip column width (68) — not square: the icon box is 68 wide × 64 tall.
         width: AppDimens.categoryChipWidth,
         child: Column(
           children: [

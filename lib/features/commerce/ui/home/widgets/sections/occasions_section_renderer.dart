@@ -11,9 +11,8 @@ import 'package:customer_app/features/commerce/domain/entities/home_section_cont
 import 'package:customer_app/features/commerce/domain/entities/occasion_entity.dart';
 import '../../registry/home_section_renderer.dart';
 import '../home_scroll_physics.dart';
-import 'section_state_box.dart';
+import 'home_section_body.dart';
 
-/// Renders an [OccasionsSectionContent] as Home's occasions row (image card + name), reusing [AppSectionHeader]/[AppImagePlaceholder].
 class OccasionsSectionRenderer implements HomeSectionRenderer {
   const OccasionsSectionRenderer();
 
@@ -35,40 +34,22 @@ class OccasionsSectionRenderer implements HomeSectionRenderer {
           viewAllStyle: AppTextStyles.sectionViewAll,
         ),
         const SizedBox(height: AppDimens.space16),
-        _animatedContent(occasions),
+        homeSectionBody(
+          status: occasions.status,
+          success: () => HomeHorizontalScroller(
+            height: AppDimens.occasionCardHeight,
+            itemCount: occasions.occasions.length,
+            itemBuilder: (context, index) {
+              final occasion = occasions.occasions[index];
+              return _OccasionCard(
+                key: ValueKey(occasion.id),
+                occasion: occasion,
+                width: AppDimens.homeCardWidth,
+              );
+            },
+          ),
+        ),
       ],
-    );
-  }
-
-  Widget _animatedContent(OccasionsSectionContent section) {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 200),
-      switchInCurve: Curves.easeOut,
-      child: KeyedSubtree(
-        key: ValueKey(section.status),
-        child: _content(section),
-      ),
-    );
-  }
-
-  Widget _content(OccasionsSectionContent section) {
-    if (section.status == HomeSectionLoadStatus.failed) {
-      return SectionStateBox.error(message: AppStrings.somethingWentWrong);
-    }
-    if (section.status == HomeSectionLoadStatus.empty) {
-      return SectionStateBox.empty(message: AppStrings.homeSectionEmpty);
-    }
-    return HomeHorizontalScroller(
-      height: AppDimens.occasionCardHeight,
-      itemCount: section.occasions.length,
-      itemBuilder: (context, index) {
-        final occasion = section.occasions[index];
-        return _OccasionCard(
-          key: ValueKey(occasion.id),
-          occasion: occasion,
-          width: AppDimens.homeCardWidth,
-        );
-      },
     );
   }
 }
@@ -96,10 +77,8 @@ class _OccasionCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const AspectRatio(
-              // Figma-verified Home preview-card ratio (131:151) — was an unverified 1:1 before.
               aspectRatio:
                   AppDimens.homeCardWidth / AppDimens.productCardImageHeight,
-              // Figma shows no rounding on this image — was an unverified radiusMedium before.
               child: AppImagePlaceholder(borderRadius: BorderRadius.zero),
             ),
             const SizedBox(height: AppDimens.space8),

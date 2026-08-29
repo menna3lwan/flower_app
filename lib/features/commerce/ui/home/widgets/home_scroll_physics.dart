@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:customer_app/core/constants/app_dimens.dart';
 
-/// Platform-native Home scroll feel — bounce on iOS, clamp on Android — shared by the outer list and each section carousel.
+const Duration homeFadeDuration = Duration(milliseconds: 200);
+
+/// Platform-native Home scroll feel — bounce on iOS, clamp on Android.
 ScrollPhysics homeScrollPhysics(
   BuildContext context, {
   bool alwaysScrollable = false,
@@ -16,7 +18,7 @@ ScrollPhysics homeScrollPhysics(
       : parent;
 }
 
-/// Horizontal Home carousel: independent physics, 16px start/end padding, no nested-scroll fight with the vertical list.
+/// Horizontal Home carousel with independent physics so it doesn't fight the vertical list.
 class HomeHorizontalScroller extends StatelessWidget {
   const HomeHorizontalScroller({
     required this.height,

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'package:customer_app/common/widgets/media/app_image_placeholder.dart';
 import 'package:customer_app/core/constants/app_colors.dart';
 import 'package:customer_app/core/constants/app_dimens.dart';
-import 'package:customer_app/core/localization/app_strings.dart';
-import '../../core/domain/entities/product_entity.dart';
+import 'package:customer_app/core/domain/entities/product_entity.dart';
 import 'package:customer_app/core/extensions/string_extensions.dart';
+import 'package:customer_app/core/localization/app_strings.dart';
 import 'package:customer_app/core/theme/app_text_styles.dart';
-import 'package:customer_app/common/widgets/media/app_image_placeholder.dart';
 
 class ProductCard extends StatelessWidget {
   const ProductCard({

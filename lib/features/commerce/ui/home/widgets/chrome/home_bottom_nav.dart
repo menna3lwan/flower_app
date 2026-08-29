@@ -10,8 +10,7 @@ import 'package:customer_app/core/localization/app_strings.dart';
 import 'package:customer_app/core/routing/customer_routes.dart';
 import 'package:customer_app/core/theme/app_text_styles.dart';
 
-/// Home bottom navigation. Home is the only tab with a real destination today;
-/// Categories routes to the existing catalog screen, Cart/Profile surface "coming soon".
+/// Home bottom nav — Home is live; Categories opens the catalog; Cart/Profile are coming soon.
 class HomeBottomNav extends StatelessWidget {
   const HomeBottomNav({super.key});
 

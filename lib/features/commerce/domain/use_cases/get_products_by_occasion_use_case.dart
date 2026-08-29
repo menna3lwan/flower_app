@@ -5,7 +5,7 @@ import '../../../../core/result/result.dart';
 import '../../../../core/usecase/usecase.dart';
 import '../repositories/catalog_repository.dart';
 
-/// Thin, single-purpose wrapper over [CatalogRepository.getProductsByOccasion]. See `GetCategoriesUseCase`'s doc comment for why this exists.
+/// Thin wrapper over [CatalogRepository.getProductsByOccasion].
 @lazySingleton
 class GetProductsByOccasionUseCase
     implements UseCase<List<ProductEntity>, String> {

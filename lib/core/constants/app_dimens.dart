@@ -34,13 +34,13 @@ abstract final class AppDimens {
   static const double iconSizeSmall = 16;
   static const double avatarSize = 88;
 
-  /// Figma-verified Home bottom navigation bar height (was an unused, unverified 64 before).
+  /// Home bottom navigation bar height.
   static const double bottomNavHeight = 56;
 
-  /// Figma-verified Home category-chip icon circle size (was an unverified 56 before).
+  /// Home category-chip icon box height.
   static const double categoryIconSize = 64;
 
-  /// Figma-verified Home preview-card image height (best seller / occasion / products carousel) — was an unverified 160 before.
+  /// Home preview-card image height (best seller / occasion / products carousel).
   static const double productCardImageHeight = 151;
 
   /// Figma-verified width for Home's horizontal preview cards (best seller, occasion, products carousel all share this).
@@ -58,8 +58,7 @@ abstract final class AppDimens {
   /// Figma-verified inner leaf-glyph size inside the Home logo badge.
   static const double logoLeafSize = 12;
 
-  /// Figma-verified Home category-chip column width (68) — distinct from [categoryIconSize] (64):
-  /// the chip box is 68 wide × 64 tall, not square.
+  /// Home category-chip column width (68×64, not square).
   static const double categoryChipWidth = 68;
 
   /// Figma Home categories row: icon(64) + gap(8) + 14px label at 17px line-box = 89.

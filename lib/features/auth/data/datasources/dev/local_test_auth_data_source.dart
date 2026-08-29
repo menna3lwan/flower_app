@@ -3,15 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../../../../../core/domain/entities/user_entity.dart';
 import '../auth_remote_data_source.dart';
 
-/// DEVELOPMENT/TESTING ONLY — never wired in a release build (see `injectable_injector.config.dart`'s
-/// `kDebugMode` gate, which also lets the release compiler tree-shake this whole class out).
-///
-/// A [AuthRemoteDataSource] decorator that intercepts `login()` for exactly one hardcoded local
-/// account ([testEmail]/[testPassword]) so the app — and anything downstream of a signed-in session,
-/// like Home — can be exercised before the real backend is reachable. Every other `login()` call,
-/// and every other method on this interface, is forwarded untouched to the wrapped real
-/// [AuthRemoteDataSource]: nothing here ever reaches the network for the test account, and the real
-/// API path is never modified, weakened, or bypassed for anyone using real credentials.
+/// Debug-only [AuthRemoteDataSource] decorator that intercepts one hardcoded local login.
 class LocalTestAuthDataSource implements AuthRemoteDataSource {
   const LocalTestAuthDataSource(this._realDataSource);
 

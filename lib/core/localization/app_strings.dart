@@ -136,7 +136,6 @@ abstract final class AppStrings {
   static String get trackOrder => 'trackOrder'.tr();
   static String get isGift => 'isGift'.tr();
 
-  static String get deliverToLabel => 'deliverTo'.tr();
   static String get addNewAddress => 'addNewAddress'.tr();
   static String get next => 'next'.tr();
   static String get paymentMethod => 'paymentMethod'.tr();

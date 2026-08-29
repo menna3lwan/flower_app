@@ -20,7 +20,7 @@ class AppSectionHeader extends StatelessWidget {
 
   final String? viewAllLabel;
 
-  /// Null falls back to [AppTextStyles.titleLarge]/[AppTextStyles.link] — keeps existing callers (Auth, etc.) unchanged; Home passes its own Figma-verified styles.
+  /// Null falls back to [AppTextStyles.titleLarge]/[AppTextStyles.link].
   final TextStyle? titleStyle;
   final TextStyle? viewAllStyle;
 
@@ -38,7 +38,7 @@ class AppSectionHeader extends StatelessWidget {
               children: [
                 Text(title, style: titleStyle ?? AppTextStyles.titleLarge),
                 if (subtitle != null) ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppDimens.space4),
                   Text(subtitle!, style: AppTextStyles.bodySmall),
                 ],
               ],

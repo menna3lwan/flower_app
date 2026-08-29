@@ -5,7 +5,7 @@ import 'package:customer_app/core/usecase/usecase.dart';
 import '../entities/home_section_entity.dart';
 import '../repositories/home_repository.dart';
 
-/// Thin, single-purpose wrapper over [HomeRepository.getHomeSections]. See `GetCategoriesUseCase`'s doc comment for why this exists.
+/// Thin wrapper over [HomeRepository.getHomeSections].
 @lazySingleton
 class GetHomeSectionsUseCase
     implements UseCase<List<HomeSectionEntity>, NoParams> {
