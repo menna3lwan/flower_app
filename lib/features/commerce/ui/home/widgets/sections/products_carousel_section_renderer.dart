@@ -9,6 +9,7 @@ import 'package:customer_app/common/widgets/app_section_header.dart';
 import 'package:customer_app/common/widgets/product_card.dart';
 import 'package:customer_app/features/commerce/domain/entities/home_section_content_entity.dart';
 import '../../registry/home_section_renderer.dart';
+import '../home_scroll_physics.dart';
 import 'section_state_box.dart';
 
 /// Renders a [ProductsCarouselSectionContent] — a generic, server-titled products row; the title is server content, already localized, so it's shown as-is.
@@ -33,7 +34,7 @@ class ProductsCarouselSectionRenderer implements HomeSectionRenderer {
           viewAllStyle: AppTextStyles.sectionViewAll,
         ),
         const SizedBox(height: AppDimens.space16),
-        _content(context, carousel),
+        _animatedContent(context, carousel),
       ],
     );
   }
@@ -43,6 +44,20 @@ class ProductsCarouselSectionRenderer implements HomeSectionRenderer {
     return CustomerRoutes.categories;
   }
 
+  Widget _animatedContent(
+    BuildContext context,
+    ProductsCarouselSectionContent section,
+  ) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 200),
+      switchInCurve: Curves.easeOut,
+      child: KeyedSubtree(
+        key: ValueKey(section.status),
+        child: _content(context, section),
+      ),
+    );
+  }
+
   Widget _content(BuildContext context, ProductsCarouselSectionContent section) {
     if (section.status == HomeSectionLoadStatus.failed) {
       return SectionStateBox.error(message: AppStrings.somethingWentWrong);
@@ -50,25 +65,21 @@ class ProductsCarouselSectionRenderer implements HomeSectionRenderer {
     if (section.status == HomeSectionLoadStatus.empty) {
       return SectionStateBox.empty(message: AppStrings.homeSectionEmpty);
     }
-    return SizedBox(
+    return HomeHorizontalScroller(
       height: AppDimens.productPreviewCardHeight,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: AppDimens.space16),
-        itemCount: section.products.length,
-        separatorBuilder: (_, __) => const SizedBox(width: AppDimens.space16),
-        itemBuilder: (context, index) {
-          final product = section.products[index];
-          return ProductCard(
-            product: product,
-            width: AppDimens.homeCardWidth,
-            onTap: () => Get.toNamed(
-              CustomerRoutes.productDetails,
-              arguments: product.id,
-            ),
-          );
-        },
-      ),
+      itemCount: section.products.length,
+      itemBuilder: (context, index) {
+        final product = section.products[index];
+        return ProductCard(
+          key: ValueKey(product.id),
+          product: product,
+          width: AppDimens.homeCardWidth,
+          onTap: () => Get.toNamed(
+            CustomerRoutes.productDetails,
+            arguments: product.id,
+          ),
+        );
+      },
     );
   }
 }

@@ -29,7 +29,8 @@ class AppSectionHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppDimens.space16),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
         children: [
           Expanded(
             child: Column(
@@ -46,7 +47,10 @@ class AppSectionHeader extends StatelessWidget {
           if (onViewAllTap != null && viewAllLabel != null)
             GestureDetector(
               onTap: onViewAllTap,
-              child: Text(viewAllLabel!, style: viewAllStyle ?? AppTextStyles.link),
+              child: Text(
+                viewAllLabel!,
+                style: viewAllStyle ?? AppTextStyles.link,
+              ),
             ),
         ],
       ),

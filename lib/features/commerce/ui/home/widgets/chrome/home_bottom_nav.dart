@@ -10,49 +10,59 @@ import 'package:customer_app/core/localization/app_strings.dart';
 import 'package:customer_app/core/routing/customer_routes.dart';
 import 'package:customer_app/core/theme/app_text_styles.dart';
 
-/// Figma-verified bottom navigation bar. Home is the only tab with a real destination today;
-/// Categories routes to the existing catalog screen, Cart/Profile surface "coming soon" until
-/// those features exist — never a crash from navigating to an unregistered route.
+/// Home bottom navigation. Home is the only tab with a real destination today;
+/// Categories routes to the existing catalog screen, Cart/Profile surface "coming soon".
 class HomeBottomNav extends StatelessWidget {
   const HomeBottomNav({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: AppDimens.bottomNavHeight,
-      padding: const EdgeInsets.symmetric(horizontal: AppDimens.space16),
-      decoration: const BoxDecoration(
-        color: AppColors.background,
-        border: Border(top: BorderSide(color: AppColors.dividerLight)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _NavItem(
-            icon: AppAssets.navHomeIcon,
-            label: AppStrings.homeNavLabel,
-            isActive: true,
-            onTap: () {},
+    return Material(
+      color: AppColors.background,
+      child: DecoratedBox(
+        decoration: const BoxDecoration(
+          border: Border(top: BorderSide(color: AppColors.dividerLight)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: SizedBox(
+            height: AppDimens.bottomNavHeight,
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: AppDimens.space16),
+              child: Row(
+                children: [
+                  _NavItem(
+                    icon: AppAssets.navHomeIcon,
+                    label: AppStrings.homeNavLabel,
+                    isActive: true,
+                    onTap: () {},
+                  ),
+                  _NavItem(
+                    icon: AppAssets.navCategoriesIcon,
+                    label: AppStrings.categories,
+                    isActive: false,
+                    onTap: () => Get.toNamed(CustomerRoutes.categories),
+                  ),
+                  _NavItem(
+                    icon: AppAssets.navCartIcon,
+                    label: AppStrings.cart,
+                    isActive: false,
+                    onTap: () =>
+                        context.showInfoSnackBar(AppStrings.comingSoon),
+                  ),
+                  _NavItem(
+                    icon: AppAssets.navProfileIcon,
+                    label: AppStrings.profile,
+                    isActive: false,
+                    onTap: () =>
+                        context.showInfoSnackBar(AppStrings.comingSoon),
+                  ),
+                ],
+              ),
+            ),
           ),
-          _NavItem(
-            icon: AppAssets.navCategoriesIcon,
-            label: AppStrings.categories,
-            isActive: false,
-            onTap: () => Get.toNamed(CustomerRoutes.categories),
-          ),
-          _NavItem(
-            icon: AppAssets.navCartIcon,
-            label: AppStrings.cart,
-            isActive: false,
-            onTap: () => context.showInfoSnackBar(AppStrings.comingSoon),
-          ),
-          _NavItem(
-            icon: AppAssets.navProfileIcon,
-            label: AppStrings.profile,
-            isActive: false,
-            onTap: () => context.showInfoSnackBar(AppStrings.comingSoon),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -74,20 +84,29 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = isActive ? AppColors.primary : AppColors.navInactive;
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SvgPicture.asset(
-            icon,
-            width: AppDimens.iconSize,
-            height: AppDimens.iconSize,
-            colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
-          ),
-          const SizedBox(height: AppDimens.space4),
-          Text(label, style: AppTextStyles.bodySmall.copyWith(color: color)),
-        ],
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        splashColor: AppColors.primaryLight,
+        highlightColor: AppColors.categoryChipBackground,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              icon,
+              width: AppDimens.iconSize,
+              height: AppDimens.iconSize,
+              colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+            ),
+            const SizedBox(height: AppDimens.space4),
+            Text(
+              label,
+              style: AppTextStyles.navLabel.copyWith(color: color),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }

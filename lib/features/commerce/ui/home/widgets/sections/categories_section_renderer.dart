@@ -11,6 +11,7 @@ import 'package:customer_app/common/widgets/app_section_header.dart';
 import 'package:customer_app/features/commerce/domain/entities/category_entity.dart';
 import 'package:customer_app/features/commerce/domain/entities/home_section_content_entity.dart';
 import '../../registry/home_section_renderer.dart';
+import '../home_scroll_physics.dart';
 import 'section_state_box.dart';
 import 'category_icon.dart';
 
@@ -36,8 +37,19 @@ class CategoriesSectionRenderer implements HomeSectionRenderer {
           viewAllStyle: AppTextStyles.sectionViewAll,
         ),
         const SizedBox(height: AppDimens.space16),
-        _content(categories),
+        _animatedContent(categories),
       ],
+    );
+  }
+
+  Widget _animatedContent(CategoriesSectionContent section) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 200),
+      switchInCurve: Curves.easeOut,
+      child: KeyedSubtree(
+        key: ValueKey(section.status),
+        child: _content(section),
+      ),
     );
   }
 
@@ -48,22 +60,22 @@ class CategoriesSectionRenderer implements HomeSectionRenderer {
     if (section.status == HomeSectionLoadStatus.empty) {
       return SectionStateBox.empty(message: AppStrings.homeSectionEmpty);
     }
-    return SizedBox(
+    return HomeHorizontalScroller(
       height: AppDimens.categoryCardsRowHeight,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: AppDimens.space16),
-        itemCount: section.categories.length,
-        separatorBuilder: (_, __) => const SizedBox(width: AppDimens.space16),
-        itemBuilder: (context, index) =>
-            _CategoryChip(category: section.categories[index]),
-      ),
+      itemCount: section.categories.length,
+      itemBuilder: (context, index) {
+        final category = section.categories[index];
+        return _CategoryChip(
+          key: ValueKey(category.id),
+          category: category,
+        );
+      },
     );
   }
 }
 
 class _CategoryChip extends StatelessWidget {
-  const _CategoryChip({required this.category});
+  const _CategoryChip({required this.category, super.key});
 
   final CategoryEntity category;
 
@@ -91,12 +103,16 @@ class _CategoryChip extends StatelessWidget {
                 categoryIconAssetFor(category.iconName),
                 width: AppDimens.iconSize,
                 height: AppDimens.iconSize,
+                colorFilter: const ColorFilter.mode(
+                  AppColors.black,
+                  BlendMode.srcIn,
+                ),
               ),
             ),
             const SizedBox(height: AppDimens.space8),
             Text(
               category.name,
-              style: AppTextStyles.bodyMedium,
+              style: AppTextStyles.homeChipLabel,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,

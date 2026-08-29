@@ -8,7 +8,7 @@ import 'package:customer_app/core/constants/app_dimens.dart';
 import 'package:customer_app/core/localization/app_strings.dart';
 import 'package:customer_app/core/theme/app_text_styles.dart';
 
-/// Figma-verified Home header: brand wordmark + a search entry point (no search API yet, so tapping surfaces "coming soon").
+/// Home header: brand wordmark + a search entry point (no search API yet, so tapping surfaces "coming soon").
 class HomeLogoSearchRow extends StatelessWidget {
   const HomeLogoSearchRow({super.key});
 
@@ -34,7 +34,7 @@ class HomeLogoSearchRow extends StatelessWidget {
           ),
           const SizedBox(width: AppDimens.space8),
           Text(AppStrings.appName, style: AppTextStyles.logoWordmark),
-          const SizedBox(width: 17),
+          const SizedBox(width: AppDimens.homeLogoToSearchGap),
           Expanded(child: _SearchField(onTap: () => _showComingSoon(context))),
         ],
       ),
@@ -52,29 +52,39 @@ class _SearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: AppDimens.searchBarHeight,
-        padding: const EdgeInsets.symmetric(horizontal: AppDimens.space8),
-        decoration: BoxDecoration(
-          border: Border.all(color: AppColors.placeholderGray),
-          borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-        ),
-        child: Row(
-          children: [
-            SvgPicture.asset(
-              AppAssets.searchIcon,
-              width: AppDimens.iconSize,
-              height: AppDimens.iconSize,
-            ),
-            const SizedBox(width: AppDimens.space4),
-            Text(
-              AppStrings.search,
-              style: AppTextStyles.labelMedium
-                  .copyWith(color: AppColors.placeholderGray),
-            ),
-          ],
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+        child: Ink(
+          height: AppDimens.searchBarHeight,
+          padding: const EdgeInsets.symmetric(horizontal: AppDimens.space8),
+          decoration: BoxDecoration(
+            border: Border.all(color: AppColors.placeholderGray),
+            borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+          ),
+          child: Row(
+            children: [
+              SvgPicture.asset(
+                AppAssets.searchIcon,
+                width: AppDimens.iconSize,
+                height: AppDimens.iconSize,
+                colorFilter: const ColorFilter.mode(
+                  AppColors.placeholderGray,
+                  BlendMode.srcIn,
+                ),
+              ),
+              const SizedBox(width: AppDimens.space4),
+              Text(
+                AppStrings.search,
+                style: AppTextStyles.labelMedium.copyWith(
+                  color: AppColors.placeholderGray,
+                  height: 1,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

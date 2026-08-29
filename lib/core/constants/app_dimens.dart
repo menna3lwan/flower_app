@@ -49,6 +49,9 @@ abstract final class AppDimens {
   /// Figma-verified Home search bar height (logo & search row).
   static const double searchBarHeight = 36;
 
+  /// Figma-verified gap between the Flowery wordmark and the search field.
+  static const double homeLogoToSearchGap = 17;
+
   /// Figma-verified icon size shared by the Home logo badge (circle diameter) and the delivery-location pin icon.
   static const double chromeIconSize = 20;
 
@@ -59,15 +62,12 @@ abstract final class AppDimens {
   /// the chip box is 68 wide × 64 tall, not square.
   static const double categoryChipWidth = 68;
 
-  /// Figma-verified Home categories horizontal row height: icon(64) + gap(8) + one-line label,
-  /// +4 over the Figma-measured 89 since Flutter's default text line-height renders taller than Figma's.
-  static const double categoryCardsRowHeight = 93;
+  /// Figma Home categories row: icon(64) + gap(8) + 14px label at 17px line-box = 89.
+  static const double categoryCardsRowHeight = 89;
 
-  /// Figma-verified Home occasion-card total height: image(151) + gap(8) + one-line label,
-  /// +4 over the Figma-measured 176 for the same Flutter/Figma line-height difference.
-  static const double occasionCardHeight = 180;
+  /// Figma Home occasion card: image(151) + gap(8) + 14px label at 17px line-box = 176.
+  static const double occasionCardHeight = 176;
 
-  /// Figma-verified Home best-seller/products-carousel card total height: image(151) + gap(8) + two-line name+price,
-  /// +6 over the Figma-measured 195 for the same Flutter/Figma line-height difference.
-  static const double productPreviewCardHeight = 201;
+  /// Figma Home best-seller/carousel card: image(151) + gap(8) + name + gap(4) + price ≈ 195.
+  static const double productPreviewCardHeight = 195;
 }

@@ -17,6 +17,7 @@ import '../registry/home_section_renderer_registry.dart';
 import '../widgets/chrome/delivery_location_row.dart';
 import '../widgets/chrome/home_bottom_nav.dart';
 import '../widgets/chrome/home_logo_search_row.dart';
+import '../widgets/home_scroll_physics.dart';
 
 /// Server-driven Home screen: renders whatever sections `/home/sections` returns, in the order given.
 class HomeView extends StatefulWidget {
@@ -52,24 +53,41 @@ class _HomeViewState extends State<HomeView> {
             const SizedBox(height: AppDimens.space16),
             Expanded(
               child: BlocConsumer<HomeCubit, HomeState>(
-                listener: _handleRefreshFailure,
-                builder: (context, state) => switch (state) {
-                  HomeInitial() || HomeLoading() => const LoadingView(),
-                  HomeEmpty() => EmptyState(
-                      message: AppStrings.homeEmptyState,
-                      icon: Icons.local_florist_outlined,
-                    ),
-                  HomeError(:final failure) => ErrorView(
-                      message: failure.homeMessage,
-                      retryLabel: AppStrings.retry,
-                      onRetry: () => context.read<HomeCubit>().loadHome(),
-                    ),
-                  HomeLoaded(:final sections) => _HomeSectionsList(
-                      sections: sections,
-                      registry: _registry,
-                      onRefresh: () => context.read<HomeCubit>().refreshHome(),
-                    ),
+                listenWhen: (previous, current) =>
+                    current is HomeLoaded && current.refreshFailure != null,
+                buildWhen: (previous, current) {
+                  if (previous is HomeLoaded && current is HomeLoaded) {
+                    return previous.sections != current.sections;
+                  }
+                  return previous.runtimeType != current.runtimeType ||
+                      previous != current;
                 },
+                listener: _handleRefreshFailure,
+                builder: (context, state) => AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  switchInCurve: Curves.easeOut,
+                  child: KeyedSubtree(
+                    key: ValueKey(state.runtimeType),
+                    child: switch (state) {
+                      HomeInitial() || HomeLoading() => const LoadingView(),
+                      HomeEmpty() => EmptyState(
+                          message: AppStrings.homeEmptyState,
+                          icon: Icons.local_florist_outlined,
+                        ),
+                      HomeError(:final failure) => ErrorView(
+                          message: failure.homeMessage,
+                          retryLabel: AppStrings.retry,
+                          onRetry: () => context.read<HomeCubit>().loadHome(),
+                        ),
+                      HomeLoaded(:final sections) => _HomeSectionsList(
+                          sections: sections,
+                          registry: _registry,
+                          onRefresh: () =>
+                              context.read<HomeCubit>().refreshHome(),
+                        ),
+                    },
+                  ),
+                ),
               ),
             ),
           ],
@@ -104,11 +122,17 @@ class _HomeSectionsList extends StatelessWidget {
       color: AppColors.primary,
       child: ListView.separated(
         // No top padding: the gap after DeliveryLocationRow already supplies it (see HomeView).
+        physics: homeScrollPhysics(context, alwaysScrollable: true),
         padding: const EdgeInsets.only(bottom: AppDimens.space16),
         itemCount: sections.length,
         separatorBuilder: (_, __) => const SizedBox(height: AppDimens.space24),
-        itemBuilder: (context, index) =>
-            registry.build(context, sections[index]),
+        itemBuilder: (context, index) {
+          final section = sections[index];
+          return KeyedSubtree(
+            key: ValueKey(section.id),
+            child: registry.build(context, section),
+          );
+        },
       ),
     );
   }

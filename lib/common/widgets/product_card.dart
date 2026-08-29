@@ -22,6 +22,9 @@ class ProductCard extends StatelessWidget {
   final VoidCallback? onAddToCart;
   final double? width;
 
+  /// Home compact preview (Figma best-seller / carousel) — no add-to-cart.
+  bool get _isCompact => onAddToCart == null;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -29,17 +32,21 @@ class ProductCard extends StatelessWidget {
       child: SizedBox(
         width: width,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Stack(
               children: [
                 AspectRatio(
-                  // Figma-verified Home preview-card ratio (131:151) — was an unverified 1:1 before.
-                  aspectRatio: AppDimens.homeCardWidth /
-                      AppDimens.productCardImageHeight,
-                  // Figma shows no rounding on this image — was an unverified radiusMedium before.
-                  child: const AppImagePlaceholder(
-                      borderRadius: BorderRadius.zero),
+                  aspectRatio: _isCompact
+                      ? AppDimens.homeCardWidth /
+                          AppDimens.productCardImageHeight
+                      : 1,
+                  child: AppImagePlaceholder(
+                    borderRadius: _isCompact
+                        ? BorderRadius.zero
+                        : BorderRadius.circular(AppDimens.radiusMedium),
+                  ),
                 ),
                 if (product.discountPercentage != null)
                   PositionedDirectional(
@@ -66,20 +73,35 @@ class ProductCard extends StatelessWidget {
             const SizedBox(height: AppDimens.space8),
             Text(
               product.name,
-              style: AppTextStyles.productCardTitle,
+              style: _isCompact
+                  ? AppTextStyles.productCardTitle
+                  : AppTextStyles.bodyMedium,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: AppDimens.space4),
+            SizedBox(height: _isCompact ? AppDimens.space4 : 2),
             Row(
               children: [
-                Text(product.price.asEgp, style: AppTextStyles.labelMedium),
+                Flexible(
+                  child: Text(
+                    product.price.asEgp,
+                    style: _isCompact
+                        ? AppTextStyles.productCardPrice
+                        : AppTextStyles.titleMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
                 if (product.hasDiscount) ...[
                   const SizedBox(width: 6),
-                  Text(
-                    product.originalPrice!.asEgp,
-                    style: AppTextStyles.bodySmall.copyWith(
-                      decoration: TextDecoration.lineThrough,
+                  Flexible(
+                    child: Text(
+                      product.originalPrice!.asEgp,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
