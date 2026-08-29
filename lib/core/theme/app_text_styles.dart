@@ -64,6 +64,42 @@ abstract final class AppTextStyles {
         color: AppColors.onPrimary,
       );
 
+  static TextStyle get labelMedium => _base.copyWith(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+      );
+
+  /// Figma-verified Home section header title (Categories/Best seller/Occasion) — 18px medium, distinct from [titleLarge] (18px semibold) so other [titleLarge] callers stay unaffected.
+  static TextStyle get sectionTitle => _base.copyWith(
+        fontSize: 18,
+        fontWeight: FontWeight.w500,
+      );
+
+  /// Figma-verified Home section "View All" link — 12px medium underline, distinct from [link] (14px semibold) so other [link] callers stay unaffected.
+  static TextStyle get sectionViewAll => _base.copyWith(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: AppColors.primary,
+        decoration: TextDecoration.underline,
+      );
+
+  /// The Figma logo wordmark's display face — bundled as `assets/fonts/IMFellEnglish.ttf`, registered only for this one use (the Home/Splash "Flowery" mark), never for body text.
+  static const String logoFontFamily = 'IMFellEnglish';
+
+  /// Figma-verified Home "Flowery" wordmark style — 20px, brand color, the dedicated logo face.
+  static TextStyle get logoWordmark => const TextStyle(
+        fontFamily: logoFontFamily,
+        fontSize: 20,
+        color: AppColors.primary,
+      );
+
+  /// Figma-verified [ProductCard] title (Best seller / Products carousel) — 12px regular, primary text
+  /// color; distinct from [bodySmall] (same size but [AppColors.textSecondary]).
+  static TextStyle get productCardTitle => _base.copyWith(
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+      );
+
   static TextStyle get caption => _base.copyWith(
         fontSize: 12,
         fontWeight: FontWeight.w500,

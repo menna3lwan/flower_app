@@ -29,4 +29,17 @@ abstract final class AppColors {
 
   /// Figma "White/70" placeholder color (#A6A6A6), deliberately distinct from [textHint] — verified via Dev Mode inspection.
   static const Color placeholderGray = Color(0xFFA6A6A6);
+
+  /// Figma "Light pink" (#F9ECF0) — Home's category-chip background. Distinct from [primaryLight]
+  /// (an earlier, unverified guess used elsewhere) since this exact value is now confirmed via Figma Dev Mode.
+  static const Color categoryChipBackground = Color(0xFFF9ECF0);
+
+  /// Figma "Black/50" (#35383C) — the muted "Deliver to" label prefix on Home.
+  static const Color textMuted = Color(0xFF35383C);
+
+  /// Figma "White/80" (#7D7D7D) — inactive bottom-navigation icon/label color.
+  static const Color navInactive = Color(0xFF7D7D7D);
+
+  /// Figma "White/60" (#CFCFCF) — the bottom navigation bar's top border.
+  static const Color dividerLight = Color(0xFFCFCFCF);
 }

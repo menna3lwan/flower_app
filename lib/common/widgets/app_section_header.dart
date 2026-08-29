@@ -9,6 +9,8 @@ class AppSectionHeader extends StatelessWidget {
     this.subtitle,
     this.onViewAllTap,
     this.viewAllLabel,
+    this.titleStyle,
+    this.viewAllStyle,
     super.key,
   });
 
@@ -17,6 +19,10 @@ class AppSectionHeader extends StatelessWidget {
   final VoidCallback? onViewAllTap;
 
   final String? viewAllLabel;
+
+  /// Null falls back to [AppTextStyles.titleLarge]/[AppTextStyles.link] — keeps existing callers (Auth, etc.) unchanged; Home passes its own Figma-verified styles.
+  final TextStyle? titleStyle;
+  final TextStyle? viewAllStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +35,7 @@ class AppSectionHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: AppTextStyles.titleLarge),
+                Text(title, style: titleStyle ?? AppTextStyles.titleLarge),
                 if (subtitle != null) ...[
                   const SizedBox(height: 4),
                   Text(subtitle!, style: AppTextStyles.bodySmall),
@@ -40,7 +46,7 @@ class AppSectionHeader extends StatelessWidget {
           if (onViewAllTap != null && viewAllLabel != null)
             GestureDetector(
               onTap: onViewAllTap,
-              child: Text(viewAllLabel!, style: AppTextStyles.link),
+              child: Text(viewAllLabel!, style: viewAllStyle ?? AppTextStyles.link),
             ),
         ],
       ),

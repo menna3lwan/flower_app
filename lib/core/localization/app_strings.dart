@@ -108,6 +108,16 @@ abstract final class AppStrings {
   static String get viewAll => 'viewAll'.tr();
   static String get search => 'search'.tr();
   static String get searchEmptyState => 'searchEmptyState'.tr();
+  static String get retry => 'retry'.tr();
+  static String get homeEmptyState => 'homeEmptyState'.tr();
+  static String get homeSectionEmpty => 'homeSectionEmpty'.tr();
+  static String get products => 'products'.tr();
+  static String get comingSoon => 'comingSoon'.tr();
+
+  /// Static placeholder shown next to "Deliver to" until a real saved-address feature exists.
+  static String get homeDeliveryAddressPlaceholder =>
+      'homeDeliveryAddressPlaceholder'.tr();
+  static String get homeNavLabel => 'homeNavLabel'.tr();
 
   // Product.
   static String get description => 'description'.tr();

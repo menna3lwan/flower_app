@@ -1,55 +1,62 @@
 import 'package:injectable/injectable.dart';
 
 import 'package:customer_app/core/base/base_cubit.dart';
+import 'package:customer_app/core/error/failures.dart';
+import 'package:customer_app/core/result/result.dart';
 import 'package:customer_app/core/usecase/usecase.dart';
-import '../../../domain/use_cases/get_best_sellers_use_case.dart';
-import '../../../domain/use_cases/get_categories_use_case.dart';
-import '../../../domain/use_cases/get_occasions_use_case.dart';
+import 'package:customer_app/features/commerce/domain/entities/home_section_content_entity.dart';
+import 'package:customer_app/features/commerce/domain/use_cases/load_home_use_case.dart';
 import 'home_state.dart';
 
-/// Loads Home's three sections as one [HomeLoaded] snapshot via three single-purpose use cases, never `CatalogRepository` directly.
+/// State management only — every fetch/parsing/orchestration decision lives in [LoadHomeUseCase].
 @injectable
 class HomeCubit extends BaseCubit<HomeState> {
-  HomeCubit(
-    this._getCategories,
-    this._getBestSellers,
-    this._getOccasions,
-  ) : super(const HomeLoading());
+  HomeCubit(this._loadHome) : super(const HomeInitial());
 
-  final GetCategoriesUseCase _getCategories;
-  final GetBestSellersUseCase _getBestSellers;
-  final GetOccasionsUseCase _getOccasions;
+  final LoadHomeUseCase _loadHome;
 
   Future<void> loadHome() async {
     safeEmit(const HomeLoading());
+    final result = await _loadHome(const NoParams());
+    safeEmit(_toState(result));
+  }
 
-    final categoriesResult = await _getCategories(const NoParams());
-    final bestSellersResult = await _getBestSellers(const NoParams());
-    final occasionsResult = await _getOccasions(const NoParams());
-
-    if (categoriesResult.isFailure) {
-      safeEmit(categoriesResult.fold(
-          (f) => HomeError(f.message), (_) => const HomeError('')));
-      return;
-    }
-    if (bestSellersResult.isFailure) {
-      safeEmit(bestSellersResult.fold(
-          (f) => HomeError(f.message), (_) => const HomeError('')));
-      return;
-    }
-    if (occasionsResult.isFailure) {
-      safeEmit(occasionsResult.fold(
-          (f) => HomeError(f.message), (_) => const HomeError('')));
-      return;
-    }
-
+  /// Pull-to-refresh: keeps the currently visible sections on failure instead of replacing them with a full-screen error.
+  Future<void> refreshHome() async {
+    final current = state;
     safeEmit(
-      HomeLoaded(
-        categories: categoriesResult.fold((_) => const [], (data) => data),
-        bestSellers: bestSellersResult.fold(
-            (_) => const [], (data) => data.take(6).toList()),
-        occasions: occasionsResult.fold((_) => const [], (data) => data),
-      ),
+      current is HomeLoaded
+          ? current.copyWith(isRefreshing: true, clearRefreshFailure: true)
+          : const HomeLoading(),
     );
+
+    final result = await _loadHome(const NoParams());
+    final refreshingState = state;
+    if (refreshingState is HomeLoaded && result.isFailure) {
+      safeEmit(
+        refreshingState.copyWith(
+          isRefreshing: false,
+          refreshFailure: result.fold<Failure?>((failure) => failure, (_) => null),
+        ),
+      );
+      return;
+    }
+    safeEmit(_toState(result));
+  }
+
+  /// Clears the one-shot refresh failure once the view has shown it.
+  void consumeRefreshFailure() {
+    final current = state;
+    if (current is HomeLoaded && current.refreshFailure != null) {
+      safeEmit(current.copyWith(clearRefreshFailure: true));
+    }
+  }
+
+  HomeState _toState(Result<List<HomeSectionContentEntity>> result) {
+    return switch (result) {
+      ResultFailure(:final failure) => HomeError(failure),
+      Success(:final data) =>
+        data.isEmpty ? const HomeEmpty() : HomeLoaded(sections: data),
+    };
   }
 }

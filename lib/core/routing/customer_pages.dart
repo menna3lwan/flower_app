@@ -9,7 +9,8 @@ import 'package:customer_app/features/auth/presentation/views/otp_verification_v
 import 'package:customer_app/features/auth/presentation/views/reset_password_view.dart';
 import 'package:customer_app/features/auth/presentation/views/sign_up_view.dart';
 import 'package:customer_app/features/commerce/routing/commerce_pages.dart';
-import 'package:customer_app/features/commerce/ui/home/pages/main_view.dart';
+import 'package:customer_app/features/commerce/ui/home/manager/home_cubit.dart';
+import 'package:customer_app/features/commerce/ui/home/pages/home_view.dart';
 import 'package:customer_app/features/splash/presentation/views/splash_view.dart';
 import './customer_routes.dart';
 
@@ -60,7 +61,10 @@ abstract final class CustomerPages {
     // Reached from Login/Sign Up success; confirmed live that without this entry Get.offAllNamed(main) crashed the app outright.
     GetPage(
       name: CustomerRoutes.main,
-      page: () => const MainView(),
+      page: () => BlocProvider(
+        create: (_) => sl<HomeCubit>(),
+        child: const HomeView(),
+      ),
     ),
     // The Commerce module owns its own routes — see CommercePages for why they're defined there, not inline here.
     ...CommercePages.pages,

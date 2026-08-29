@@ -34,15 +34,17 @@ class ProductCard extends StatelessWidget {
             Stack(
               children: [
                 AspectRatio(
-                  aspectRatio: 1,
-                  child: AppImagePlaceholder(
-                      borderRadius:
-                          BorderRadius.circular(AppDimens.radiusMedium)),
+                  // Figma-verified Home preview-card ratio (131:151) — was an unverified 1:1 before.
+                  aspectRatio: AppDimens.homeCardWidth /
+                      AppDimens.productCardImageHeight,
+                  // Figma shows no rounding on this image — was an unverified radiusMedium before.
+                  child: const AppImagePlaceholder(
+                      borderRadius: BorderRadius.zero),
                 ),
                 if (product.discountPercentage != null)
-                  Positioned(
+                  PositionedDirectional(
                     top: AppDimens.space8,
-                    left: AppDimens.space8,
+                    start: AppDimens.space8,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: AppDimens.space8,
@@ -64,14 +66,14 @@ class ProductCard extends StatelessWidget {
             const SizedBox(height: AppDimens.space8),
             Text(
               product.name,
-              style: AppTextStyles.bodyMedium,
+              style: AppTextStyles.productCardTitle,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: AppDimens.space4),
             Row(
               children: [
-                Text(product.price.asEgp, style: AppTextStyles.titleMedium),
+                Text(product.price.asEgp, style: AppTextStyles.labelMedium),
                 if (product.hasDiscount) ...[
                   const SizedBox(width: 6),
                   Text(

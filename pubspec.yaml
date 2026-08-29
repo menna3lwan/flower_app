@@ -64,6 +64,11 @@ dependencies:
   # instead of hand-rolling and re-testing that state machine ourselves.
   pinput: ^5.0.1
 
+  # Renders the bundled Figma-exported icon assets (assets/icons/*.svg) used by
+  # Home's category chips and static chrome — added instead of re-drawing those
+  # icons as Material glyphs, to keep asset fidelity with the design.
+  flutter_svg: ^2.0.10+1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -99,3 +104,7 @@ flutter:
     - family: Inter
       fonts:
         - asset: assets/fonts/inter.ttf
+    # Home/Splash logo wordmark only — see AppTextStyles.logoFontFamily.
+    - family: IMFellEnglish
+      fonts:
+        - asset: assets/fonts/IMFellEnglish.ttf

@@ -1,12 +1,14 @@
 // Hand-authored stand-in for Injectable's generated config (no Dart/Flutter SDK in this sandbox) — run `dart run build_runner build --delete-conflicting-outputs` elsewhere to replace it for real.
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:get_it/get_it.dart';
 
 // Auth module.
 import '../../features/auth/api/auth_api_service.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source_impl.dart';
+import '../../features/auth/data/datasources/dev/local_test_auth_data_source.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/di/auth_module.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
@@ -32,10 +34,25 @@ import '../../features/commerce/domain/use_cases/get_products_by_occasion_use_ca
 import '../../features/commerce/domain/use_cases/search_products_use_case.dart';
 import '../../features/commerce/ui/home/manager/home_cubit.dart';
 
+// Commerce module (Home / SDUI).
+import '../../features/commerce/data/api/home_api_service.dart';
+import '../../features/commerce/data/data_sources/remote/dev/local_mock_home_remote_data_source.dart';
+import '../../features/commerce/data/data_sources/remote/home_remote_data_source.dart';
+import '../../features/commerce/data/data_sources/remote/home_remote_data_source_impl.dart';
+import '../../features/commerce/data/repositories/home_repository_impl.dart';
+import '../../features/commerce/di/home_module.dart';
+import '../../features/commerce/domain/repositories/home_repository.dart';
+import '../../features/commerce/domain/use_cases/get_home_sections_use_case.dart';
+import '../../features/commerce/domain/use_cases/load_home_use_case.dart';
+import '../../features/commerce/ui/home/registry/home_section_renderer_registry.dart';
+
 import '../storage/secure_storage_service.dart';
 
 /// Instantiates the abstract `@module` class so its provider method can be called, mirroring what the real generator does.
 class _AuthApiModuleImpl extends AuthApiModule {}
+
+/// Instantiates the abstract `@module` class so its provider method can be called, mirroring what the real generator does.
+class _HomeApiModuleImpl extends HomeApiModule {}
 
 extension GetItInjectableX on GetIt {
   /// Registers every `@injectable`/`@LazySingleton`/`@module` class; core deps are assumed already registered first.
@@ -47,13 +64,27 @@ extension GetItInjectableX on GetIt {
       () => authApiModule.authApiService(get<Dio>()),
     );
 
-    // AuthRemoteDataSource is Auth's one and only data source — the real backend over Retrofit/Dio. There is no dummy/local implementation to accidentally wire up anymore.
-    registerLazySingleton<AuthRemoteDataSource>(
-      () => AuthRemoteDataSourceImpl(
+    // AuthRemoteDataSource is Auth's one and only data source — the real backend over Retrofit/Dio.
+    // In debug builds only, it's wrapped by LocalTestAuthDataSource (a Decorator) so a single hardcoded
+    // local account can reach Home etc. before the real backend exists, without touching this class,
+    // AuthRepositoryImpl, or any use case/Cubit. Every other credential — and every build that isn't
+    // debug — goes through AuthRemoteDataSourceImpl exactly as before. In release builds the `if`
+    // below is compile-time false, so LocalTestAuthDataSource is dead-code-eliminated entirely.
+    // NOTE: AuthRemoteDataSourceImpl still carries @LazySingleton(as: AuthRemoteDataSource) from the
+    // earlier refactor. This file is hand-authored (see header), so that annotation is inert today —
+    // but if this project ever switches to a real `build_runner`-generated config, this manual
+    // debug/release branch must be ported over (or the annotation removed) so the real generator
+    // doesn't silently re-bind AuthRemoteDataSourceImpl directly and drop this gate.
+    registerLazySingleton<AuthRemoteDataSource>(() {
+      final realDataSource = AuthRemoteDataSourceImpl(
         get<AuthApiService>(),
         get<SecureStorageService>(),
-      ),
-    );
+      );
+      if (kDebugMode) {
+        return LocalTestAuthDataSource(realDataSource);
+      }
+      return realDataSource;
+    });
 
     registerLazySingleton<AuthRepository>(
       () => AuthRepositoryImpl(get<AuthRemoteDataSource>()),
@@ -120,13 +151,51 @@ extension GetItInjectableX on GetIt {
       () => SearchProductsUseCase(get<CatalogRepository>()),
     );
 
-    // ---- Commerce: Home ----
-    registerFactory<HomeCubit>(
-      () => HomeCubit(
+    // ---- Commerce: Home (SDUI) ---- section list/order is real remote data; section content still reuses the Catalog use cases above.
+    final homeApiModule = _HomeApiModuleImpl();
+
+    registerLazySingleton<HomeApiService>(
+      () => homeApiModule.homeApiService(get<Dio>()),
+    );
+
+    // The real Commerce Home API still doesn't exist (see docs/BACKEND_INTEGRATION_TODO.md), so in
+    // debug builds only, HomeRemoteDataSource resolves to LocalMockHomeRemoteDataSource instead of
+    // the real Retrofit-backed impl — same contract, zero network calls, and dead-code-eliminated
+    // from release builds since `kDebugMode` is compile-time false there. HomeRepositoryImpl, every
+    // use case, and HomeCubit are untouched either way; only this registration branches. Swap back to
+    // the real API by deleting this `if` once the backend is live — no other file needs to change.
+    registerLazySingleton<HomeRemoteDataSource>(() {
+      if (kDebugMode) {
+        return LocalMockHomeRemoteDataSource();
+      }
+      return HomeRemoteDataSourceImpl(get<HomeApiService>());
+    });
+
+    registerLazySingleton<HomeRepository>(
+      () => HomeRepositoryImpl(get<HomeRemoteDataSource>()),
+    );
+
+    registerLazySingleton<GetHomeSectionsUseCase>(
+      () => GetHomeSectionsUseCase(get<HomeRepository>()),
+    );
+
+    registerLazySingleton<LoadHomeUseCase>(
+      () => LoadHomeUseCase(
+        get<GetHomeSectionsUseCase>(),
         get<GetCategoriesUseCase>(),
-        get<GetBestSellersUseCase>(),
         get<GetOccasionsUseCase>(),
+        get<GetBestSellersUseCase>(),
+        get<GetProductsByOccasionUseCase>(),
+        get<GetProductsByCategoryUseCase>(),
       ),
+    );
+
+    registerLazySingleton<HomeSectionRendererRegistry>(
+      HomeSectionRendererRegistry.new,
+    );
+
+    registerFactory<HomeCubit>(
+      () => HomeCubit(get<LoadHomeUseCase>()),
     );
 
     return this;
