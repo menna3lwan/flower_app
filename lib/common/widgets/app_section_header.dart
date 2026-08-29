@@ -9,6 +9,8 @@ class AppSectionHeader extends StatelessWidget {
     this.subtitle,
     this.onViewAllTap,
     this.viewAllLabel,
+    this.titleStyle,
+    this.viewAllStyle,
     super.key,
   });
 
@@ -18,20 +20,25 @@ class AppSectionHeader extends StatelessWidget {
 
   final String? viewAllLabel;
 
+  /// Null falls back to [AppTextStyles.titleLarge]/[AppTextStyles.link].
+  final TextStyle? titleStyle;
+  final TextStyle? viewAllStyle;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppDimens.space16),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: AppTextStyles.titleLarge),
+                Text(title, style: titleStyle ?? AppTextStyles.titleLarge),
                 if (subtitle != null) ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppDimens.space4),
                   Text(subtitle!, style: AppTextStyles.bodySmall),
                 ],
               ],
@@ -40,7 +47,10 @@ class AppSectionHeader extends StatelessWidget {
           if (onViewAllTap != null && viewAllLabel != null)
             GestureDetector(
               onTap: onViewAllTap,
-              child: Text(viewAllLabel!, style: AppTextStyles.link),
+              child: Text(
+                viewAllLabel!,
+                style: viewAllStyle ?? AppTextStyles.link,
+              ),
             ),
         ],
       ),

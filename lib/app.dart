@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 
 import 'package:customer_app/core/localization/app_strings.dart';
 import 'package:customer_app/core/localization/current_language.dart';
-import './core/routing/customer_pages.dart';
-import './core/routing/customer_routes.dart';
+import 'package:customer_app/core/routing/customer_pages.dart';
+import 'package:customer_app/core/routing/customer_routes.dart';
 import 'package:customer_app/core/theme/app_theme.dart';
 
 class FlowerApp extends StatelessWidget {
@@ -24,7 +24,6 @@ class FlowerApp extends StatelessWidget {
       supportedLocales: context.supportedLocales,
       locale: context.locale,
       getPages: CustomerPages.pages,
-      // SplashView was built but never reachable before; starting here is the routing fix that makes it run.
       initialRoute: CustomerRoutes.splash,
     );
   }

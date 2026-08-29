@@ -5,7 +5,7 @@ import '../../../../core/result/result.dart';
 import '../../../../core/usecase/usecase.dart';
 import '../repositories/catalog_repository.dart';
 
-/// Thin, single-purpose wrapper over [CatalogRepository.getProductById]. See `GetCategoriesUseCase`'s doc comment for why this exists.
+/// Thin wrapper over [CatalogRepository.getProductById].
 @lazySingleton
 class GetProductByIdUseCase implements UseCase<ProductEntity, String> {
   const GetProductByIdUseCase(this._repository);

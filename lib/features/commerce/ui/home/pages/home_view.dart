@@ -1,0 +1,141 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:customer_app/common/extensions/context_extensions.dart';
+import 'package:customer_app/common/widgets/states/empty_state.dart';
+import 'package:customer_app/common/widgets/states/error_view.dart';
+import 'package:customer_app/common/widgets/states/loading_view.dart';
+import 'package:customer_app/core/constants/app_colors.dart';
+import 'package:customer_app/core/constants/app_dimens.dart';
+import 'package:customer_app/core/localization/app_strings.dart';
+import 'package:customer_app/features/commerce/domain/entities/home_section_content_entity.dart';
+import '../mappers/home_failure_message.dart';
+import '../manager/home_cubit.dart';
+import '../manager/home_state.dart';
+import '../registry/home_section_renderer_registry.dart';
+import '../widgets/chrome/delivery_location_row.dart';
+import '../widgets/chrome/home_bottom_nav.dart';
+import '../widgets/chrome/home_logo_search_row.dart';
+import '../widgets/home_scroll_physics.dart';
+
+/// Server-driven Home: renders `/home/sections` in the order the data layer returns.
+class HomeView extends StatefulWidget {
+  const HomeView({required this.registry, super.key});
+
+  final HomeSectionRendererRegistry registry;
+
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<HomeCubit>().loadHome();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      bottomNavigationBar: const HomeBottomNav(),
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            const SizedBox(height: AppDimens.space16),
+            const HomeLogoSearchRow(),
+            const SizedBox(height: AppDimens.space16),
+            const DeliveryLocationRow(),
+            const SizedBox(height: AppDimens.space16),
+            Expanded(
+              child: BlocConsumer<HomeCubit, HomeState>(
+                listenWhen: (previous, current) =>
+                    current is HomeLoaded && current.refreshFailure != null,
+                buildWhen: (previous, current) {
+                  if (previous is HomeLoaded && current is HomeLoaded) {
+                    return previous.sections != current.sections;
+                  }
+                  return previous.runtimeType != current.runtimeType ||
+                      previous != current;
+                },
+                listener: _handleRefreshFailure,
+                builder: (context, state) => AnimatedSwitcher(
+                  duration: homeFadeDuration,
+                  switchInCurve: Curves.easeOut,
+                  child: switch (state) {
+                    HomeInitial() || HomeLoading() =>
+                      const LoadingView(key: ValueKey(HomeLoading)),
+                    HomeEmpty() => EmptyState(
+                        key: const ValueKey(HomeEmpty),
+                        message: AppStrings.homeEmptyState,
+                        icon: Icons.local_florist_outlined,
+                      ),
+                    HomeError(:final failure) => ErrorView(
+                        key: const ValueKey(HomeError),
+                        message: failure.homeMessage,
+                        retryLabel: AppStrings.retry,
+                        onRetry: () => context.read<HomeCubit>().loadHome(),
+                      ),
+                    HomeLoaded(:final sections) => _HomeSectionsList(
+                        key: const ValueKey(HomeLoaded),
+                        sections: sections,
+                        registry: widget.registry,
+                        onRefresh: () =>
+                            context.read<HomeCubit>().refreshHome(),
+                      ),
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _handleRefreshFailure(BuildContext context, HomeState state) {
+    if (state is HomeLoaded && state.refreshFailure != null) {
+      context.showErrorSnackBar(state.refreshFailure!.homeMessage);
+      context.read<HomeCubit>().consumeRefreshFailure();
+    }
+  }
+}
+
+class _HomeSectionsList extends StatelessWidget {
+  const _HomeSectionsList({
+    required this.sections,
+    required this.registry,
+    required this.onRefresh,
+    super.key,
+  });
+
+  final List<HomeSectionContentEntity> sections;
+  final HomeSectionRendererRegistry registry;
+  final Future<void> Function() onRefresh;
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      color: AppColors.primary,
+      child: ListView.separated(
+        physics: homeScrollPhysics(
+          Theme.of(context).platform,
+          alwaysScrollable: true,
+        ),
+        padding: const EdgeInsets.only(bottom: AppDimens.space16),
+        itemCount: sections.length,
+        separatorBuilder: (_, __) => const SizedBox(height: AppDimens.space24),
+        itemBuilder: (context, index) {
+          final section = sections[index];
+          return KeyedSubtree(
+            key: ValueKey(section.id),
+            child: registry.build(context, section),
+          );
+        },
+      ),
+    );
+  }
+}

@@ -108,8 +108,19 @@ abstract final class AppStrings {
   static String get viewAll => 'viewAll'.tr();
   static String get search => 'search'.tr();
   static String get searchEmptyState => 'searchEmptyState'.tr();
+  static String get retry => 'retry'.tr();
+  static String get homeEmptyState => 'homeEmptyState'.tr();
+  static String get homeSectionEmpty => 'homeSectionEmpty'.tr();
+  static String get products => 'products'.tr();
+  static String get comingSoon => 'comingSoon'.tr();
+
+  /// Static placeholder shown next to "Deliver to" until a real saved-address feature exists.
+  static String get homeDeliveryAddressPlaceholder =>
+      'homeDeliveryAddressPlaceholder'.tr();
+  static String get homeNavLabel => 'homeNavLabel'.tr();
 
   // Product.
+  static String get productDetails => 'productDetails'.tr();
   static String get description => 'description'.tr();
   static String get bouquetIncludes => 'bouquetIncludes'.tr();
   static String get addToCart => 'addToCart'.tr();
@@ -126,7 +137,6 @@ abstract final class AppStrings {
   static String get trackOrder => 'trackOrder'.tr();
   static String get isGift => 'isGift'.tr();
 
-  static String get deliverToLabel => 'deliverTo'.tr();
   static String get addNewAddress => 'addNewAddress'.tr();
   static String get next => 'next'.tr();
   static String get paymentMethod => 'paymentMethod'.tr();

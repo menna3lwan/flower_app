@@ -7,10 +7,10 @@ import 'package:customer_app/common/widgets/app_back_app_bar.dart';
 import 'package:customer_app/common/widgets/buttons/primary_button.dart';
 import 'package:customer_app/common/widgets/buttons/secondary_button.dart';
 import 'package:customer_app/common/widgets/inputs/app_text_field.dart';
+import 'package:customer_app/core/constants/app_colors.dart';
 import 'package:customer_app/core/constants/app_dimens.dart';
 import 'package:customer_app/core/localization/app_strings.dart';
-import '../../../../core/routing/customer_routes.dart';
-import 'package:customer_app/core/constants/app_colors.dart';
+import 'package:customer_app/core/routing/customer_routes.dart';
 import 'package:customer_app/core/theme/app_text_styles.dart';
 import 'package:customer_app/core/utils/validators.dart';
 import '../cubit/auth_cubit.dart';
@@ -100,7 +100,6 @@ class _LoginViewState extends State<LoginView> {
                       validator: Validators.password,
                       forceLiveValidation: _forceLiveValidation,
                     ),
-                    // Figma Dev Mode: uniform 24px gap Email->Password->Remember-me — this SizedBox was missing, breaking that rhythm.
                     const SizedBox(height: AppDimens.space24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

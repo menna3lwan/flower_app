@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'package:customer_app/common/widgets/media/app_image_placeholder.dart';
 import 'package:customer_app/core/constants/app_colors.dart';
 import 'package:customer_app/core/constants/app_dimens.dart';
-import 'package:customer_app/core/localization/app_strings.dart';
-import '../../core/domain/entities/product_entity.dart';
+import 'package:customer_app/core/domain/entities/product_entity.dart';
 import 'package:customer_app/core/extensions/string_extensions.dart';
+import 'package:customer_app/core/localization/app_strings.dart';
 import 'package:customer_app/core/theme/app_text_styles.dart';
-import 'package:customer_app/common/widgets/media/app_image_placeholder.dart';
 
 class ProductCard extends StatelessWidget {
   const ProductCard({
@@ -22,6 +22,9 @@ class ProductCard extends StatelessWidget {
   final VoidCallback? onAddToCart;
   final double? width;
 
+  /// Home compact preview (Figma best-seller / carousel) — no add-to-cart.
+  bool get _isCompact => onAddToCart == null;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -29,20 +32,23 @@ class ProductCard extends StatelessWidget {
       child: SizedBox(
         width: width,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Stack(
               children: [
                 AspectRatio(
-                  aspectRatio: 1,
+                  aspectRatio: _isCompact ? AppDimens.homeCardAspectRatio : 1,
                   child: AppImagePlaceholder(
-                      borderRadius:
-                          BorderRadius.circular(AppDimens.radiusMedium)),
+                    borderRadius: _isCompact
+                        ? BorderRadius.zero
+                        : BorderRadius.circular(AppDimens.radiusMedium),
+                  ),
                 ),
                 if (product.discountPercentage != null)
-                  Positioned(
+                  PositionedDirectional(
                     top: AppDimens.space8,
-                    left: AppDimens.space8,
+                    start: AppDimens.space8,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: AppDimens.space8,
@@ -64,20 +70,35 @@ class ProductCard extends StatelessWidget {
             const SizedBox(height: AppDimens.space8),
             Text(
               product.name,
-              style: AppTextStyles.bodyMedium,
+              style: _isCompact
+                  ? AppTextStyles.productCardTitle
+                  : AppTextStyles.bodyMedium,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 2),
+            SizedBox(height: _isCompact ? AppDimens.space4 : 2),
             Row(
               children: [
-                Text(product.price.asEgp, style: AppTextStyles.titleMedium),
+                Flexible(
+                  child: Text(
+                    product.price.asEgp,
+                    style: _isCompact
+                        ? AppTextStyles.productCardPrice
+                        : AppTextStyles.titleMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
                 if (product.hasDiscount) ...[
                   const SizedBox(width: 6),
-                  Text(
-                    product.originalPrice!.asEgp,
-                    style: AppTextStyles.bodySmall.copyWith(
-                      decoration: TextDecoration.lineThrough,
+                  Flexible(
+                    child: Text(
+                      product.originalPrice!.asEgp,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],

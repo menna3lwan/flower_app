@@ -11,8 +11,8 @@ import 'package:customer_app/common/widgets/inputs/password_rules_checklist.dart
 import 'package:customer_app/core/constants/app_colors.dart';
 import 'package:customer_app/core/constants/app_dimens.dart';
 import 'package:customer_app/core/localization/app_strings.dart';
-import '../../../../core/domain/entities/user_entity.dart';
-import '../../../../core/routing/customer_routes.dart';
+import 'package:customer_app/core/domain/entities/user_entity.dart';
+import 'package:customer_app/core/routing/customer_routes.dart';
 import 'package:customer_app/core/theme/app_text_styles.dart';
 import 'package:customer_app/core/utils/validators.dart';
 import '../cubit/auth_cubit.dart';

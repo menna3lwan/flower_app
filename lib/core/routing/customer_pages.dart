@@ -9,7 +9,9 @@ import 'package:customer_app/features/auth/presentation/views/otp_verification_v
 import 'package:customer_app/features/auth/presentation/views/reset_password_view.dart';
 import 'package:customer_app/features/auth/presentation/views/sign_up_view.dart';
 import 'package:customer_app/features/commerce/routing/commerce_pages.dart';
-import 'package:customer_app/features/commerce/ui/home/pages/main_view.dart';
+import 'package:customer_app/features/commerce/ui/home/manager/home_cubit.dart';
+import 'package:customer_app/features/commerce/ui/home/pages/home_view.dart';
+import 'package:customer_app/features/commerce/ui/home/registry/home_section_renderer_registry.dart';
 import 'package:customer_app/features/splash/presentation/views/splash_view.dart';
 import './customer_routes.dart';
 
@@ -46,23 +48,30 @@ abstract final class CustomerPages {
       name: CustomerRoutes.otpVerification,
       page: () => BlocProvider(
         create: (_) => sl<AuthCubit>(),
-        child: const OtpVerificationView(),
+        child: OtpVerificationView(
+          email: Get.arguments is String ? Get.arguments as String : '',
+        ),
       ),
     ),
-    // Reached from OtpVerificationView's success, carrying the one-time resetToken forward as the route argument.
+    // Carries the one-time resetToken from OtpVerificationView.
     GetPage(
       name: CustomerRoutes.resetPassword,
       page: () => BlocProvider(
         create: (_) => sl<AuthCubit>(),
-        child: const ResetPasswordView(),
+        child: ResetPasswordView(
+          resetToken: Get.arguments is String ? Get.arguments as String : '',
+        ),
       ),
     ),
-    // Reached from Login/Sign Up success; confirmed live that without this entry Get.offAllNamed(main) crashed the app outright.
+    // App shell after Login/Sign Up; omitting this entry made Get.offAllNamed(main) crash.
     GetPage(
       name: CustomerRoutes.main,
-      page: () => const MainView(),
+      page: () => BlocProvider(
+        create: (_) => sl<HomeCubit>(),
+        child: HomeView(registry: sl<HomeSectionRendererRegistry>()),
+      ),
     ),
-    // The Commerce module owns its own routes — see CommercePages for why they're defined there, not inline here.
+    // Commerce-owned routes live in CommercePages.
     ...CommercePages.pages,
   ];
 }

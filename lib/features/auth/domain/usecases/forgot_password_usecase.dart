@@ -3,7 +3,7 @@ import 'package:injectable/injectable.dart';
 import '../../../../core/result/result.dart';
 import '../repositories/auth_repository.dart';
 
-/// Thin wrapper over [AuthRepository.sendPasswordResetEmail] — see [LoginUseCase]'s doc comment for why this layer exists.
+/// Thin wrapper over [AuthRepository.sendPasswordResetEmail].
 @lazySingleton
 class ForgotPasswordUseCase {
   const ForgotPasswordUseCase(this._repository);

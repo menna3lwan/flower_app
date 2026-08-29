@@ -5,7 +5,7 @@ import '../../../../core/result/result.dart';
 import '../../../../core/usecase/usecase.dart';
 import '../repositories/catalog_repository.dart';
 
-/// Thin, single-purpose wrapper over [CatalogRepository.getProductsByCategory] — `Params` is the plain `categoryId` string, no dedicated params class (YAGNI).
+/// Thin wrapper over [CatalogRepository.getProductsByCategory].
 @lazySingleton
 class GetProductsByCategoryUseCase
     implements UseCase<List<ProductEntity>, String> {

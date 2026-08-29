@@ -5,7 +5,7 @@ import '../../../../core/usecase/usecase.dart';
 import '../entities/occasion_entity.dart';
 import '../repositories/catalog_repository.dart';
 
-/// Thin, single-purpose wrapper over [CatalogRepository.getOccasions]. See [GetCategoriesUseCase]'s doc comment for why this exists.
+/// Thin wrapper over [CatalogRepository.getOccasions].
 @lazySingleton
 class GetOccasionsUseCase implements UseCase<List<OccasionEntity>, NoParams> {
   const GetOccasionsUseCase(this._repository);

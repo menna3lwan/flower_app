@@ -8,7 +8,7 @@ import 'package:customer_app/common/widgets/buttons/primary_button.dart';
 import 'package:customer_app/common/widgets/inputs/app_text_field.dart';
 import 'package:customer_app/core/constants/app_dimens.dart';
 import 'package:customer_app/core/localization/app_strings.dart';
-import '../../../../core/routing/customer_routes.dart';
+import 'package:customer_app/core/routing/customer_routes.dart';
 import 'package:customer_app/core/theme/app_text_styles.dart';
 import 'package:customer_app/core/utils/validators.dart';
 import '../cubit/auth_cubit.dart';
@@ -68,7 +68,6 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
         builder: (context, state) {
           final isSubmitting = state.forgotPasswordState.isLoading;
           return SafeArea(
-            // Scrollable instead of plain Padding so the form doesn't overflow when the keyboard opens on shorter screens.
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(AppDimens.space16),
               child: Form(
@@ -84,7 +83,6 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                           Text(AppStrings.forgotPasswordTitle,
                               style: AppTextStyles.titleLarge,
                               textAlign: TextAlign.center),
-                          // Figma measures 16px between the title and subtitle.
                           const SizedBox(height: AppDimens.space16),
                           Text(
                             AppStrings.forgotPasswordSubtitle,
@@ -94,7 +92,6 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                         ],
                       ),
                     ),
-                    // Email field.
                     const SizedBox(height: AppDimens.space32),
                     AppTextField(
                       label: AppStrings.email,

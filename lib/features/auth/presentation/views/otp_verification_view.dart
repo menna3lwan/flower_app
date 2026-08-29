@@ -12,7 +12,7 @@ import 'package:customer_app/common/widgets/buttons/primary_button.dart';
 import 'package:customer_app/core/constants/app_colors.dart';
 import 'package:customer_app/core/constants/app_dimens.dart';
 import 'package:customer_app/core/localization/app_strings.dart';
-import '../../../../core/routing/customer_routes.dart';
+import 'package:customer_app/core/routing/customer_routes.dart';
 import 'package:customer_app/core/theme/app_text_styles.dart';
 import 'package:customer_app/core/utils/validators.dart';
 import '../cubit/auth_cubit.dart';
@@ -21,7 +21,9 @@ import '../mappers/auth_failure_message.dart';
 import '../state/auth_state.dart';
 
 class OtpVerificationView extends StatefulWidget {
-  const OtpVerificationView({super.key});
+  const OtpVerificationView({this.email = '', super.key});
+
+  final String email;
 
   @override
   State<OtpVerificationView> createState() => _OtpVerificationViewState();
@@ -45,8 +47,7 @@ class _OtpVerificationViewState extends State<OtpVerificationView> {
   @override
   void initState() {
     super.initState();
-    final arguments = Get.arguments;
-    _email = arguments is String ? arguments : '';
+    _email = widget.email;
     // A code was already sent by Forgot Password right before this screen was pushed, so the cooldown starts immediately.
     _startResendCooldown();
   }
@@ -282,7 +283,7 @@ class _OtpPinInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final baseStyle = AppTextStyles.titleLarge;
-    final boxConstraints = const BoxConstraints(
+    const boxConstraints = BoxConstraints(
       minWidth: AppDimens.otpBoxWidth,
       minHeight: AppDimens.otpBoxHeight,
     );

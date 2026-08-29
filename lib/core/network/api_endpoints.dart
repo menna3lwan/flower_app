@@ -27,4 +27,7 @@ abstract final class ApiEndpoints {
   static const String resetPassword = '$_authRoot/reset-password';
   static const String refreshToken = '$_authRoot/refresh-token';
   static const String forgotPassword = '$_authRoot/forgot-password';
+
+  // Commerce/Home endpoints — path confirmed against `flowery-app-api (1).yaml` only, not yet against a live gateway (no Commerce service exists in docker-compose today).
+  static const String homeSections = '/home/sections';
 }
